@@ -1,0 +1,5 @@
+{
+    "graphqlURL": "http://localhost:8000/graphql",
+    "wsURL": "ws://localhost:8000/graphql-sock",
+    "persistedQueries": false
+}

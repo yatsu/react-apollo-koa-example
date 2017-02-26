@@ -1,0 +1,26 @@
+.main.container {
+  padding-top: 3em;
+}
+
+.ui.menu {
+  font-size: 1.2rem;
+}
+
+.ui.footer.segment {
+  margin: 5em 0em 0em;
+  padding: 2em 0em;
+}
+
+.app-logo-large {
+  animation: app-logo-spin infinite 60s linear;
+  height: 160px;
+}
+
+@keyframes app-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.main-content {
+  margin-top: 3em;
+}
