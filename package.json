@@ -6,6 +6,7 @@
     "babel-cli": "^6.22.2",
     "babel-preset-es2015": "^6.22.0",
     "babel-preset-stage-2": "^6.22.0",
+    "enzyme": "^2.7.1",
     "eslint": "3.8.1",
     "eslint-config-react-app": "^0.5.1",
     "eslint-loader": "1.6.0",
@@ -14,6 +15,7 @@
     "eslint-plugin-jsx-a11y": "2.2.3",
     "eslint-plugin-react": "6.4.1",
     "nodemon": "^1.11.0",
+    "react-addons-test-utils": "15.4.2",
     "react-app-rewired": "^0.6.0",
     "react-scripts": "0.9.0"
   },
@@ -50,7 +52,7 @@
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
-    "test": "react-scripts test --env=jsdom",
+    "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint src",
     "persistgraphql": "persistgraphql src/graphql --add_typename",
