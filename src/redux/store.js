@@ -7,17 +7,18 @@ import rootLogic from './logic'
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 
-export default function configureStore(initialState, client) {
-  const rootReducer = configureRootReducer(client)
+export default function configureStore(initialState, apolloClient, webClient) {
+  const rootReducer = configureRootReducer(apolloClient)
 
   const logicMiddleware = createLogicMiddleware(rootLogic, {
-    apolloClient: client,
+    apolloClient,
+    webClient,
     subscriptions: { 'todo': null }
   })
 
   return createStore(rootReducer, initialState, composeEnhancers(
     applyMiddleware(routerMiddleware(browserHistory)),
-    applyMiddleware(client.middleware()),
+    applyMiddleware(apolloClient.middleware()),
     applyMiddleware(logicMiddleware)
   ))
 }

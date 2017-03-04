@@ -4,7 +4,7 @@ class Home extends Component {
   render() {
     return (
       <div className="ui main text container main-content">
-        <h1>apollo-koa-example</h1>
+        <h1>Home</h1>
       </div>
     )
   }
