@@ -23,6 +23,10 @@ proxy /sockjs-node localhost:3000 {
     websocket
 }
 
+proxy /api localhost:7000 {
+    transparent
+}
+
 proxy / localhost:3000 {
     transparent
 }

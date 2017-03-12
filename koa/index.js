@@ -11,6 +11,8 @@ import { SubscriptionServer } from 'subscriptions-transport-ws'
 import subscriptionManager from './subscriptions'
 import { resolvers } from './resolvers'
 import queryMap from '../extracted_queries.json'
+import errorHandler from './error'
+import { signin, signout } from './auth'
 
 require('dotenv').config()
 
@@ -18,6 +20,7 @@ const app = new Koa()
 
 app.use(convert(logger()))
 app.use(bodyParser())
+app.use(errorHandler)
 
 app.use(async (ctx, next) => {
   if (ctx.path === '/graphql' && ctx.request.body.id) {
@@ -32,6 +35,8 @@ const router = Router()
 router.post('/graphql', graphqlKoa({ schema: executableSchema }))
 router.get('/graphql', graphqlKoa({ schema: executableSchema }))
 router.get('/graphiql', graphiqlKoa({ endpointURL: '/graphql' }))
+router.post('/api/signin', signin)
+router.post('/api/signout', signout)
 
 app.use(router.routes())
 app.use(router.allowedMethods())

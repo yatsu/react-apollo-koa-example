@@ -1,3 +1,4 @@
+import { signinLogic, signoutLogic } from '../ducks/auth'
 import {
   todoSubscribeLogic,
   todoUnsubscribeLogic,
@@ -6,6 +7,8 @@ import {
 } from '../ducks/todoPubSub'
 
 const rootLogic = [
+  signinLogic,
+  signoutLogic,
   todoSubscribeLogic,
   todoUnsubscribeLogic,
   todoCreateLogic,

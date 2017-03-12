@@ -9,6 +9,7 @@ import { ApolloProvider } from 'react-apollo'
 import WebClient from './WebClient'
 import App from './containers/App'
 import HomeApp from './containers/Home/HomeApp'
+import SigninApp from './containers/Signin/SigninApp'
 import TodoApp from './containers/Todo/TodoApp'
 import RemoteTodoApp from './containers/RemoteTodo/RemoteTodoApp'
 import PubSubTodoApp from './containers/PubSubTodo/PubSubTodoApp'
@@ -73,9 +74,10 @@ ReactDOM.render(
     <Router history={history}>
       <Route path="/" component={App}>
         <IndexRoute component={HomeApp}/>
-        <Route path="todo" component={TodoApp}/>
-        <Route path="todo-remote" component={RemoteTodoApp}/>
-        <Route path="todo-pubsub" component={PubSubTodoApp}/>
+        <Route path="signin" component={withoutAuth(SigninApp)}/>
+        <Route path="todo" component={withAuth(TodoApp)}/>
+        <Route path="todo-remote" component={withAuth(RemoteTodoApp)}/>
+        <Route path="todo-pubsub" component={withAuth(PubSubTodoApp)}/>
       </Route>
     </Router>
   </ApolloProvider>,

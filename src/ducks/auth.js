@@ -64,15 +64,15 @@ export function authReducer(state = initialState, action = {}) {
 
 export function signin(username, password) {
   return {
-    type: SIGININ,
+    type: SIGNIN,
     username,
     password
   }
 }
 
 export function signinSucceeded(payload) {
-  const { acccessToken } = payload
-  const { user } = jwtDecode(acccessToken)
+  const { accessToken } = payload
+  const { user } = jwtDecode(accessToken)
 
   return {
     type: SIGNIN_SUCCEEDED,
@@ -149,15 +149,38 @@ export const signinLogic = createLogic({
 
   process({ action, webClient }) {
     const { username, password } = action
-    const body = new FormData()
-    body.append('username', username)
-    body.append('password', password)
-    return webClient.post('/signin', body, null, false)
+    const body = { username, password }
+    const headers = { 'Content-Type': 'application/json' }
+    return webClient.post('api/signin', body, headers, false)
       .map(payload => {
         const { accessToken, refreshToken } = payload
-        localStorage.addItem('accessToken', accessToken)
-        localStorage.addItem('refreshToken', refreshToken)
+        localStorage.setItem('accessToken', accessToken)
+        localStorage.setItem('refreshToken', refreshToken)
         return payload
       })
+  }
+})
+
+export const signoutLogic = createLogic({
+  type: SIGNOUT,
+  latest: true,
+
+  process({ action, webClient }) {
+    const headers = { 'Content-Type': 'application/json' }
+    webClient.post('api/signout', {}, headers).subscribe()
+    localStorage.removeItem('accessToken')
+    localStorage.removeItem('refreshToken')
+  }
+})
+
+export const autoSignoutLogic = createLogic({
+  type: new RegExp('[/_](REJECTED|FAILED)$'),
+  latest: true,
+
+  process({ action }, dispatch) {
+    if (action.payload && action.payload.error &&
+        action.payload.error.status === 401) {
+      dispatch(signout())
+    }
   }
 })
