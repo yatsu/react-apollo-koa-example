@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { Button, Form, Message } from 'semantic-ui-react'
 import { signin, clearAuthError } from '../../ducks/auth'
@@ -6,6 +6,17 @@ import { signin, clearAuthError } from '../../ducks/auth'
 import './SigninApp.css'
 
 class SigninApp extends Component {
+  static propTypes = {
+    authenticating: PropTypes.bool.isRequired,
+    error: PropTypes.string,
+    clearAuthError: PropTypes.func.isRequired,
+    onSubmit: PropTypes.func.isRequired
+  }
+
+  static defaultProps = {
+    error: null
+  }
+
   componentWillMount() {
     this.props.clearAuthError()
   }

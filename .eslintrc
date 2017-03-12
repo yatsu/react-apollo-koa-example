@@ -1,3 +1,17 @@
 {
-  "extends": "react-app"
+  "extends": [
+    "react-app",
+    "airbnb"
+  ],
+  "rules": {
+    "class-methods-use-this": "off",
+    "comma-dangle": ["error", "never"],
+    "semi": ["error", "never"],
+    "no-param-reassign": ["error", { "props": false }],
+    "react/jsx-filename-extension": "off",
+    "react/prefer-stateless-function": ["error", { "ignorePureComponents": true }],
+    "import/no-extraneous-dependencies": ["error", {
+      "devDependencies": ["**/*.test.js"]
+    }]
+  }
 }

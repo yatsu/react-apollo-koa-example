@@ -27,7 +27,7 @@ class TodoList extends Component {
         {todos.map(todo =>
           <Todo
             key={todo.get('id')}
-            onClick={(e) => this.handleTodoClick(e, todo.get('id'))}
+            onClick={(e) => { this.handleTodoClick(e, todo.get('id')) }}
             todo={todo}
           />
         )}

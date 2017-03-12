@@ -16,14 +16,16 @@ import PubSubTodoApp from './containers/PubSubTodo/PubSubTodoApp'
 import configureStore from './redux/store'
 import createApolloClient from './apollo/create-apollo-client'
 import getNetworkInterface from './apollo/transport'
-import config from '../config'
+import { signinResume } from './ducks/auth'
+import config from '../config.json'
+
 import './index.css'
 
 const initialState = {
   todo: fromJS({
     todos: [
-      {id: '0', text: 'hello', completed: true},
-      {id: '1', text: 'world', completed: false}
+      { id: '0', text: 'hello', completed: true },
+      { id: '1', text: 'world', completed: false }
     ]
   })
 }
@@ -40,6 +42,7 @@ const networkInterfaceWithSubscriptions = addGraphQLSubscriptions(
 
 const apolloClient = createApolloClient({
   networkInterface: networkInterfaceWithSubscriptions,
+  // eslint-disable-next-line no-underscore-dangle
   initialState: window.__APOLLO_STATE__,
   ssrForceFetchDelay: 100
 })
@@ -63,21 +66,26 @@ const withoutAuth = UserAuthWrapper({
   predicate: auth => !auth.get('username'),
   redirectAction: replace,
   allowRedirectBack: false,
-  failureRedirectPath: (state, ownProps) => {
-    return ownProps.location.query.redirect || '/'
-  },
+  failureRedirectPath: (state, ownProps) => (
+    ownProps.location.query.redirect || '/'
+  ),
   wrapperDisplayName: 'withoutAuth'
 })
+
+const accessToken = localStorage.getItem('accessToken')
+if (accessToken) {
+  store.dispatch(signinResume())
+}
 
 ReactDOM.render(
   <ApolloProvider store={store} client={apolloClient}>
     <Router history={history}>
       <Route path="/" component={App}>
-        <IndexRoute component={HomeApp}/>
-        <Route path="signin" component={withoutAuth(SigninApp)}/>
-        <Route path="todo" component={withAuth(TodoApp)}/>
-        <Route path="todo-remote" component={withAuth(RemoteTodoApp)}/>
-        <Route path="todo-pubsub" component={withAuth(PubSubTodoApp)}/>
+        <IndexRoute component={HomeApp} />
+        <Route path="signin" component={withoutAuth(SigninApp)} />
+        <Route path="todo" component={withAuth(TodoApp)} />
+        <Route path="todo-remote" component={withAuth(RemoteTodoApp)} />
+        <Route path="todo-pubsub" component={withAuth(PubSubTodoApp)} />
       </Route>
     </Router>
   </ApolloProvider>,

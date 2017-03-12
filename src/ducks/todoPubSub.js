@@ -10,7 +10,8 @@ const SUBSCRIBE = 'todo-pubsub/SUBSCRIBE'
 const SUBSCRIBE_SUCCEEDED = 'todo-pubsub/SUBSCRIBE_SUCCEEDED'
 const UNSUBSCRIBE = 'todo-pubsub/UNSUBSCRIBE'
 const UNSUBSCRIBE_SUCCEEDED = 'todo-pubsub/UNSUBSCRIBE_SUCCEEDED'
-const RECEIVED = 'todo-pubsub/RECEIVED'
+const RECEIVE_SUCCEEDED = 'todo-pubsub/RECEIVE_SUCCEEDED'
+const RECEIVE_FAILED = 'todo-pubsub/RECEIVE_FAILED'
 const CREATE = 'todo-pubsub/CREATE'
 const CREATE_SUCCEEDED = 'todo-pubsub/CREATE_SUCCEEDED'
 const CREATE_FAILED = 'todo-pubsub/CREATE_FAILED'
@@ -24,7 +25,8 @@ const initialState = fromJS({
   subid: null,
   todos: {},
   createError: null,
-  toggleError: null
+  toggleError: null,
+  receiveError: null
 })
 
 export default function todoPubSubReducer(state = initialState, action = {}) {
@@ -37,20 +39,22 @@ export default function todoPubSubReducer(state = initialState, action = {}) {
       return state
     case UNSUBSCRIBE_SUCCEEDED:
       return state.set('subid', null)
-    case RECEIVED:
+    case RECEIVE_SUCCEEDED:
       return state.setIn(['todos', action.todo.id], fromJS(action.todo))
+    case RECEIVE_FAILED:
+      return state.set('receiveError', action.error)
     case CREATE:
       return state
     case CREATE_SUCCEEDED:
       return state
     case CREATE_FAILED:
-      return state.set('createError', action.createError)
+      return state.set('createError', action.error)
     case TOGGLE:
-      return state;
+      return state
     case TOGGLE_SUCCEEDED:
       return state
     case TOGGLE_FAILED:
-      return state.set('toggleError', action.createError)
+      return state.set('toggleError', action.error)
     default:
       return state
   }
@@ -84,10 +88,17 @@ export function unsubscribeTodosSucceeded(subid) {
   }
 }
 
-export function todoReceived(todo) {
+export function todoReceiveSucceeded(todo) {
   return {
-    type: RECEIVED,
+    type: RECEIVE_SUCCEEDED,
     todo
+  }
+}
+
+export function todoReceiveFailed(error) {
+  return {
+    type: RECEIVE_FAILED,
+    error
   }
 }
 
@@ -108,7 +119,7 @@ export function createTodoSucceeded(todo) {
 export function createTodoFailed(error) {
   return {
     type: CREATE_FAILED,
-    createError: error
+    error
   }
 }
 
@@ -129,7 +140,7 @@ export function toggleTodoSucceeded(todo) {
 export function toggleTodoFailed(error) {
   return {
     type: TOGGLE_FAILED,
-    toggleError: error
+    error
   }
 }
 
@@ -140,22 +151,25 @@ export function toggleTodoFailed(error) {
 export const todoSubscribeLogic = createLogic({
   type: SUBSCRIBE,
 
+  // eslint-disable-next-line no-unused-vars
   process({ apolloClient, subscriptions }, dispatch, done) {
-    if (subscriptions['todo']) {
-      dispatch(subscribeTodosSucceeded(subscriptions['todo']._networkSubscriptionId))
+    if (subscriptions.todo) {
+      // eslint-disable-next-line no-underscore-dangle
+      dispatch(subscribeTodosSucceeded(subscriptions.todo._networkSubscriptionId))
       return
     }
     const sub = apolloClient.subscribe(
       { query: TODO_UPDATED_SUBSCRIPTION }
     ).subscribe({
       next(payload) {
-        dispatch(todoReceived(payload.todoUpdated))
+        dispatch(todoReceiveSucceeded(payload.todoUpdated))
       },
       error(err) {
-        console.error('todo subscription error', err)
+        dispatch(todoReceiveFailed(err))
       }
     })
-    subscriptions['todo'] = sub
+    subscriptions.todo = sub
+    // eslint-disable-next-line no-underscore-dangle
     dispatch(subscribeTodosSucceeded(sub._networkSubscriptionId))
   }
 })
@@ -165,9 +179,10 @@ export const todoUnsubscribeLogic = createLogic({
   latest: true,
 
   process({ apolloClient, subscriptions }, dispatch) {
-    const sub = subscriptions['todo']
+    const sub = subscriptions.todo
     sub.unsubscribe()
-    subscriptions['todo'] = null
+    subscriptions.todo = null
+    // eslint-disable-next-line no-underscore-dangle
     dispatch(unsubscribeTodosSucceeded(sub._networkSubscriptionId))
   }
 })
@@ -181,7 +196,7 @@ export const todoCreateLogic = createLogic({
     failType: createTodoFailed
   },
 
-  process({ apolloClient, action }, dispatch) {
+  process({ apolloClient, action }) {
     return apolloClient.mutate({
       mutation: ADD_TODO_MUTATION,
       variables: { text: action.todo }
@@ -199,7 +214,7 @@ export const todoToggleLogic = createLogic({
     failType: toggleTodoFailed
   },
 
-  process({ apolloClient, action }, dispatch) {
+  process({ apolloClient, action }) {
     return apolloClient.mutate({
       mutation: TOGGLE_TODO_MUTATION,
       variables: { id: action.todoId }

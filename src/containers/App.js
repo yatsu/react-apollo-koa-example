@@ -1,17 +1,22 @@
-import React, { Component } from 'react'
+import React, { PureComponent, PropTypes } from 'react'
 import Header from './Header'
 import Footer from './Footer'
+
 import './App.css'
 
-class App extends Component {
+class App extends PureComponent {
+  static propTypes = {
+    children: PropTypes.element.isRequired
+  }
+
   render() {
     const { children } = this.props
 
     return (
       <div className="app">
-        <Header/>
+        <Header />
         {children}
-        <Footer/>
+        <Footer />
       </div>
     )
   }

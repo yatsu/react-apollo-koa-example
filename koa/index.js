@@ -4,10 +4,11 @@ import logger from 'koa-logger'
 import bodyParser from 'koa-bodyparser'
 import Router from 'koa-router'
 import { createServer } from 'http'
+import createDebug from 'debug'
 import R from 'ramda'
 import { graphqlKoa, graphiqlKoa } from 'graphql-server-koa'
-import { executableSchema } from './executableSchema'
 import { SubscriptionServer } from 'subscriptions-transport-ws'
+import { executableSchema } from './executableSchema'
 import subscriptionManager from './subscriptions'
 import { resolvers } from './resolvers'
 import queryMap from '../extracted_queries.json'
@@ -15,6 +16,8 @@ import errorHandler from './error'
 import { signin, signout } from './auth'
 
 require('dotenv').config()
+
+const debug = createDebug('example:server')
 
 const app = new Koa()
 
@@ -47,23 +50,22 @@ const websocketServer = createServer((request, response) => {
   response.writeHead(404)
   response.end()
 })
-// console.log('websocketServer', websocketServer)
 
 websocketServer.listen(
   process.env.WS_PORT,
-  () => console.log(`WebSocket is running on port ${process.env.WS_PORT}`)
+  () => debug(`WebSocket is running on port ${process.env.WS_PORT}`)
 )
 
+// eslint-disable-next-line no-new
 new SubscriptionServer(
   {
     subscriptionManager,
-    onSubscribe(message, params, webSocket) {
+    onSubscribe(message, params) {
       setTimeout(() => {
-        resolvers.TodoList.todos().forEach(todo => {
+        resolvers.TodoList.todos().forEach((todo) => {
           subscriptionManager.pubsub.publish('todoUpdated', todo)
         })
       }, 0)
-      // return Promise.resolve(Object.assign({}, params, {}))
       return Promise.resolve(params)
     }
   },

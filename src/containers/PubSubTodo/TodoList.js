@@ -25,24 +25,20 @@ class TodoListC extends TodoList {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    todos: state.todoPubSub.get('todos').toList()
-  }
-}
+const mapStateToProps = state => ({
+  todos: state.todoPubSub.get('todos').toList()
+})
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    subscribeTodos: () => {
-      dispatch(subscribeTodos())
-    },
-    unsubscribeTodos: () => {
-      dispatch(unsubscribeTodos())
-    },
-    onTodoClick: (todoId) => {
-      dispatch(toggleTodo(todoId))
-    }
+const mapDispatchToProps = dispatch => ({
+  subscribeTodos() {
+    dispatch(subscribeTodos())
+  },
+  unsubscribeTodos() {
+    dispatch(unsubscribeTodos())
+  },
+  onTodoClick(todoId) {
+    dispatch(toggleTodo(todoId))
   }
-}
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(TodoListC)

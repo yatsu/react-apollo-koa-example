@@ -109,9 +109,6 @@ export function signinResume() {
 }
 
 export function signout() {
-  localStorage.removeItem('accessToken')
-  localStorage.removeItem('refreshToken')
-
   return {
     type: SIGNOUT
   }
@@ -152,7 +149,7 @@ export const signinLogic = createLogic({
     const body = { username, password }
     const headers = { 'Content-Type': 'application/json' }
     return webClient.post('api/signin', body, headers, false)
-      .map(payload => {
+      .map((payload) => {
         const { accessToken, refreshToken } = payload
         localStorage.setItem('accessToken', accessToken)
         localStorage.setItem('refreshToken', refreshToken)
@@ -165,7 +162,7 @@ export const signoutLogic = createLogic({
   type: SIGNOUT,
   latest: true,
 
-  process({ action, webClient }) {
+  process({ webClient }) {
     const headers = { 'Content-Type': 'application/json' }
     webClient.post('api/signout', {}, headers).subscribe()
     localStorage.removeItem('accessToken')

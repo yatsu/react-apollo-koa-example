@@ -1,9 +1,9 @@
-import React, { Component, PropTypes } from 'react'
+import React, { PureComponent, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import TodoField from '../../components/TodoField'
 import { createTodo } from '../../ducks/todo'
 
-class AddTodoContainer extends Component {
+class AddTodoContainer extends PureComponent {
   static propTypes = {
     onCreateTodo: PropTypes.func.isRequired
   }
@@ -12,22 +12,18 @@ class AddTodoContainer extends Component {
     const { onCreateTodo } = this.props
 
     return (
-      <TodoField onSubmit={onCreateTodo}/>
+      <TodoField onSubmit={onCreateTodo} />
     )
   }
 }
 
-const mapStateToProps = (state) => {
-  return {}
-}
+const mapStateToProps = () => ({})
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onCreateTodo: (todo) => {
-      dispatch(createTodo(todo))
-    }
+const mapDispatchToProps = dispatch => ({
+  onCreateTodo(todo) {
+    dispatch(createTodo(todo))
   }
-}
+})
 
 const AddTodo = connect(mapStateToProps, mapDispatchToProps)(AddTodoContainer)
 

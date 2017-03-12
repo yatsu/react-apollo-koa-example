@@ -17,14 +17,16 @@ export default function todoReducer(state = iMap(), action = {}) {
         completed: false
       })))
     case TOGGLE:
-      const todo = todos.get(action.todoId)
-      return state.set(
-        'todos',
-        todos.set(
-          action.todoId,
-          todo.set('completed', !todo.get('completed'))
+      return (() => {
+        const todo = todos.get(action.todoId)
+        return state.set(
+          'todos',
+          todos.set(
+            action.todoId,
+            todo.set('completed', !todo.get('completed'))
+          )
         )
-      )
+      })()
     default:
       return state
   }

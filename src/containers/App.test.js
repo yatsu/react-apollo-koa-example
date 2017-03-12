@@ -3,7 +3,7 @@ import { shallow } from 'enzyme'
 import App from './App'
 
 function setup() {
-  const app = shallow(<App/>)
+  const app = shallow(<App />)
 
   return {
     app

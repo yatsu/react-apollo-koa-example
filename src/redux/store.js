@@ -5,6 +5,7 @@ import { createLogicMiddleware } from 'redux-logic'
 import configureRootReducer from './reducer'
 import rootLogic from './logic'
 
+// eslint-disable-next-line no-underscore-dangle
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 
 export default function configureStore(initialState, apolloClient, webClient) {
@@ -13,7 +14,7 @@ export default function configureStore(initialState, apolloClient, webClient) {
   const logicMiddleware = createLogicMiddleware(rootLogic, {
     apolloClient,
     webClient,
-    subscriptions: { 'todo': null }
+    subscriptions: { todo: null }
   })
 
   return createStore(rootReducer, initialState, composeEnhancers(
