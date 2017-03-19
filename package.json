@@ -59,6 +59,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint src",
+    "console": "NODE_ENV=development babel-node --presets react-app",
     "persistgraphql": "persistgraphql src/graphql --add_typename",
     "server": "nodemon server.js",
     "caddy": "caddy"
