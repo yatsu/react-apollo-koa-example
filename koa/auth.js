@@ -24,11 +24,13 @@ export async function signin(ctx) {
 
   const accessToken = jwt.sign(
     { user: { username, admin: process.env.USER_ADMIN === 'true' }, type: 'access' },
-    process.env.JWT_SECRET, { expiresIn: '2h' }
+    process.env.JWT_SECRET,
+    { expiresIn: '2h' }
   )
   const refreshToken = jwt.sign(
     { user: { username, admin: process.env.USER_ADMIN === 'true' }, type: 'refresh' },
-    process.env.JWT_SECRET, { expiresIn: '60d' }
+    process.env.JWT_SECRET,
+    { expiresIn: '60d' }
   )
   ctx.body = { accessToken, refreshToken }
 }

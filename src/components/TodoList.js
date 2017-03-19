@@ -5,13 +5,15 @@ import Todo from './Todo'
 
 class TodoList extends Component {
   static propTypes = {
-    todos: IPropTypes.listOf(IPropTypes.contains({
-      id: PropTypes.string.isRequired,
-      completed: PropTypes.bool.isRequired,
-      text: PropTypes.string.isRequired
-    })).isRequired,
+    todos: IPropTypes.listOf(
+      IPropTypes.contains({
+        id: PropTypes.string.isRequired,
+        completed: PropTypes.bool.isRequired,
+        text: PropTypes.string.isRequired
+      })
+    ).isRequired,
     onTodoClick: PropTypes.func.isRequired
-  }
+  };
 
   handleTodoClick(event, todoId) {
     event.preventDefault()
@@ -24,13 +26,15 @@ class TodoList extends Component {
 
     return (
       <List>
-        {todos.map(todo =>
+        {todos.map(todo => (
           <Todo
             key={todo.get('id')}
-            onClick={(e) => { this.handleTodoClick(e, todo.get('id')) }}
+            onClick={(e) => {
+              this.handleTodoClick(e, todo.get('id'))
+            }}
             todo={todo}
           />
-        )}
+        ))}
       </List>
     )
   }

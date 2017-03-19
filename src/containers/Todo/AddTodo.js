@@ -6,14 +6,12 @@ import { createTodo } from '../../ducks/todo'
 class AddTodoContainer extends PureComponent {
   static propTypes = {
     onCreateTodo: PropTypes.func.isRequired
-  }
+  };
 
   render() {
     const { onCreateTodo } = this.props
 
-    return (
-      <TodoField onSubmit={onCreateTodo} />
-    )
+    return <TodoField onSubmit={onCreateTodo} />
   }
 }
 

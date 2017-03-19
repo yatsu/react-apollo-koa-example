@@ -50,21 +50,22 @@ const websocketServer = createServer((request, response) => {
   response.end()
 })
 
-websocketServer.listen(
-  process.env.WS_PORT,
-  () => debug(`WebSocket is running on port ${process.env.WS_PORT}`)
-)
+websocketServer.listen(process.env.WS_PORT, () =>
+  debug(`WebSocket is running on port ${process.env.WS_PORT}`))
 
 // eslint-disable-next-line no-new
 new SubscriptionServer(
   {
     subscriptionManager,
     onSubscribe(message, params) {
-      setTimeout(() => {
-        resolvers.TodoList.todos().forEach((todo) => {
-          subscriptionManager.pubsub.publish('todoUpdated', todo)
-        })
-      }, 0)
+      setTimeout(
+        () => {
+          resolvers.TodoList.todos().forEach((todo) => {
+            subscriptionManager.pubsub.publish('todoUpdated', todo)
+          })
+        },
+        0
+      )
       return Promise.resolve(params)
     }
   },

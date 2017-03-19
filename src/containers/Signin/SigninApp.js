@@ -11,11 +11,11 @@ class SigninApp extends Component {
     error: PropTypes.string,
     clearAuthError: PropTypes.func.isRequired,
     onSubmit: PropTypes.func.isRequired
-  }
+  };
 
   static defaultProps = {
     error: null
-  }
+  };
 
   componentWillMount() {
     this.props.clearAuthError()
@@ -69,7 +69,9 @@ class SigninApp extends Component {
               name="username"
               type="text"
               disabled={authenticating}
-              ref={(elem) => { this.usernameField = elem }}
+              ref={(elem) => {
+                this.usernameField = elem
+              }}
             />
           </Form.Field>
           <Form.Field>
@@ -79,7 +81,9 @@ class SigninApp extends Component {
               name="password"
               type="password"
               disabled={authenticating}
-              ref={(elem) => { this.passwordField = elem }}
+              ref={(elem) => {
+                this.passwordField = elem
+              }}
             />
           </Form.Field>
           <Form.Field>

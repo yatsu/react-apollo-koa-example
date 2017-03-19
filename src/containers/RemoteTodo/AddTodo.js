@@ -7,14 +7,12 @@ import TodoField from '../../components/TodoField'
 class AddTodo extends PureComponent {
   static propTypes = {
     onCreateTodo: PropTypes.func.isRequired
-  }
+  };
 
   render() {
     const { onCreateTodo } = this.props
 
-    return (
-      <TodoField onSubmit={onCreateTodo} />
-    )
+    return <TodoField onSubmit={onCreateTodo} />
   }
 }
 
@@ -28,11 +26,10 @@ const addTodoMutation = gql`
   }
 `
 
-const mergeProps = (stateProps, dispatchProps, ownProps) => (
+const mergeProps = (stateProps, dispatchProps, ownProps) =>
   Object.assign({}, ownProps, {
     onCreateTodo: ownProps.createTodo
   })
-)
 
 export default compose(
   graphql(addTodoMutation, {

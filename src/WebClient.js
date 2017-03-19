@@ -30,12 +30,18 @@ class WebClient {
               () => {
                 this.debugAuth('token refreshed')
                 this.request(method, args, auth, true).subscribe(
-                  (response) => { observer.next(response) },
-                  (retryError) => { observer.error(retryError) },
+                  (response) => {
+                    observer.next(response)
+                  },
+                  (retryError) => {
+                    observer.error(retryError)
+                  },
                   () => observer.complete()
                 )
               },
-              (refreshError) => { observer.error(refreshError) }
+              (refreshError) => {
+                observer.error(refreshError)
+              }
             )
           } else {
             observer.error(error)
@@ -63,7 +69,9 @@ class WebClient {
           this.debugAuth('refreshing token failed', error.xhr.response.error.message)
           observer.error(error)
         },
-        () => { observer.complete() }
+        () => {
+          observer.complete()
+        }
       )
     })
   }

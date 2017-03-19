@@ -12,12 +12,12 @@ const resolvers = {
   TodoList: {
     todos() {
       return todos
-    },
+    }
   },
   Query: {
     todoList() {
       return todoList
-    },
+    }
   },
   Mutation: {
     addTodo(_, { text }) {
@@ -38,7 +38,7 @@ const resolvers = {
       todo.completed = !todo.completed
       pubsub.publish('todoUpdated', todo)
       return todo
-    },
+    }
   },
   Subscription: {
     todoUpdated(todo) {

@@ -5,17 +5,14 @@ const subscriptionManager = new SubscriptionManager({
   schema: executableSchema,
   pubsub,
   setupFunctions: {
-    todoUpdated: (options, args, subscriptionName) => {
-      return {
-        todoUpdated: {
-          channelOptions: {},
-          filter: todo => {
+    todoUpdated: (options, args, subscriptionName) => ({
+      todoUpdated: {
+        channelOptions: {},
+        filter: todo =>
             // console.log('filter todo', todo)
-            return true
-          }
-        }
+             true
       }
-    }
+    })
   }
 })
 

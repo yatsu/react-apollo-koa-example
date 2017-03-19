@@ -158,9 +158,7 @@ export const todoSubscribeLogic = createLogic({
       dispatch(subscribeTodosSucceeded(subscriptions.todo._networkSubscriptionId))
       return
     }
-    const sub = apolloClient.subscribe(
-      { query: TODO_UPDATED_SUBSCRIPTION }
-    ).subscribe({
+    const sub = apolloClient.subscribe({ query: TODO_UPDATED_SUBSCRIPTION }).subscribe({
       next(payload) {
         dispatch(todoReceiveSucceeded(payload.todoUpdated))
       },
@@ -197,11 +195,12 @@ export const todoCreateLogic = createLogic({
   },
 
   process({ apolloClient, action }) {
-    return apolloClient.mutate({
-      mutation: ADD_TODO_MUTATION,
-      variables: { text: action.todo }
-    })
-    .then(resp => resp.data.addTodo)
+    return apolloClient
+      .mutate({
+        mutation: ADD_TODO_MUTATION,
+        variables: { text: action.todo }
+      })
+      .then(resp => resp.data.addTodo)
   }
 })
 
@@ -215,10 +214,11 @@ export const todoToggleLogic = createLogic({
   },
 
   process({ apolloClient, action }) {
-    return apolloClient.mutate({
-      mutation: TOGGLE_TODO_MUTATION,
-      variables: { id: action.todoId }
-    })
-    .then(resp => resp.data.toggleTodo)
+    return apolloClient
+      .mutate({
+        mutation: TOGGLE_TODO_MUTATION,
+        variables: { id: action.todoId }
+      })
+      .then(resp => resp.data.toggleTodo)
   }
 })

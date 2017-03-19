@@ -20,6 +20,7 @@
     "eslint-plugin-jsx-a11y": "^4.0.0",
     "eslint-plugin-react": "^6.10.0",
     "nodemon": "^1.11.0",
+    "prettier-standard": "^1.0.6",
     "react-addons-test-utils": "^15.4.2",
     "react-app-rewired": "^0.6.0",
     "react-scripts": "0.9.5"
@@ -64,6 +65,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint src",
+    "format": "prettier-standard 'src/**/*.js' 'koa/**/*.js'",
     "console": "NODE_ENV=development babel-node --presets react-app",
     "persistgraphql": "persistgraphql src/graphql --add_typename",
     "server": "nodemon server.js",

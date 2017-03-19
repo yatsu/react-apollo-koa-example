@@ -16,7 +16,7 @@ class RemoteTodoApp extends PureComponent {
     }).isRequired,
     toggleTodo: PropTypes.func.isRequired,
     refetchTodoList: PropTypes.func.isRequired
-  }
+  };
 
   render() {
     const { todos, toggleTodo, refetchTodoList } = this.props
@@ -52,13 +52,12 @@ const toggleTodoMutation = gql`
   }
 `
 
-const mergeProps = (stateProps, dispatchProps, ownProps) => (
+const mergeProps = (stateProps, dispatchProps, ownProps) =>
   Object.assign({}, ownProps, {
     todos: ownProps.todos,
     toggleTodo: ownProps.toggleTodo,
     refetchTodoList: ownProps.refetchTodoList
   })
-)
 
 export default compose(
   graphql(todoListQuery, {

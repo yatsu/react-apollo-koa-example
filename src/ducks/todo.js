@@ -11,20 +11,22 @@ export default function todoReducer(state = iMap(), action = {}) {
   const todos = state.get('todos')
   switch (action.type) {
     case CREATE:
-      return state.set('todos', todos.push(fromJS({
-        id: todos.size.toString(),
-        text: action.todo,
-        completed: false
-      })))
+      return state.set(
+        'todos',
+        todos.push(
+          fromJS({
+            id: todos.size.toString(),
+            text: action.todo,
+            completed: false
+          })
+        )
+      )
     case TOGGLE:
       return (() => {
         const todo = todos.get(action.todoId)
         return state.set(
           'todos',
-          todos.set(
-            action.todoId,
-            todo.set('completed', !todo.get('completed'))
-          )
+          todos.set(action.todoId, todo.set('completed', !todo.get('completed')))
         )
       })()
     default:

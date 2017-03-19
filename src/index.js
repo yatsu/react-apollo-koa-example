@@ -66,9 +66,7 @@ const withoutAuth = UserAuthWrapper({
   predicate: auth => !auth.get('username'),
   redirectAction: replace,
   allowRedirectBack: false,
-  failureRedirectPath: (state, ownProps) => (
-    ownProps.location.query.redirect || '/'
-  ),
+  failureRedirectPath: (state, ownProps) => ownProps.location.query.redirect || '/',
   wrapperDisplayName: 'withoutAuth'
 })
 

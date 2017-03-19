@@ -17,9 +17,13 @@ export default function configureStore(initialState, apolloClient, webClient) {
     subscriptions: { todo: null }
   })
 
-  return createStore(rootReducer, initialState, composeEnhancers(
-    applyMiddleware(routerMiddleware(browserHistory)),
-    applyMiddleware(apolloClient.middleware()),
-    applyMiddleware(logicMiddleware)
-  ))
+  return createStore(
+    rootReducer,
+    initialState,
+    composeEnhancers(
+      applyMiddleware(routerMiddleware(browserHistory)),
+      applyMiddleware(apolloClient.middleware()),
+      applyMiddleware(logicMiddleware)
+    )
+  )
 }

@@ -14,11 +14,11 @@ class Header extends Component {
     username: PropTypes.string,
     admin: PropTypes.bool.isRequired,
     signout: PropTypes.func.isRequired
-  }
+  };
 
   static defaultProps = {
     username: null
-  }
+  };
 
   active(path) {
     return this.props.path === `/${path}`
@@ -68,10 +68,7 @@ class Header extends Component {
           <img src={logo} className="app-logo" alt="logo" />
           Example App
         </Link>
-        <Link
-          to="/todo"
-          className={classnames('item', { active: this.active('todo') })}
-        >
+        <Link to="/todo" className={classnames('item', { active: this.active('todo') })}>
           Local
         </Link>
         <Link

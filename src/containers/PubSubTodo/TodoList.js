@@ -6,15 +6,17 @@ import TodoList from '../../components/TodoList'
 
 class TodoListC extends TodoList {
   static propTypes = {
-    todos: IPropTypes.listOf(IPropTypes.contains({
-      id: PropTypes.string.isRequired,
-      completed: PropTypes.bool.isRequired,
-      text: PropTypes.string.isRequired
-    })).isRequired,
+    todos: IPropTypes.listOf(
+      IPropTypes.contains({
+        id: PropTypes.string.isRequired,
+        completed: PropTypes.bool.isRequired,
+        text: PropTypes.string.isRequired
+      })
+    ).isRequired,
     subscribeTodos: PropTypes.func.isRequired,
     unsubscribeTodos: PropTypes.func.isRequired,
     onTodoClick: PropTypes.func.isRequired
-  }
+  };
 
   componentDidMount() {
     this.props.subscribeTodos()

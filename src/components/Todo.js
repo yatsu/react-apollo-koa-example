@@ -11,7 +11,7 @@ class Todo extends PureComponent {
       text: PropTypes.string.isRequired
     }).isRequired,
     onClick: PropTypes.func.isRequired
-  }
+  };
 
   render() {
     const { todo, onClick } = this.props

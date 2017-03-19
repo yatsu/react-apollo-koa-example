@@ -25,36 +25,27 @@ const initialState = fromJS({
 export function authReducer(state = initialState, action = {}) {
   switch (action.type) {
     case SIGNIN:
-      return state
-        .set('authenticating', true)
-        .set('error', null)
+      return state.set('authenticating', true).set('error', null)
     case SIGNIN_SUCCEEDED:
       return state
         .set('authenticating', false)
         .set('username', action.payload.username)
         .set('admin', action.payload.admin)
     case SIGNIN_FAILED:
-      return state
-        .set('authenticating', false)
-        .set('error', action.payload.error.message)
+      return state.set('authenticating', false).set('error', action.payload.error.message)
     case SIGNIN_RESUME:
       return state
         .set('authenticating', false)
         .set('username', action.payload.username)
         .set('admin', action.payload.admin)
     case SIGNOUT:
-      return state
-        .set('authenticating', false)
-        .set('username', null)
-        .set('admin', false)
+      return state.set('authenticating', false).set('username', null).set('admin', false)
     case SIGNOUT_SUCCEEDED:
       return state
     case SIGNOUT_FAILED:
       return state
     case CLEAR_AUTH_ERROR:
-      return state
-        .set('authenticating', false)
-        .set('error', null)
+      return state.set('authenticating', false).set('error', null)
     default:
       return state
   }
@@ -148,13 +139,12 @@ export const signinLogic = createLogic({
     const { username, password } = action
     const body = { username, password }
     const headers = { 'Content-Type': 'application/json' }
-    return webClient.post('api/signin', body, headers, false)
-      .map((payload) => {
-        const { accessToken, refreshToken } = payload
-        localStorage.setItem('accessToken', accessToken)
-        localStorage.setItem('refreshToken', refreshToken)
-        return payload
-      })
+    return webClient.post('api/signin', body, headers, false).map((payload) => {
+      const { accessToken, refreshToken } = payload
+      localStorage.setItem('accessToken', accessToken)
+      localStorage.setItem('refreshToken', refreshToken)
+      return payload
+    })
   }
 })
 
@@ -175,8 +165,7 @@ export const autoSignoutLogic = createLogic({
   latest: true,
 
   process({ action }, dispatch) {
-    if (action.payload && action.payload.error &&
-        action.payload.error.status === 401) {
+    if (action.payload && action.payload.error && action.payload.error.status === 401) {
       dispatch(signout())
     }
   }

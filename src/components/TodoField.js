@@ -4,7 +4,7 @@ import { Button, Form } from 'semantic-ui-react'
 class TodoField extends Component {
   static propTypes = {
     onSubmit: PropTypes.func.isRequired
-  }
+  };
 
   componentDidMount() {
     this.input.focus()
@@ -27,7 +27,9 @@ class TodoField extends Component {
       <Form onSubmit={e => this.handleSubmit(e)}>
         <Form.Field>
           <input
-            ref={(input) => { this.input = input }}
+            ref={(input) => {
+              this.input = input
+            }}
             name="add-todo"
             placeholder="Input Todo"
           />
