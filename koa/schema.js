@@ -1,3 +1,4 @@
+// @flow
 const schema = `
 type Todo {
   id: String!

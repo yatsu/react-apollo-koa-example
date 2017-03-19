@@ -1,3 +1,4 @@
+// @flow
 import Koa from 'koa'
 import logger from 'koa-logger'
 import bodyParser from 'koa-bodyparser'
@@ -16,7 +17,7 @@ import { signin, signout } from './auth'
 
 require('dotenv').config()
 
-const debug = createDebug('example:server')
+const debug = createDebug('server:main')
 
 const app = new Koa()
 
@@ -24,7 +25,7 @@ app.use(logger())
 app.use(bodyParser())
 app.use(errorHandler)
 
-app.use(async (ctx, next) => {
+app.use(async (ctx: Object, next: () => {}) => {
   if (ctx.path === '/graphql' && ctx.request.body.id) {
     const invertedMap = R.invertObj(queryMap)
     ctx.request.body.query = invertedMap[ctx.request.body.id]
@@ -45,13 +46,14 @@ app.use(router.allowedMethods())
 
 app.listen(process.env.SERVER_PORT, process.env.SERVER_HOST)
 
-const websocketServer = createServer((request, response) => {
+const websocketServer: Object = createServer((request, response) => {
   response.writeHead(404)
   response.end()
 })
 
-websocketServer.listen(process.env.WS_PORT, () =>
-  debug(`WebSocket is running on port ${process.env.WS_PORT}`))
+websocketServer.listen(process.env.WS_PORT, () => {
+  debug(`WebSocket is running on port ${process.env.WS_PORT || 0}`)
+})
 
 // eslint-disable-next-line no-new
 new SubscriptionServer(

@@ -19,6 +19,7 @@
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-jsx-a11y": "^4.0.0",
     "eslint-plugin-react": "^6.10.0",
+    "flow-bin": "^0.42.0",
     "husky": "^0.13.2",
     "lint-staged": "^3.4.0",
     "nodemon": "^1.11.0",
@@ -36,6 +37,7 @@
     "graphql-anywhere": "^3.0.1",
     "graphql-fragments": "^0.1.0",
     "graphql-server-koa": "^0.6.0",
+    "graphql-subscriptions": "^0.3.1",
     "graphql-tag": "^1.3.1",
     "graphql-tools": "^0.10.0",
     "immutable": "^3.8.1",
@@ -66,7 +68,8 @@
     "build": "react-app-rewired build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "eslint src",
+    "lint": "eslint src koa",
+    "flow": "flow status",
     "format": "prettier-standard 'src/**/*.js' 'koa/**/*.js'",
     "precommit": "lint-staged",
     "console": "NODE_ENV=development babel-node --presets react-app",
@@ -77,10 +80,12 @@
   "lint-staged": {
     "src/**/*.js": [
       "prettier-standard",
+      "lint",
       "git add"
     ],
     "koa/**/*.js": [
       "prettier-standard",
+      "lint",
       "git add"
     ]
   }

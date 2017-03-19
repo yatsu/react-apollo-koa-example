@@ -1,0 +1,10 @@
+[ignore]
+
+[include]
+
+[libs]
+
+[options]
+# workaround for errors on importing CSS
+# http://github.com/facebook/flow/issues/2092
+module.name_mapper='.*\.css$' -> './helpers/CSSModule'

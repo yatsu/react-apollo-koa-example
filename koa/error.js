@@ -1,4 +1,5 @@
-export default (async function errorHandler(ctx, next) {
+// @flow
+async function errorHandler(ctx: Object, next: () => {}) {
   try {
     await next()
   } catch (err) {
@@ -7,4 +8,6 @@ export default (async function errorHandler(ctx, next) {
     ctx.type = 'application/json'
     ctx.body = { error: { message: err.message, status: ctx.status } }
   }
-});
+}
+
+export default errorHandler

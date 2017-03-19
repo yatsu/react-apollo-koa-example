@@ -1,4 +1,8 @@
+// @flow
+import createDebug from 'debug'
 import { PubSub } from 'graphql-subscriptions'
+
+const debug = createDebug('server:resolvers')
 
 const pubsub = new PubSub()
 
@@ -20,7 +24,7 @@ const resolvers = {
     }
   },
   Mutation: {
-    addTodo(_, { text }) {
+    addTodo(_: Object, { text }: Object) {
       const todo = {
         id: (todos.length + 1).toString(),
         text,
@@ -30,7 +34,7 @@ const resolvers = {
       pubsub.publish('todoUpdated', todo)
       return todo
     },
-    toggleTodo(_, { id }) {
+    toggleTodo(_: Object, { id }: Object) {
       const todo = todos[id - 1]
       if (!todo) {
         throw new Error(`Couldn't find Todo with id ${id}`)
@@ -41,8 +45,8 @@ const resolvers = {
     }
   },
   Subscription: {
-    todoUpdated(todo) {
-      console.log('todoUpdated', todo)
+    todoUpdated(todo: Object) {
+      debug('todoUpdated', todo)
       return todo
     }
   }
