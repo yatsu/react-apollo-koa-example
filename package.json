@@ -19,6 +19,8 @@
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-jsx-a11y": "^4.0.0",
     "eslint-plugin-react": "^6.10.0",
+    "husky": "^0.13.2",
+    "lint-staged": "^3.4.0",
     "nodemon": "^1.11.0",
     "prettier-standard": "^1.0.6",
     "react-addons-test-utils": "^15.4.2",
@@ -66,9 +68,20 @@
     "eject": "react-scripts eject",
     "lint": "eslint src",
     "format": "prettier-standard 'src/**/*.js' 'koa/**/*.js'",
+    "precommit": "lint-staged",
     "console": "NODE_ENV=development babel-node --presets react-app",
     "persistgraphql": "persistgraphql src/graphql --add_typename",
     "server": "nodemon server.js",
     "caddy": "caddy"
+  },
+  "lint-staged": {
+    "src/**/*.js": [
+      "prettier-standard",
+      "git add"
+    ],
+    "koa/**/*.js": [
+      "prettier-standard",
+      "git add"
+    ]
   }
 }

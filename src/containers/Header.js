@@ -92,14 +92,11 @@ class Header extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  const { auth, routing } = state
-  return {
-    path: routing.locationBeforeTransitions.pathname,
-    username: auth.get('username'),
-    admin: auth.get('admin')
-  }
-}
+const mapStateToProps = state => ({
+  path: state.routing.locationBeforeTransitions.pathname,
+  username: state.auth.get('username'),
+  admin: state.auth.get('admin')
+})
 
 const mapDispatchToProps = dispatch => ({
   signout() {

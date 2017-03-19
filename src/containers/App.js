@@ -6,7 +6,11 @@ import './App.css'
 
 class App extends PureComponent {
   static propTypes = {
-    children: PropTypes.element.isRequired
+    children: PropTypes.element
+  };
+
+  static defaultProps = {
+    children: null
   };
 
   render() {
