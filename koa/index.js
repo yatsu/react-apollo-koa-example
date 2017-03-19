@@ -1,5 +1,4 @@
 import Koa from 'koa'
-import convert from 'koa-convert'
 import logger from 'koa-logger'
 import bodyParser from 'koa-bodyparser'
 import Router from 'koa-router'
@@ -21,7 +20,7 @@ const debug = createDebug('example:server')
 
 const app = new Koa()
 
-app.use(convert(logger()))
+app.use(logger())
 app.use(bodyParser())
 app.use(errorHandler)
 
