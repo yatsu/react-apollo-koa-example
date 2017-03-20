@@ -1,7 +1,7 @@
 .header-logo {
-    margin-right: 3rem !important;
+  margin-right: 3rem !important;
 }
 
-.ui.menu:not(.vertical) .item>.button {
-    padding: 6px 10px;
+.ui.menu:not(.vertical) .item > .button {
+  padding: 6px 10px;
 }

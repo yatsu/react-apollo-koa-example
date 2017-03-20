@@ -27,7 +27,9 @@
     "prettier-standard": "^1.0.6",
     "react-addons-test-utils": "^15.4.2",
     "react-app-rewired": "^0.6.0",
-    "react-scripts": "0.9.5"
+    "react-scripts": "0.9.5",
+    "stylelint": "^7.9.0",
+    "stylelint-config-standard": "^16.0.0"
   },
   "dependencies": {
     "apollo-client": "^1.0.0-rc.4",
@@ -72,6 +74,7 @@
     "eject": "react-scripts eject",
     "lint": "eslint src koa",
     "flow": "flow status",
+    "stylelint": "stylelint src/**/*.css",
     "format": "prettier-standard 'src/**/*.js' 'koa/**/*.js'",
     "precommit": "lint-staged",
     "console": "NODE_ENV=development babel-node --presets react-app",
@@ -84,6 +87,9 @@
       "prettier-standard",
       "lint",
       "git add"
+    ],
+    "src/**/*.css": [
+      "stylelint"
     ],
     "koa/**/*.js": [
       "prettier-standard",
