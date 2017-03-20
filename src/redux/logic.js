@@ -1,3 +1,4 @@
+// @flow
 import { signinLogic, signoutLogic } from '../ducks/auth'
 import {
   todoSubscribeLogic,

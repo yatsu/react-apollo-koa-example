@@ -1,3 +1,4 @@
+// @flow
 import React from 'react'
 import { Divider } from 'semantic-ui-react'
 import AddTodo from './AddTodo'

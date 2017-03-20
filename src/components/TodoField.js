@@ -1,3 +1,4 @@
+// @flow
 import React, { Component, PropTypes } from 'react'
 import { Button, Form } from 'semantic-ui-react'
 
@@ -7,19 +8,21 @@ class TodoField extends Component {
   };
 
   componentDidMount() {
-    this.input.focus()
+    this.inputField.focus()
   }
 
-  handleSubmit(event) {
+  inputField: any;
+
+  handleSubmit(event: Event) {
     const { onSubmit } = this.props
 
     event.preventDefault()
-    if (!this.input.value.trim()) {
+    if (!this.inputField.value.trim()) {
       return
     }
-    onSubmit(this.input.value)
-    this.input.value = ''
-    this.input.focus()
+    onSubmit(this.inputField.value)
+    this.inputField.value = ''
+    this.inputField.focus()
   }
 
   render() {
@@ -27,8 +30,8 @@ class TodoField extends Component {
       <Form onSubmit={e => this.handleSubmit(e)}>
         <Form.Field>
           <input
-            ref={(input) => {
-              this.input = input
+            ref={(elem) => {
+              this.inputField = elem
             }}
             name="add-todo"
             placeholder="Input Todo"

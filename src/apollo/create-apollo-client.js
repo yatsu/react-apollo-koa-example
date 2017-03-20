@@ -1,6 +1,7 @@
+// @flow
 import ApolloClient, { addTypename } from 'apollo-client'
 
-export default options =>
+export default (options: Object) =>
   new ApolloClient(
     Object.assign(
       {},

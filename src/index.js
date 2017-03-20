@@ -1,3 +1,4 @@
+// @flow
 import { fromJS } from 'immutable'
 import React from 'react'
 import ReactDOM from 'react-dom'

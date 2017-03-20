@@ -1,3 +1,4 @@
+// @flow
 import { Map as iMap, fromJS } from 'immutable'
 
 // Actions
@@ -7,7 +8,7 @@ const TOGGLE = 'todo/TOGGLE'
 
 // Reducer
 
-export default function todoReducer(state = iMap(), action = {}) {
+export default function todoReducer(state: iMap<string, any> = iMap(), action: Object = {}) {
   const todos = state.get('todos')
   switch (action.type) {
     case CREATE:
@@ -23,10 +24,10 @@ export default function todoReducer(state = iMap(), action = {}) {
       )
     case TOGGLE:
       return (() => {
-        const todo = todos.get(action.todoId)
+        const todo = todos.get(action.todoID)
         return state.set(
           'todos',
-          todos.set(action.todoId, todo.set('completed', !todo.get('completed')))
+          todos.set(action.todoID, todo.set('completed', !todo.get('completed')))
         )
       })()
     default:
@@ -36,10 +37,10 @@ export default function todoReducer(state = iMap(), action = {}) {
 
 // Action Creators
 
-export function createTodo(todo) {
+export function createTodo(todo: Object) {
   return { type: CREATE, todo }
 }
 
-export function toggleTodo(todoId) {
-  return { type: TOGGLE, todoId }
+export function toggleTodo(todoID: string) {
+  return { type: TOGGLE, todoID }
 }

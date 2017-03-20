@@ -1,3 +1,4 @@
+// @flow
 import React, { Component, PropTypes } from 'react'
 import IPropTypes from 'react-immutable-proptypes'
 import { List } from 'semantic-ui-react'
@@ -15,10 +16,10 @@ class TodoList extends Component {
     onTodoClick: PropTypes.func.isRequired
   };
 
-  handleTodoClick(event, todoId) {
+  handleTodoClick(event: Event, todoID: string) {
     event.preventDefault()
     const { onTodoClick } = this.props
-    onTodoClick(todoId)
+    onTodoClick(todoID)
   }
 
   render() {

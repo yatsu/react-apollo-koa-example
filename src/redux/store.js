@@ -1,3 +1,4 @@
+// @flow
 import { createStore, applyMiddleware, compose } from 'redux'
 import { browserHistory } from 'react-router'
 import { routerMiddleware } from 'react-router-redux'
@@ -8,7 +9,11 @@ import rootLogic from './logic'
 // eslint-disable-next-line no-underscore-dangle
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 
-export default function configureStore(initialState, apolloClient, webClient) {
+export default function configureStore(
+  initialState: Object,
+  apolloClient: Object,
+  webClient: Object
+) {
   const rootReducer = configureRootReducer(apolloClient)
 
   const logicMiddleware = createLogicMiddleware(rootLogic, {

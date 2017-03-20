@@ -1,3 +1,4 @@
+// @flow
 import React, { PureComponent, PropTypes } from 'react'
 import { fromJS } from 'immutable'
 import { connect } from 'react-redux'
@@ -52,12 +53,7 @@ const toggleTodoMutation = gql`
   }
 `
 
-const mergeProps = (stateProps, dispatchProps, ownProps) =>
-  Object.assign({}, ownProps, {
-    todos: ownProps.todos,
-    toggleTodo: ownProps.toggleTodo,
-    refetchTodoList: ownProps.refetchTodoList
-  })
+const mergeProps = (stateProps, dispatchProps, ownProps) => ownProps
 
 export default compose(
   graphql(todoListQuery, {
@@ -84,5 +80,5 @@ export default compose(
       }
     })
   }),
-  connect(null, null, mergeProps)
+  connect(() => ({}), () => ({}), mergeProps)
 )(RemoteTodoApp)

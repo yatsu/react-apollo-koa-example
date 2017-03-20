@@ -1,3 +1,4 @@
+// @flow
 import { PropTypes } from 'react'
 import IPropTypes from 'react-immutable-proptypes'
 import { connect } from 'react-redux'
@@ -27,19 +28,19 @@ class TodoListC extends TodoList {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: Object) => ({
   todos: state.todoPubSub.get('todos').toList()
 })
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch: Dispatch) => ({
   subscribeTodos() {
     dispatch(subscribeTodos())
   },
   unsubscribeTodos() {
     dispatch(unsubscribeTodos())
   },
-  onTodoClick(todoId) {
-    dispatch(toggleTodo(todoId))
+  onTodoClick(todoID: string) {
+    dispatch(toggleTodo(todoID))
   }
 })
 

@@ -1,3 +1,4 @@
+// @flow
 import React, { PureComponent, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { compose, graphql } from 'react-apollo'
@@ -6,13 +7,13 @@ import TodoField from '../../components/TodoField'
 
 class AddTodo extends PureComponent {
   static propTypes = {
-    onCreateTodo: PropTypes.func.isRequired
+    createTodo: PropTypes.func.isRequired
   };
 
   render() {
-    const { onCreateTodo } = this.props
+    const { createTodo } = this.props
 
-    return <TodoField onSubmit={onCreateTodo} />
+    return <TodoField onSubmit={createTodo} />
   }
 }
 
@@ -26,10 +27,7 @@ const addTodoMutation = gql`
   }
 `
 
-const mergeProps = (stateProps, dispatchProps, ownProps) =>
-  Object.assign({}, ownProps, {
-    onCreateTodo: ownProps.createTodo
-  })
+const mergeProps = (stateProps: Object, dispatchProps: Object, ownProps: Object) => ownProps
 
 export default compose(
   graphql(addTodoMutation, {
@@ -41,5 +39,5 @@ export default compose(
       }
     })
   }),
-  connect(null, null, mergeProps)
+  connect(() => ({}), () => ({}), mergeProps)
 )(AddTodo)

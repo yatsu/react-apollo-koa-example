@@ -1,4 +1,5 @@
-import { fromJS } from 'immutable'
+// @flow
+import { Map as iMap, fromJS } from 'immutable'
 import { createLogic } from 'redux-logic'
 import TODO_UPDATED_SUBSCRIPTION from '../graphql/todoUpdatedSubscription.graphql'
 import ADD_TODO_MUTATION from '../graphql/addTodoMutation.graphql'
@@ -29,7 +30,10 @@ const initialState = fromJS({
   receiveError: null
 })
 
-export default function todoPubSubReducer(state = initialState, action = {}) {
+export default function todoPubSubReducer(
+  state: iMap<string, any> = initialState,
+  action: Object = {}
+) {
   switch (action.type) {
     case SUBSCRIBE:
       return state
@@ -68,7 +72,7 @@ export function subscribeTodos() {
   }
 }
 
-export function subscribeTodosSucceeded(subid) {
+export function subscribeTodosSucceeded(subid: string) {
   return {
     type: SUBSCRIBE_SUCCEEDED,
     subid
@@ -81,63 +85,63 @@ export function unsubscribeTodos() {
   }
 }
 
-export function unsubscribeTodosSucceeded(subid) {
+export function unsubscribeTodosSucceeded(subid: string) {
   return {
     type: UNSUBSCRIBE_SUCCEEDED,
     subid
   }
 }
 
-export function todoReceiveSucceeded(todo) {
+export function todoReceiveSucceeded(todo: Object) {
   return {
     type: RECEIVE_SUCCEEDED,
     todo
   }
 }
 
-export function todoReceiveFailed(error) {
+export function todoReceiveFailed(error: Object) {
   return {
     type: RECEIVE_FAILED,
     error
   }
 }
 
-export function createTodo(todo) {
+export function createTodo(todo: Object) {
   return {
     type: CREATE,
     todo
   }
 }
 
-export function createTodoSucceeded(todo) {
+export function createTodoSucceeded(todo: Object) {
   return {
     type: CREATE_SUCCEEDED,
     todo
   }
 }
 
-export function createTodoFailed(error) {
+export function createTodoFailed(error: Object) {
   return {
     type: CREATE_FAILED,
     error
   }
 }
 
-export function toggleTodo(todoId) {
+export function toggleTodo(todoID: string) {
   return {
     type: TOGGLE,
-    todoId
+    todoID
   }
 }
 
-export function toggleTodoSucceeded(todo) {
+export function toggleTodoSucceeded(todo: Object) {
   return {
     type: TOGGLE_SUCCEEDED,
     todo
   }
 }
 
-export function toggleTodoFailed(error) {
+export function toggleTodoFailed(error: Object) {
   return {
     type: TOGGLE_FAILED,
     error
@@ -217,7 +221,7 @@ export const todoToggleLogic = createLogic({
     return apolloClient
       .mutate({
         mutation: TOGGLE_TODO_MUTATION,
-        variables: { id: action.todoId }
+        variables: { id: action.todoID }
       })
       .then(resp => resp.data.toggleTodo)
   }

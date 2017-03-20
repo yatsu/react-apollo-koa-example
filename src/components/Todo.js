@@ -1,3 +1,4 @@
+// @flow
 import classNames from 'classnames'
 import React, { PureComponent, PropTypes } from 'react'
 import IPropTypes from 'react-immutable-proptypes'

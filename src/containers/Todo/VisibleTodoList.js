@@ -1,14 +1,15 @@
+// @flow
 import { connect } from 'react-redux'
 import { toggleTodo } from '../../ducks/todo'
 import TodoList from '../../components/TodoList'
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: Object) => ({
   todos: state.todo.get('todos')
 })
 
-const mapDispatchToProps = dispatch => ({
-  onTodoClick(todoId) {
-    dispatch(toggleTodo(todoId))
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+  onTodoClick(todoID) {
+    dispatch(toggleTodo(todoID))
   }
 })
 

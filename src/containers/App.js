@@ -1,3 +1,4 @@
+// @flow
 import React, { PureComponent, PropTypes } from 'react'
 import Header from './Header'
 import Footer from './Footer'

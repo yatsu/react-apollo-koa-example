@@ -1,3 +1,4 @@
+// @flow
 import React, { PureComponent, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import TodoField from '../../components/TodoField'
@@ -17,7 +18,7 @@ class AddTodoContainer extends PureComponent {
 
 const mapStateToProps = () => ({})
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch: Dispatch) => ({
   onCreateTodo(todo) {
     dispatch(createTodo(todo))
   }

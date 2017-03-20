@@ -7,7 +7,7 @@ function digest(password: string) {
 }
 
 function authError(status: number = 401, msg: string = 'Username or password incorrect') {
-  const error = new Error(msg)
+  const error: Object = new Error(msg)
   error.status = status
   throw error
 }

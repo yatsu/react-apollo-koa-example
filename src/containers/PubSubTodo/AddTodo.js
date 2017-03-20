@@ -1,9 +1,10 @@
+// @flow
 import React, { PureComponent, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import TodoField from '../../components/TodoField'
 import { createTodo } from '../../ducks/todoPubSub'
 
-class AddTodoContainer extends PureComponent {
+class AddTodo extends PureComponent {
   static propTypes = {
     onCreateTodo: PropTypes.func.isRequired
   };
@@ -17,12 +18,10 @@ class AddTodoContainer extends PureComponent {
 
 const mapStateToProps = () => ({})
 
-const mapDispatchToProps = dispatch => ({
-  onCreateTodo(todo) {
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+  onCreateTodo(todo: Object) {
     dispatch(createTodo(todo))
   }
 })
 
-const AddTodo = connect(mapStateToProps, mapDispatchToProps)(AddTodoContainer)
-
-export default AddTodo
+export default connect(mapStateToProps, mapDispatchToProps)(AddTodo)

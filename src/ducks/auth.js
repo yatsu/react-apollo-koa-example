@@ -1,4 +1,5 @@
-import { fromJS } from 'immutable'
+// @flow
+import { Map as iMap, fromJS } from 'immutable'
 import { createLogic } from 'redux-logic'
 import jwtDecode from 'jwt-decode'
 
@@ -22,7 +23,7 @@ const initialState = fromJS({
   error: null
 })
 
-export function authReducer(state = initialState, action = {}) {
+export function authReducer(state: iMap<string, any> = initialState, action: Object = {}) {
   switch (action.type) {
     case SIGNIN:
       return state.set('authenticating', true).set('error', null)
@@ -53,7 +54,7 @@ export function authReducer(state = initialState, action = {}) {
 
 // Action Creators
 
-export function signin(username, password) {
+export function signin(username: string, password: string) {
   return {
     type: SIGNIN,
     username,
@@ -61,7 +62,7 @@ export function signin(username, password) {
   }
 }
 
-export function signinSucceeded(payload) {
+export function signinSucceeded(payload: Object) {
   const { accessToken } = payload
   const { user } = jwtDecode(accessToken)
 
@@ -74,7 +75,7 @@ export function signinSucceeded(payload) {
   }
 }
 
-export function signinFailed(error) {
+export function signinFailed(error: Object) {
   return {
     type: SIGNIN_FAILED,
     payload: {

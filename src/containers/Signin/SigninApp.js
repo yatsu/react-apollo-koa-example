@@ -1,3 +1,4 @@
+// @flow
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { Button, Form, Message } from 'semantic-ui-react'
@@ -30,6 +31,9 @@ class SigninApp extends Component {
     this.passwordField.value = ''
     this.props.clearAuthError()
   }
+
+  usernameField: any;
+  passwordField: any;
 
   handleSubmit(event) {
     event.preventDefault()
@@ -100,12 +104,12 @@ class SigninApp extends Component {
   }
 }
 
-const mapStatusToProps = state => ({
+const mapStatusToProps = (state: Object) => ({
   authenticating: state.auth.get('authenticating'),
   error: state.auth.get('error')
 })
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch: Dispatch) => ({
   onSubmit(username, password) {
     dispatch(signin(username, password))
   },
