@@ -1,5 +1,5 @@
 {
-  "name": "apollo-koa-example",
+  "name": "react-apollo-koa-example",
   "version": "0.1.0",
   "description": "An example app using React, Apollo and Koa",
   "repository": "https://github.com/yatsu/react-apollo-koa-example.git",
@@ -7,6 +7,7 @@
   "author": "Masaki Yatsu <yatsu@yatsu.info>",
   "private": true,
   "devDependencies": {
+    "@kadira/storybook": "^2.21.0",
     "babel-cli": "^6.22.2",
     "babel-eslint": "^7.0.0",
     "babel-preset-es2015": "^6.22.0",
@@ -24,7 +25,7 @@
     "husky": "^0.13.2",
     "lint-staged": "^3.4.0",
     "nodemon": "^1.11.0",
-    "prettier-standard": "^1.0.6",
+    "prettier-eslint-cli": "^3.1.3",
     "react-addons-test-utils": "^15.4.2",
     "react-app-rewired": "^0.6.0",
     "react-scripts": "0.9.5",
@@ -75,16 +76,18 @@
     "lint": "eslint src koa",
     "flow": "flow status",
     "stylelint": "stylelint src/**/*.css",
-    "format": "prettier-standard 'src/**/*.js' 'koa/**/*.js'",
+    "format": "prettier-eslint 'src/**/*.js' 'koa/**/*.js'",
     "precommit": "lint-staged",
-    "console": "NODE_ENV=development babel-node --presets react-app",
+    "storybook": "start-storybook -p 9009 -s public",
+    "build-storybook": "build-storybook -s public",
     "persistgraphql": "persistgraphql src/graphql --add_typename",
     "server": "nodemon server.js",
-    "caddy": "caddy"
+    "caddy": "caddy",
+    "console": "NODE_ENV=development babel-node --presets react-app"
   },
   "lint-staged": {
     "src/**/*.js": [
-      "prettier-standard",
+      "prettier-eslint --write",
       "lint",
       "git add"
     ],
@@ -92,7 +95,7 @@
       "stylelint"
     ],
     "koa/**/*.js": [
-      "prettier-standard",
+      "prettier-eslint --write",
       "lint",
       "git add"
     ]
