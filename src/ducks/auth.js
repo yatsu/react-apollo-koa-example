@@ -54,7 +54,20 @@ export function authReducer(state: iMap<string, any> = initialState, action: Obj
 
 // Action Creators
 
-export function signin(username: string, password: string) {
+export type AuthAction = {
+  type: string,
+  payload?: {
+    username?: string,
+    password?: string,
+    admin?: boolean,
+    error?: {
+      message: string,
+      status: number
+    }
+  }
+};
+
+export function signin(username: string, password: string): AuthAction {
   return {
     type: SIGNIN,
     username,
@@ -62,7 +75,7 @@ export function signin(username: string, password: string) {
   }
 }
 
-export function signinSucceeded(payload: Object) {
+export function signinSucceeded(payload: Object): AuthAction {
   const { accessToken } = payload
   const { user } = jwtDecode(accessToken)
 
@@ -75,7 +88,7 @@ export function signinSucceeded(payload: Object) {
   }
 }
 
-export function signinFailed(error: Object) {
+export function signinFailed(error: Object): AuthAction {
   return {
     type: SIGNIN_FAILED,
     payload: {
@@ -87,7 +100,7 @@ export function signinFailed(error: Object) {
   }
 }
 
-export function signinResume() {
+export function signinResume(): AuthAction {
   const accessToken = localStorage.getItem('accessToken')
   const { user } = jwtDecode(accessToken)
 
@@ -100,25 +113,25 @@ export function signinResume() {
   }
 }
 
-export function signout() {
+export function signout(): AuthAction {
   return {
     type: SIGNOUT
   }
 }
 
-export function signoutSucceeded() {
+export function signoutSucceeded(): AuthAction {
   return {
     type: SIGNOUT_SUCCEEDED
   }
 }
 
-export function signoutFailed() {
+export function signoutFailed(): AuthAction {
   return {
     type: SIGNOUT_FAILED
   }
 }
 
-export function clearAuthError() {
+export function clearAuthError(): AuthAction {
   return {
     type: CLEAR_AUTH_ERROR
   }
