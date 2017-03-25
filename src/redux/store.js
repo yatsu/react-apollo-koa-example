@@ -6,7 +6,6 @@ import { createLogicMiddleware } from 'redux-logic'
 import configureRootReducer from './reducer'
 import rootLogic from './logic'
 
-// eslint-disable-next-line no-underscore-dangle
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 
 export default function configureStore(

@@ -43,7 +43,6 @@ const networkInterfaceWithSubscriptions = addGraphQLSubscriptions(
 
 const apolloClient = createApolloClient({
   networkInterface: networkInterfaceWithSubscriptions,
-  // eslint-disable-next-line no-underscore-dangle
   initialState: window.__APOLLO_STATE__,
   ssrForceFetchDelay: 100
 })

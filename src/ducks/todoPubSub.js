@@ -1,6 +1,7 @@
 // @flow
 import { Map as iMap, fromJS } from 'immutable'
 import { createLogic } from 'redux-logic'
+import { Todo } from '../types/todo'
 import TODO_UPDATED_SUBSCRIPTION from '../graphql/todoUpdatedSubscription.graphql'
 import ADD_TODO_MUTATION from '../graphql/addTodoMutation.graphql'
 import TOGGLE_TODO_MUTATION from '../graphql/toggleTodoMutation.graphql'
@@ -66,82 +67,91 @@ export default function todoPubSubReducer(
 
 // Action Creators
 
-export function subscribeTodos() {
+type TodoAction = {
+  type: string,
+  todo?: Todo,
+  error?: {
+    message: string,
+    status: number
+  }
+};
+
+export function subscribeTodos(): TodoAction {
   return {
     type: SUBSCRIBE
   }
 }
 
-export function subscribeTodosSucceeded(subid: string) {
+export function subscribeTodosSucceeded(subid: string): TodoAction {
   return {
     type: SUBSCRIBE_SUCCEEDED,
     subid
   }
 }
 
-export function unsubscribeTodos() {
+export function unsubscribeTodos(): TodoAction {
   return {
     type: UNSUBSCRIBE
   }
 }
 
-export function unsubscribeTodosSucceeded(subid: string) {
+export function unsubscribeTodosSucceeded(subid: string): TodoAction {
   return {
     type: UNSUBSCRIBE_SUCCEEDED,
     subid
   }
 }
 
-export function todoReceiveSucceeded(todo: Object) {
+export function todoReceiveSucceeded(todo: Object): TodoAction {
   return {
     type: RECEIVE_SUCCEEDED,
     todo
   }
 }
 
-export function todoReceiveFailed(error: Object) {
+export function todoReceiveFailed(error: Object): TodoAction {
   return {
     type: RECEIVE_FAILED,
     error
   }
 }
 
-export function createTodo(todo: Object) {
+export function createTodo(todo: Object): TodoAction {
   return {
     type: CREATE,
     todo
   }
 }
 
-export function createTodoSucceeded(todo: Object) {
+export function createTodoSucceeded(todo: Object): TodoAction {
   return {
     type: CREATE_SUCCEEDED,
     todo
   }
 }
 
-export function createTodoFailed(error: Object) {
+export function createTodoFailed(error: Object): TodoAction {
   return {
     type: CREATE_FAILED,
     error
   }
 }
 
-export function toggleTodo(todoID: string) {
+export function toggleTodo(todoID: string): TodoAction {
   return {
     type: TOGGLE,
     todoID
   }
 }
 
-export function toggleTodoSucceeded(todo: Object) {
+export function toggleTodoSucceeded(todo: Object): TodoAction {
   return {
     type: TOGGLE_SUCCEEDED,
     todo
   }
 }
 
-export function toggleTodoFailed(error: Object) {
+export function toggleTodoFailed(error: Object): TodoAction {
   return {
     type: TOGGLE_FAILED,
     error
@@ -158,7 +168,6 @@ export const todoSubscribeLogic = createLogic({
   // eslint-disable-next-line no-unused-vars
   process({ apolloClient, subscriptions }, dispatch, done) {
     if (subscriptions.todo) {
-      // eslint-disable-next-line no-underscore-dangle
       dispatch(subscribeTodosSucceeded(subscriptions.todo._networkSubscriptionId))
       return
     }
@@ -171,7 +180,6 @@ export const todoSubscribeLogic = createLogic({
       }
     })
     subscriptions.todo = sub
-    // eslint-disable-next-line no-underscore-dangle
     dispatch(subscribeTodosSucceeded(sub._networkSubscriptionId))
   }
 })
@@ -184,7 +192,6 @@ export const todoUnsubscribeLogic = createLogic({
     const sub = subscriptions.todo
     sub.unsubscribe()
     subscriptions.todo = null
-    // eslint-disable-next-line no-underscore-dangle
     dispatch(unsubscribeTodosSucceeded(sub._networkSubscriptionId))
   }
 })

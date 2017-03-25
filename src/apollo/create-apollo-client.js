@@ -8,9 +8,7 @@ export default (options: Object) =>
       {
         queryTransformer: addTypename,
         dataIdFromObject: (result) => {
-          // eslint-disable-next-line no-underscore-dangle
           if (result.id && result.__typename) {
-            // eslint-disable-next-line no-underscore-dangle
             return result.__typename + result.id
           }
           return null

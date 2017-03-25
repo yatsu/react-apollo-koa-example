@@ -1,5 +1,6 @@
 // @flow
 import { Map as iMap, fromJS } from 'immutable'
+import { Todo } from '../types/todo'
 
 // Actions
 
@@ -17,17 +18,17 @@ export default function todoReducer(state: iMap<string, any> = iMap(), action: O
         todos.push(
           fromJS({
             id: todos.size.toString(),
-            text: action.todo,
+            text: action.payload.todo,
             completed: false
           })
         )
       )
     case TOGGLE:
       return (() => {
-        const todo = todos.get(action.todoID)
+        const todo = todos.get(action.payload.todoID)
         return state.set(
           'todos',
-          todos.set(action.todoID, todo.set('completed', !todo.get('completed')))
+          todos.set(action.payload.todoID, todo.set('completed', !todo.get('completed')))
         )
       })()
     default:
@@ -37,10 +38,18 @@ export default function todoReducer(state: iMap<string, any> = iMap(), action: O
 
 // Action Creators
 
+export type TodoAction = {
+  type: string,
+  payload?: {
+    todo?: Todo,
+    todoID?: string
+  }
+};
+
 export function createTodo(todo: Object) {
-  return { type: CREATE, todo }
+  return { type: CREATE, payload: { todo } }
 }
 
 export function toggleTodo(todoID: string) {
-  return { type: TOGGLE, todoID }
+  return { type: TOGGLE, payload: { todoID } }
 }

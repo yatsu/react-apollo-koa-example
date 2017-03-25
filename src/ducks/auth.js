@@ -54,7 +54,7 @@ export function authReducer(state: iMap<string, any> = initialState, action: Obj
 
 // Action Creators
 
-export type AuthAction = {
+type AuthAction = {
   type: string,
   payload?: {
     username?: string,
