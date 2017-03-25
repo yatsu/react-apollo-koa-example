@@ -1,6 +1,7 @@
 import React from 'react'
 import { storiesOf, action } from '@kadira/storybook'
 import Header from '../components/Header'
+import Signin from '../components/Signin/Signin'
 
 storiesOf('Header', module)
   .add('without auth', () => <Header path={'/'} signout={action('signout')} />)
@@ -14,4 +15,11 @@ storiesOf('Header', module)
   ))
   .add('GraphQL Subscription tab', () => (
     <Header path={'/todo-pubsub'} username={'bob'} signout={action('signout')} />
+  ))
+
+storiesOf('Signin', module)
+  .add('Initial state', () => <Signin authenticating={false} onSubmit={action('signin')} />)
+  .add('Signing in', () => <Signin authenticating onSubmit={action('signin')} />)
+  .add('Error', () => (
+    <Signin authenticating={false} error={'Authentication failed'} onSubmit={action('signin')} />
   ))

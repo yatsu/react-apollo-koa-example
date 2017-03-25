@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { compose, graphql } from 'react-apollo'
 import gql from 'graphql-tag'
 import { Divider } from 'semantic-ui-react'
-import TodoList from '../../components/TodoList'
+import TodoList from '../../components/Todo/TodoList'
 import AddTodo from './AddTodo'
 
 class RemoteTodoApp extends PureComponent {

@@ -3,7 +3,7 @@ import React, { PureComponent, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { compose, graphql } from 'react-apollo'
 import gql from 'graphql-tag'
-import TodoField from '../../components/TodoField'
+import TodoField from '../../components/Todo/TodoField'
 
 class AddTodo extends PureComponent {
   static propTypes = {

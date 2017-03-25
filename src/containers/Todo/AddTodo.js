@@ -1,7 +1,7 @@
 // @flow
 import React, { PureComponent, PropTypes } from 'react'
 import { connect } from 'react-redux'
-import TodoField from '../../components/TodoField'
+import TodoField from '../../components/Todo/TodoField'
 import { createTodo } from '../../ducks/todo'
 
 class AddTodoContainer extends PureComponent {

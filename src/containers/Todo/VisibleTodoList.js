@@ -1,7 +1,7 @@
 // @flow
 import { connect } from 'react-redux'
 import { toggleTodo } from '../../ducks/todo'
-import TodoList from '../../components/TodoList'
+import TodoList from '../../components/Todo/TodoList'
 
 const mapStateToProps = (state: Object) => ({
   todos: state.todo.get('todos')

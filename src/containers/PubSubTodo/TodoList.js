@@ -3,9 +3,9 @@ import { PropTypes } from 'react'
 import IPropTypes from 'react-immutable-proptypes'
 import { connect } from 'react-redux'
 import { subscribeTodos, unsubscribeTodos, toggleTodo } from '../../ducks/todoPubSub'
-import TodoList from '../../components/TodoList'
+import TodoList from '../../components/Todo/TodoList'
 
-class TodoListC extends TodoList {
+class TodoListContainer extends TodoList {
   static propTypes = {
     todos: IPropTypes.listOf(
       IPropTypes.contains({
@@ -44,4 +44,4 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
   }
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(TodoListC)
+export default connect(mapStateToProps, mapDispatchToProps)(TodoListContainer)
