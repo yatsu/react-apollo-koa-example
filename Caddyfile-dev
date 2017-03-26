@@ -13,7 +13,7 @@ proxy /graphiql localhost:7000 {
     transparent
 }
 
-proxy /graphql-sock localhost:7001 {
+proxy /graphql-sock localhost:7000 {
     transparent
     websocket
 }

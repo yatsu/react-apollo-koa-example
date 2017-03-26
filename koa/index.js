@@ -3,8 +3,6 @@ import Koa from 'koa'
 import logger from 'koa-logger'
 import bodyParser from 'koa-bodyparser'
 import Router from 'koa-router'
-import { createServer } from 'http'
-import createDebug from 'debug'
 import R from 'ramda'
 import { graphqlKoa, graphiqlKoa } from 'graphql-server-koa'
 import { SubscriptionServer } from 'subscriptions-transport-ws'
@@ -17,9 +15,9 @@ import { signin, signout } from './auth'
 
 require('dotenv').config()
 
-const debug = createDebug('server:main')
-
 const app = new Koa()
+
+app.proxy = true
 
 app.use(logger())
 app.use(bodyParser())
@@ -44,16 +42,7 @@ router.post('/api/signout', signout)
 app.use(router.routes())
 app.use(router.allowedMethods())
 
-app.listen(process.env.SERVER_PORT, process.env.SERVER_HOST)
-
-const websocketServer: Object = createServer((request, response) => {
-  response.writeHead(404)
-  response.end()
-})
-
-websocketServer.listen(process.env.WS_PORT, () => {
-  debug(`WebSocket is running on port ${process.env.WS_PORT || 0}`)
-})
+const server = app.listen(process.env.SERVER_PORT, process.env.SERVER_HOST)
 
 // eslint-disable-next-line no-new
 new SubscriptionServer(
@@ -72,7 +61,7 @@ new SubscriptionServer(
     }
   },
   {
-    server: websocketServer,
+    server,
     path: '/graphql-sock'
   }
 )
