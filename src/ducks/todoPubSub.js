@@ -1,7 +1,10 @@
 // @flow
-import { Map as iMap, fromJS } from 'immutable'
+import R from 'ramda'
+import { Map, fromJS } from 'immutable'
 import { createLogic } from 'redux-logic'
 import { Todo } from '../types/todo'
+import { ErrorType } from '../types/error'
+import { payloadLens, errorMessageLens } from './actionLenses'
 import TODO_UPDATED_SUBSCRIPTION from '../graphql/todoUpdatedSubscription.graphql'
 import ADD_TODO_MUTATION from '../graphql/addTodoMutation.graphql'
 import TOGGLE_TODO_MUTATION from '../graphql/toggleTodoMutation.graphql'
@@ -21,6 +24,38 @@ const TOGGLE = 'todo-pubsub/TOGGLE'
 const TOGGLE_SUCCEEDED = 'todo-pubsub/TOGGLE_SUCCEEDED'
 const TOGGLE_FAILED = 'todo-pubsub/TOGGLE_FAILED'
 
+// Types
+
+type TodoAction = {
+  type?: string,
+  payload?: {
+    todo?: Todo,
+    error?: ErrorType
+  }
+};
+
+type TodoToggleAction = {
+  type?: string,
+  payload?: {
+    todoID: string
+  }
+};
+
+type TodoSubscribeAction = {
+  type?: string,
+  payload?: {
+    subid?: string,
+    error?: ErrorType
+  }
+};
+
+// Lenses
+
+const todoLens = R.compose(payloadLens, R.lensProp('todo'))
+const todoTextLens = R.compose(todoLens, R.lensProp('text'))
+const todoIDLens = R.compose(payloadLens, R.lensProp('todoID'))
+const subidLens = R.compose(payloadLens, R.lensProp('subid'))
+
 // Reducer
 
 const initialState = fromJS({
@@ -32,49 +67,43 @@ const initialState = fromJS({
 })
 
 export default function todoPubSubReducer(
-  state: iMap<string, any> = initialState,
-  action: Object = {}
+  state: Map<string, any> = initialState,
+  action: TodoAction | TodoToggleAction | TodoSubscribeAction = {}
 ) {
   switch (action.type) {
     case SUBSCRIBE:
       return state
     case SUBSCRIBE_SUCCEEDED:
-      return state.set('subid', action.subid)
+      return state.set('subid', R.view(subidLens, action))
     case UNSUBSCRIBE:
       return state
     case UNSUBSCRIBE_SUCCEEDED:
       return state.set('subid', null)
     case RECEIVE_SUCCEEDED:
-      return state.setIn(['todos', action.todo.id], fromJS(action.todo))
+      return (() => {
+        const todo = R.view(todoLens, action)
+        return state.setIn(['todos', todo.id], fromJS(todo))
+      })()
     case RECEIVE_FAILED:
-      return state.set('receiveError', action.error)
+      return state.set('receiveError', R.view(errorMessageLens, action))
     case CREATE:
       return state
     case CREATE_SUCCEEDED:
       return state
     case CREATE_FAILED:
-      return state.set('createError', action.error)
+      return state.set('createError', R.view(errorMessageLens, action))
     case TOGGLE:
       return state
     case TOGGLE_SUCCEEDED:
       return state
     case TOGGLE_FAILED:
-      return state.set('toggleError', action.error)
+      return state.set('toggleError', R.view(errorMessageLens, action))
     default:
       return state
   }
 }
 
 // Action Creators
-
-type TodoAction = {
-  type: string,
-  todo?: Todo,
-  error?: {
-    message: string,
-    status: number
-  }
-};
 
 export function subscribeTodos(): TodoAction {
   return {
@@ -85,76 +114,96 @@ export function subscribeTodos(): TodoAction {
 export function subscribeTodosSucceeded(subid: string): TodoAction {
   return {
     type: SUBSCRIBE_SUCCEEDED,
-    subid
+    payload: {
+      subid
+    }
   }
 }
 
-export function unsubscribeTodos(): TodoAction {
+export function unsubscribeTodos(): TodoSubscribeAction {
   return {
     type: UNSUBSCRIBE
   }
 }
 
-export function unsubscribeTodosSucceeded(subid: string): TodoAction {
+export function unsubscribeTodosSucceeded(subid: string): TodoSubscribeAction {
   return {
     type: UNSUBSCRIBE_SUCCEEDED,
-    subid
+    payload: {
+      subid
+    }
   }
 }
 
 export function todoReceiveSucceeded(todo: Object): TodoAction {
   return {
     type: RECEIVE_SUCCEEDED,
-    todo
+    payload: {
+      todo
+    }
   }
 }
 
 export function todoReceiveFailed(error: Object): TodoAction {
   return {
     type: RECEIVE_FAILED,
-    error
+    payload: {
+      error
+    }
   }
 }
 
 export function createTodo(todo: Object): TodoAction {
   return {
     type: CREATE,
-    todo
+    payload: {
+      todo
+    }
   }
 }
 
 export function createTodoSucceeded(todo: Object): TodoAction {
   return {
     type: CREATE_SUCCEEDED,
-    todo
+    payload: {
+      todo
+    }
   }
 }
 
 export function createTodoFailed(error: Object): TodoAction {
   return {
     type: CREATE_FAILED,
-    error
+    paylaod: {
+      error
+    }
   }
 }
 
 export function toggleTodo(todoID: string): TodoAction {
   return {
     type: TOGGLE,
-    todoID
+    payload: {
+      todoID
+    }
   }
 }
 
 export function toggleTodoSucceeded(todo: Object): TodoAction {
   return {
     type: TOGGLE_SUCCEEDED,
-    todo
+    payload: {
+      todo
+    }
   }
 }
 
 export function toggleTodoFailed(error: Object): TodoAction {
   return {
     type: TOGGLE_FAILED,
-    error
+    payload: {
+      error
+    }
   }
 }
 
@@ -209,7 +258,7 @@ export const todoCreateLogic = createLogic({
     return apolloClient
       .mutate({
         mutation: ADD_TODO_MUTATION,
-        variables: { text: action.todo }
+        variables: { text: R.view(todoTextLens, action) }
       })
       .then(resp => resp.data.addTodo)
   }
@@ -228,7 +277,7 @@ export const todoToggleLogic = createLogic({
     return apolloClient
       .mutate({
         mutation: TOGGLE_TODO_MUTATION,
-        variables: { id: action.todoID }
+        variables: { id: R.view(todoIDLens, action) }
       })
       .then(resp => resp.data.toggleTodo)
   }

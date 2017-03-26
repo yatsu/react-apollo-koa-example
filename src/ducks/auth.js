@@ -1,7 +1,10 @@
 // @flow
-import { Map as iMap, fromJS } from 'immutable'
+import R from 'ramda'
+import { Map, fromJS } from 'immutable'
 import { createLogic } from 'redux-logic'
 import jwtDecode from 'jwt-decode'
+import { ErrorType } from '../types/error'
+import { payloadLens, errorMessageLens, errorStatusLens } from './actionLenses'
 
 // Actions
 
@@ -14,6 +17,23 @@ const SIGNOUT_SUCCEEDED = 'auth/SIGNOUT_SUCCEEDED'
 const SIGNOUT_FAILED = 'auth/SIGNOUT_FAILED'
 const CLEAR_AUTH_ERROR = 'auth/CLEAR_AUTH_ERROR'
 
+// Types
+
+type AuthAction = {
+  type: string,
+  payload?: {
+    username?: string,
+    password?: string,
+    admin?: boolean,
+    error?: ErrorType
+  }
+};
+
+// Lenses
+
+const usernameLens = R.compose(payloadLens, R.lensProp('username'))
+const adminLens = R.compose(payloadLens, R.lensProp('admin'))
+
 // Reducer
 
 const initialState = fromJS({
@@ -23,22 +43,22 @@ const initialState = fromJS({
   error: null
 })
 
-export function authReducer(state: iMap<string, any> = initialState, action: Object = {}) {
+export function authReducer(state: Map<string, any> = initialState, action: Object = {}) {
   switch (action.type) {
     case SIGNIN:
       return state.set('authenticating', true).set('error', null)
     case SIGNIN_SUCCEEDED:
       return state
         .set('authenticating', false)
-        .set('username', action.payload.username)
-        .set('admin', action.payload.admin)
+        .set('username', R.view(usernameLens, action))
+        .set('admin', R.view(adminLens, action))
     case SIGNIN_FAILED:
-      return state.set('authenticating', false).set('error', action.payload.error.message)
+      return state.set('authenticating', false).set('error', R.view(errorMessageLens, action))
     case SIGNIN_RESUME:
       return state
         .set('authenticating', false)
-        .set('username', action.payload.username)
-        .set('admin', action.payload.admin)
+        .set('username', R.view(usernameLens, action))
+        .set('admin', R.view(adminLens, action))
     case SIGNOUT:
       return state.set('authenticating', false).set('username', null).set('admin', false)
     case SIGNOUT_SUCCEEDED:
@@ -53,19 +73,6 @@ export function authReducer(state: iMap<string, any> = initialState, action: Obj
 }
 
 // Action Creators
-
-type AuthAction = {
-  type: string,
-  payload?: {
-    username?: string,
-    password?: string,
-    admin?: boolean,
-    error?: {
-      message: string,
-      status: number
-    }
-  }
-};
 
 export function signin(username: string, password: string): AuthAction {
   return {
@@ -179,7 +186,7 @@ export const autoSignoutLogic = createLogic({
   latest: true,
 
   process({ action }, dispatch) {
-    if (action.payload && action.payload.error && action.payload.error.status === 401) {
+    if (R.view(errorStatusLens, action) === 401) {
       dispatch(signout())
     }
   }

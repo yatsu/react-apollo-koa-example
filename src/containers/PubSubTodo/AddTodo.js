@@ -19,8 +19,8 @@ class AddTodo extends PureComponent {
 const mapStateToProps = () => ({})
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-  onCreateTodo(todo: Object) {
-    dispatch(createTodo(todo))
+  onCreateTodo(text: string) {
+    dispatch(createTodo({ text }))
   }
 })
 
