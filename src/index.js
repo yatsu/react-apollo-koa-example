@@ -14,6 +14,7 @@ import SigninApp from './containers/Signin/SigninApp'
 import TodoApp from './containers/Todo/TodoApp'
 import RemoteTodoApp from './containers/RemoteTodo/RemoteTodoApp'
 import PubSubTodoApp from './containers/PubSubTodo/PubSubTodoApp'
+import NotFound from './components/NotFound'
 import configureStore from './redux/store'
 import createApolloClient from './apollo/create-apollo-client'
 import getNetworkInterface from './apollo/transport'
@@ -84,6 +85,7 @@ ReactDOM.render(
         <Route path="todo" component={withAuth(TodoApp)} />
         <Route path="todo-remote" component={withAuth(RemoteTodoApp)} />
         <Route path="todo-pubsub" component={withAuth(PubSubTodoApp)} />
+        <Route path="*" component={NotFound} />
       </Route>
     </Router>
   </ApolloProvider>,
