@@ -19,14 +19,9 @@ import configureStore from './redux/store'
 import createApolloClient from './apollo/create-apollo-client'
 import getNetworkInterface from './apollo/transport'
 import { signinResume, usernamePath } from './ducks/auth'
-import { initialState as todoInitialState } from './ducks/todo'
 import config from '../config.json'
 
 import './index.css'
-
-const initialState = {
-  todo: todoInitialState
-}
 
 const wsClient = new SubscriptionClient(config.wsURL, {
   reconnect: true,
@@ -46,7 +41,7 @@ const apolloClient = createApolloClient({
 
 const webClient = new WebClient()
 
-const store = configureStore(initialState, apolloClient, webClient)
+const store = configureStore({}, apolloClient, webClient)
 const history = syncHistoryWithStore(browserHistory, store)
 
 const withAuth = UserAuthWrapper({

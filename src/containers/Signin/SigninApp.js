@@ -33,7 +33,7 @@ class SigninApp extends Signin {
 }
 
 const mapStatusToProps = mapStatePathsToProps({
-  auththenticating: ['auth', ...authenticatingPath],
+  authenticating: ['auth', ...authenticatingPath],
   error: ['auth', ...errorMessagePath]
 })
 

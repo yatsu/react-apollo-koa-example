@@ -77,7 +77,7 @@ const initialState: TodoPubSubState = {
   receiveError: null
 }
 
-export default function todoPubSubReducer(
+export function todoPubSubReducer(
   state: TodoPubSubState = initialState,
   action: TodoAction | TodoToggleAction | TodoSubscribeAction = {}
 ) {

@@ -32,7 +32,7 @@ type AuthAction = {
 
 type AuthState = {
   username: ?string,
-  admin: ?boolean,
+  admin: boolean,
   authenticating: boolean,
   error: ?ErrorType
 }

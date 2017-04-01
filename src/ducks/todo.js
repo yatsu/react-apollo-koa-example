@@ -34,7 +34,7 @@ export const initialState: TodoState = {
   }
 }
 
-export default function todoReducer(state: TodoState = initialState, action: Object = {}) {
+export function todoReducer(state: TodoState = initialState, action: Object = {}) {
   switch (action.type) {
     case CREATE:
       return R.over(
