@@ -1,6 +1,6 @@
 // @flow
+import R from 'ramda'
 import React, { PureComponent, PropTypes } from 'react'
-import { fromJS } from 'immutable'
 import { connect } from 'react-redux'
 import { compose, graphql } from 'react-apollo'
 import gql from 'graphql-tag'
@@ -10,11 +10,13 @@ import AddTodo from './AddTodo'
 
 class RemoteTodoApp extends PureComponent {
   static propTypes = {
-    todos: PropTypes.shape({
-      id: PropTypes.string,
-      text: PropTypes.string,
-      completed: PropTypes.bool
-    }).isRequired,
+    todos: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string,
+        text: PropTypes.string,
+        completed: PropTypes.bool
+      })
+    ).isRequired,
     toggleTodo: PropTypes.func.isRequired,
     refetchTodoList: PropTypes.func.isRequired
   };
@@ -58,11 +60,11 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => ownProps
 export default compose(
   graphql(todoListQuery, {
     props: ({ data }) => {
-      const { loading, refetch, todoList } = data
+      const { loading, refetch } = data
       return {
         todoListLoading: loading,
         refetchTodoList: refetch,
-        todos: fromJS(todoList ? todoList.todos : [])
+        todos: R.pathOr([], ['todoList', 'todos'], data)
       }
     },
     options: { pollInterval: 20000 }

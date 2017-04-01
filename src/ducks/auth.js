@@ -1,10 +1,9 @@
 // @flow
 import R from 'ramda'
-import { Map, fromJS } from 'immutable'
 import { createLogic } from 'redux-logic'
 import jwtDecode from 'jwt-decode'
-import { ErrorType } from '../types/error'
-import { payloadLens, errorMessageLens, errorStatusLens } from './actionLenses'
+import { errorPath, errorStatusPath } from './paths'
+import type { ErrorType } from '../types'
 
 // Actions
 
@@ -29,44 +28,64 @@ type AuthAction = {
   }
 }
 
-// Lenses
+// Types
 
-const usernameLens = R.compose(payloadLens, R.lensProp('username'))
-const adminLens = R.compose(payloadLens, R.lensProp('admin'))
+type AuthState = {
+  username: ?string,
+  admin: ?boolean,
+  authenticating: boolean,
+  error: ?ErrorType
+}
+
+// Paths
+
+export const usernamePath = ['username']
+export const passwordPath = ['password']
+export const adminPath = ['admin']
+export const authenticatingPath = ['authenticating']
 
 // Reducer
 
-const initialState = fromJS({
+const initialState: AuthState = {
   username: null,
   admin: false,
   authenticating: false,
   error: null
-})
+}
 
-export function authReducer(state: Map<string, any> = initialState, action: Object = {}) {
+export function authReducer(state: AuthState = initialState, action: Object = {}) {
   switch (action.type) {
     case SIGNIN:
-      return state.set('authenticating', true).set('error', null)
+      return R.pipe(R.assocPath(authenticatingPath, true), R.assocPath(errorPath, null))(state)
     case SIGNIN_SUCCEEDED:
-      return state
-        .set('authenticating', false)
-        .set('username', R.view(usernameLens, action))
-        .set('admin', R.view(adminLens, action))
+      return R.pipe(
+        R.assocPath(authenticatingPath, false),
+        R.assocPath(usernamePath, R.path(usernamePath, action.payload)),
+        R.assocPath(adminPath, R.path(adminPath, action.payload))
+      )(state)
     case SIGNIN_FAILED:
-      return state.set('authenticating', false).set('error', R.view(errorMessageLens, action))
+      return R.pipe(
+        R.assocPath(authenticatingPath, false),
+        R.assocPath(errorPath, R.path(errorPath, action.payload))
+      )(state)
     case SIGNIN_RESUME:
-      return state
-        .set('authenticating', false)
-        .set('username', R.view(usernameLens, action))
-        .set('admin', R.view(adminLens, action))
+      return R.pipe(
+        R.assocPath(authenticatingPath, false),
+        R.assocPath(usernamePath, R.path(usernamePath, action.payload)),
+        R.assocPath(adminPath, R.path(adminPath, action.payload))
+      )(state)
     case SIGNOUT:
-      return state.set('authenticating', false).set('username', null).set('admin', false)
+      return R.pipe(
+        R.assocPath(authenticatingPath, false),
+        R.assocPath(usernamePath, null),
+        R.assocPath(adminPath, false)
+      )(state)
     case SIGNOUT_SUCCEEDED:
       return state
     case SIGNOUT_FAILED:
       return state
     case CLEAR_AUTH_ERROR:
-      return state.set('authenticating', false).set('error', null)
+      return R.pipe(R.assocPath(authenticatingPath, false), R.assocPath(errorPath, null))(state)
     default:
       return state
   }
@@ -77,8 +96,10 @@ export function authReducer(state: Map<string, any> = initialState, action: Obje
 export function signin(username: string, password: string): AuthAction {
   return {
     type: SIGNIN,
-    username,
-    password
+    payload: {
+      username,
+      password
+    }
   }
 }
 
@@ -157,7 +178,7 @@ export const signinLogic = createLogic({
   },
 
   process({ action, webClient }) {
-    const { username, password } = action
+    const { username, password } = action.payload
     const body = { username, password }
     const headers = { 'Content-Type': 'application/json' }
     return webClient.post('api/signin', body, headers, false).map((payload) => {
@@ -186,7 +207,7 @@ export const autoSignoutLogic = createLogic({
   latest: true,
 
   process({ action }, dispatch) {
-    if (R.view(errorStatusLens, action) === 401) {
+    if (R.path(errorStatusPath, action.payload) === 401) {
       dispatch(signout())
     }
   }

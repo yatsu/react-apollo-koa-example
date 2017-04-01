@@ -1,14 +1,14 @@
 // @flow
+import R from 'ramda'
 import { PropTypes } from 'react'
-import IPropTypes from 'react-immutable-proptypes'
 import { connect } from 'react-redux'
-import { subscribeTodos, unsubscribeTodos, toggleTodo } from '../../ducks/todoPubSub'
+import { subscribeTodos, unsubscribeTodos, toggleTodo, todosPath } from '../../ducks/todoPubSub'
 import TodoList from '../../components/Todo/TodoList'
 
 class TodoListContainer extends TodoList {
   static propTypes = {
-    todos: IPropTypes.listOf(
-      IPropTypes.contains({
+    todos: PropTypes.arrayOf(
+      PropTypes.shape({
         id: PropTypes.string.isRequired,
         completed: PropTypes.bool.isRequired,
         text: PropTypes.string.isRequired
@@ -29,7 +29,7 @@ class TodoListContainer extends TodoList {
 }
 
 const mapStateToProps = (state: Object) => ({
-  todos: state.todoPubSub.get('todos').toList()
+  todos: R.values(R.path(todosPath, state.todoPubSub))
 })
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({

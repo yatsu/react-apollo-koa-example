@@ -1,7 +1,8 @@
 // @flow
 import { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { signin, clearAuthError } from '../../ducks/auth'
+import { mapStatePathsToProps, errorMessagePath } from '../../ducks/paths'
+import { signin, clearAuthError, authenticatingPath } from '../../ducks/auth'
 import Signin from '../../components/Signin/Signin'
 
 class SigninApp extends Signin {
@@ -31,9 +32,9 @@ class SigninApp extends Signin {
   }
 }
 
-const mapStatusToProps = (state: Object) => ({
-  authenticating: state.auth.get('authenticating'),
-  error: state.auth.get('error')
+const mapStatusToProps = mapStatePathsToProps({
+  auththenticating: ['auth', ...authenticatingPath],
+  error: ['auth', ...errorMessagePath]
 })
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({

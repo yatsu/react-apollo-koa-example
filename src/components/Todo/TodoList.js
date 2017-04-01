@@ -1,13 +1,13 @@
 // @flow
+import R from 'ramda'
 import React, { Component, PropTypes } from 'react'
-import IPropTypes from 'react-immutable-proptypes'
 import { List } from 'semantic-ui-react'
 import Todo from './Todo'
 
 class TodoList extends Component {
   static propTypes = {
-    todos: IPropTypes.listOf(
-      IPropTypes.contains({
+    todos: PropTypes.arrayOf(
+      PropTypes.shape({
         id: PropTypes.string.isRequired,
         completed: PropTypes.bool.isRequired,
         text: PropTypes.string.isRequired
@@ -27,15 +27,18 @@ class TodoList extends Component {
 
     return (
       <List>
-        {todos.map(todo => (
-          <Todo
-            key={todo.get('id')}
-            onClick={(e) => {
-              this.handleTodoClick(e, todo.get('id'))
-            }}
-            todo={todo}
-          />
-        ))}
+        {R.map(
+          todo => (
+            <Todo
+              key={todo.id}
+              onClick={(e) => {
+                this.handleTodoClick(e, todo.id)
+              }}
+              todo={todo}
+            />
+          ),
+          todos
+        )}
       </List>
     )
   }

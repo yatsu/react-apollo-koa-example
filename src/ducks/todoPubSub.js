@@ -1,13 +1,11 @@
 // @flow
 import R from 'ramda'
-import { Map, fromJS } from 'immutable'
 import { createLogic } from 'redux-logic'
-import { Todo } from '../types/todo'
-import { ErrorType } from '../types/error'
-import { payloadLens, errorMessageLens } from './actionLenses'
+import { errorMessagePath } from './paths'
 import TODO_UPDATED_SUBSCRIPTION from '../graphql/todoUpdatedSubscription.graphql'
 import ADD_TODO_MUTATION from '../graphql/addTodoMutation.graphql'
 import TOGGLE_TODO_MUTATION from '../graphql/toggleTodoMutation.graphql'
+import type { Todo, ErrorType } from '../types'
 
 // Actions
 
@@ -49,55 +47,69 @@ type TodoSubscribeAction = {
   }
 }
 
-// Lenses
+type TodoPubSubState = {
+  subid: ?string,
+  todos: { [id: string]: Todo },
+  createError: ?string,
+  toggleError: ?string,
+  receiveError: ?string
+}
 
-const todoLens = R.compose(payloadLens, R.lensProp('todo'))
-const todoTextLens = R.compose(todoLens, R.lensProp('text'))
-const todoIDLens = R.compose(payloadLens, R.lensProp('todoID'))
-const subidLens = R.compose(payloadLens, R.lensProp('subid'))
+// Paths
+
+export const todosPath = ['todos']
+export const subidPath = ['subid']
+export const todoPath = ['todo']
+export const todoTextPath = ['todo', 'text']
+export const todoIDPath = ['todo', 'text']
+export const createErrorPath = ['createErrorPath']
+export const toggleErrorPath = ['toggleErrorPath']
+export const receiveErrorPath = ['receiveErrorPath']
+export const topTodoIDPath = ['todoID']
 
 // Reducer
 
-const initialState = fromJS({
+const initialState: TodoPubSubState = {
   subid: null,
   todos: {},
   createError: null,
   toggleError: null,
   receiveError: null
-})
+}
 
 export default function todoPubSubReducer(
-  state: Map<string, any> = initialState,
+  state: TodoPubSubState = initialState,
   action: TodoAction | TodoToggleAction | TodoSubscribeAction = {}
 ) {
   switch (action.type) {
     case SUBSCRIBE:
       return state
     case SUBSCRIBE_SUCCEEDED:
-      return state.set('subid', R.view(subidLens, action))
+      return R.assocPath(subidPath, R.path(subidPath, action.payload), state)
     case UNSUBSCRIBE:
       return state
     case UNSUBSCRIBE_SUCCEEDED:
-      return state.set('subid', null)
+      return R.assocPath(subidPath, null, state)
     case RECEIVE_SUCCEEDED:
-      return (() => {
-        const todo = R.view(todoLens, action)
-        return state.setIn(['todos', todo.id], fromJS(todo))
-      })()
+      return R.assocPath(
+        [...todosPath, R.path(todoIDPath, action.payload)],
+        R.path(todoPath, action.payload),
+        state
+      )
     case RECEIVE_FAILED:
-      return state.set('receiveError', R.view(errorMessageLens, action))
+      return R.assocPath(receiveErrorPath, R.path(errorMessagePath, action.payload), state)
     case CREATE:
       return state
     case CREATE_SUCCEEDED:
       return state
     case CREATE_FAILED:
-      return state.set('createError', R.view(errorMessageLens, action))
+      return R.assocPath(createErrorPath, R.path(errorMessagePath, action.payload), state)
     case TOGGLE:
       return state
     case TOGGLE_SUCCEEDED:
       return state
     case TOGGLE_FAILED:
-      return state.set('toggleError', R.view(errorMessageLens, action))
+      return R.assocPath(toggleErrorPath, R.path(errorMessagePath, action.payload), state)
     default:
       return state
   }
@@ -258,7 +270,7 @@ export const todoCreateLogic = createLogic({
     return apolloClient
       .mutate({
         mutation: ADD_TODO_MUTATION,
-        variables: { text: R.view(todoTextLens, action) }
+        variables: { text: R.path(todoTextPath, action.payload) }
       })
       .then(resp => resp.data.addTodo)
   }
@@ -277,7 +289,7 @@ export const todoToggleLogic = createLogic({
     return apolloClient
       .mutate({
         mutation: TOGGLE_TODO_MUTATION,
-        variables: { id: R.view(todoIDLens, action) }
+        variables: { id: R.path(topTodoIDPath, action.payload) }
       })
       .then(resp => resp.data.toggleTodo)
   }

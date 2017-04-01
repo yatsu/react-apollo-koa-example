@@ -1,13 +1,22 @@
+// @flow
 import Rx from 'rxjs'
 import createDebug from 'debug'
 
 class WebClient {
+  ajax: (...rest: Array<any>) => Rx.Observable;
+  debugAuth: (...rest: Array<any>) => void;
+
   constructor() {
     this.ajax = Rx.Observable.ajax
     this.debugAuth = createDebug('example:auth')
   }
 
-  request(method, args, auth, retried) {
+  request(
+    method: (...rest: Array<void>) => Rx.Observable,
+    args: Array<any>,
+    auth: ?boolean,
+    retried: ?boolean
+  ) {
     return Rx.Observable.create((observer) => {
       const headers = args[args.length - 1] || {}
       const authEnabled = auth === undefined || auth
@@ -17,7 +26,7 @@ class WebClient {
           headers.Authorization = `Bearer ${accessToken}`
         }
       }
-      const options = [...args.slice(0, args.length - 1), headers]
+      const options: Array<any> = [...args.slice(0, args.length - 1), headers]
 
       const req = method(...options)
       req.subscribe(
@@ -57,9 +66,9 @@ class WebClient {
   tokenRefresh() {
     this.debugAuth('refreshing token')
     return Rx.Observable.create((observer) => {
-      const refreshToken = localStorage.getItem('refreshToken')
+      const refreshToken = localStorage.getItem('refreshToken') || ''
       const body = new FormData()
-      body.append('refresh_token', refreshToken)
+      body.set('refresh_token', refreshToken)
       this.post('/refresh_token', body, null, false).subscribe(
         (response) => {
           localStorage.setItem('accessToken', response.accessToken)
@@ -76,23 +85,23 @@ class WebClient {
     })
   }
 
-  get(url, headers, auth) {
+  get(url: string, headers: ?Object, auth: ?boolean) {
     return this.request(this.ajax.get, [url, headers], auth)
   }
 
-  post(url, body, headers, auth) {
+  post(url: string, body: ?Object, headers: ?Object, auth: ?boolean) {
     return this.request(this.ajax.post, [url, body, headers], auth)
   }
 
-  delete(url, headers, auth) {
+  delete(url: string, headers: ?Object, auth: ?boolean) {
     return this.request(this.ajax.delete, [url, headers], auth)
   }
 
-  put(url, body, headers, auth) {
+  put(url: string, body: ?Object, headers: ?Object, auth: ?boolean) {
     return this.request(this.ajax.put, [url, body, headers], auth)
   }
 
-  ajax(...args) {
+  ajax(...args: Array<any>) {
     return this.ajax(...args)
   }
 }

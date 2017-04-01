@@ -1,13 +1,12 @@
 // @flow
 import classNames from 'classnames'
 import React, { PureComponent, PropTypes } from 'react'
-import IPropTypes from 'react-immutable-proptypes'
 import { Checkbox, List } from 'semantic-ui-react'
 import './Todo.css'
 
 class Todo extends PureComponent {
   static propTypes = {
-    todo: IPropTypes.contains({
+    todo: PropTypes.shape({
       completed: PropTypes.bool.isRequired,
       text: PropTypes.string.isRequired
     }).isRequired,
@@ -16,8 +15,7 @@ class Todo extends PureComponent {
 
   render() {
     const { todo, onClick } = this.props
-    const completed = todo.get('completed')
-    const text = todo.get('text')
+    const { completed, text } = todo
 
     return (
       <List.Item className={classNames({ completed })}>
