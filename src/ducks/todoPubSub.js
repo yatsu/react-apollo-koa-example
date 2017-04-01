@@ -32,14 +32,14 @@ type TodoAction = {
     todo?: Todo,
     error?: ErrorType
   }
-};
+}
 
 type TodoToggleAction = {
   type?: string,
   payload?: {
     todoID: string
   }
-};
+}
 
 type TodoSubscribeAction = {
   type?: string,
@@ -47,7 +47,7 @@ type TodoSubscribeAction = {
     subid?: string,
     error?: ErrorType
   }
-};
+}
 
 // Lenses
 

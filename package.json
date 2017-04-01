@@ -76,7 +76,7 @@
     "lint": "eslint src koa",
     "flow": "flow status",
     "stylelint": "stylelint src/**/*.css",
-    "format": "prettier-eslint 'src/**/*.js' 'koa/**/*.js'",
+    "format": "prettier-eslint --write 'src/**/*.js' 'koa/**/*.js'",
     "precommit": "lint-staged",
     "storybook": "start-storybook -p 9009 -s public",
     "build-storybook": "build-storybook -s public",

@@ -44,7 +44,7 @@ export type TodoAction = {
     todo?: Todo,
     todoID?: string
   }
-};
+}
 
 export function createTodo(todo: Object) {
   return { type: CREATE, payload: { todo } }

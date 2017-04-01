@@ -10,6 +10,7 @@
     "no-mixed-operators": "off",
     "no-param-reassign": ["error", { "props": false }],
     "no-underscore-dangle": "off",
+    "flowtype/semi": ["error", "never"],
     "react/jsx-filename-extension": "off",
     "react/prefer-stateless-function": ["error", { "ignorePureComponents": true }],
     "import/no-extraneous-dependencies": ["error", {

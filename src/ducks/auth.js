@@ -27,7 +27,7 @@ type AuthAction = {
     admin?: boolean,
     error?: ErrorType
   }
-};
+}
 
 // Lenses
 
