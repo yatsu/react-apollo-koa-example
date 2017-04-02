@@ -29,6 +29,7 @@
     "react-addons-test-utils": "^15.4.2",
     "react-app-rewired": "^0.6.0",
     "react-scripts": "0.9.5",
+    "storyshots": "^3.2.2",
     "stylelint": "^7.9.0",
     "stylelint-config-standard": "^16.0.0"
   },
