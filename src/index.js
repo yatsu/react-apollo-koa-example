@@ -1,5 +1,4 @@
 // @flow
-import R from 'ramda'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Router, Route, IndexRoute, browserHistory } from 'react-router'
@@ -18,7 +17,7 @@ import NotFound from './components/NotFound'
 import configureStore from './redux/store'
 import createApolloClient from './apollo/create-apollo-client'
 import getNetworkInterface from './apollo/transport'
-import { signinResume, usernamePath } from './ducks/auth'
+import { signinResume } from './ducks/auth'
 import config from '../config.json'
 
 import './index.css'
@@ -46,7 +45,7 @@ const history = syncHistoryWithStore(browserHistory, store)
 
 const withAuth = UserAuthWrapper({
   authSelector: state => state.auth,
-  predicate: auth => !!R.path(usernamePath, auth),
+  predicate: auth => !!auth.username,
   redirectAction: replace,
   allowRedirectBack: true,
   failureRedirectPath: '/signin',
@@ -55,7 +54,7 @@ const withAuth = UserAuthWrapper({
 
 const withoutAuth = UserAuthWrapper({
   authSelector: state => state.auth,
-  predicate: auth => !R.path(usernamePath, auth),
+  predicate: auth => !auth.username,
   redirectAction: replace,
   allowRedirectBack: false,
   failureRedirectPath: (state, ownProps) => ownProps.location.query.redirect || '/',

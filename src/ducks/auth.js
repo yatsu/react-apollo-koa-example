@@ -2,8 +2,8 @@
 import R from 'ramda'
 import { createLogic } from 'redux-logic'
 import jwtDecode from 'jwt-decode'
-import { errorPath, errorStatusPath } from './paths'
-import type { ErrorType } from '../types'
+import { errorStatusPath } from './paths'
+import { Action, ErrorType } from '../types'
 
 // Actions
 
@@ -18,31 +18,12 @@ const CLEAR_AUTH_ERROR = 'auth/CLEAR_AUTH_ERROR'
 
 // Types
 
-type AuthAction = {
-  type: string,
-  payload?: {
-    username?: string,
-    password?: string,
-    admin?: boolean,
-    error?: ErrorType
-  }
-}
-
-// Types
-
 type AuthState = {
   username: ?string,
   admin: boolean,
   authenticating: boolean,
   error: ?ErrorType
 }
-
-// Paths
-
-export const usernamePath = ['username']
-export const passwordPath = ['password']
-export const adminPath = ['admin']
-export const authenticatingPath = ['authenticating']
 
 // Reducer
 
@@ -56,36 +37,36 @@ const initialState: AuthState = {
 export function authReducer(state: AuthState = initialState, action: Object = {}) {
   switch (action.type) {
     case SIGNIN:
-      return R.pipe(R.assocPath(authenticatingPath, true), R.assocPath(errorPath, null))(state)
+      return R.pipe(R.assoc('authenticating', true), R.assoc('error', null))(state)
     case SIGNIN_SUCCEEDED:
       return R.pipe(
-        R.assocPath(authenticatingPath, false),
-        R.assocPath(usernamePath, R.path(usernamePath, action.payload)),
-        R.assocPath(adminPath, R.path(adminPath, action.payload))
+        R.assoc('authenticating', false),
+        R.assoc('username', R.prop('username', action.payload)),
+        R.assoc('admin', R.prop('admin', action.payload))
       )(state)
     case SIGNIN_FAILED:
       return R.pipe(
-        R.assocPath(authenticatingPath, false),
-        R.assocPath(errorPath, R.path(errorPath, action.payload))
+        R.assoc('authenticating', false),
+        R.assoc('error', R.prop('error', action.payload))
       )(state)
     case SIGNIN_RESUME:
       return R.pipe(
-        R.assocPath(authenticatingPath, false),
-        R.assocPath(usernamePath, R.path(usernamePath, action.payload)),
-        R.assocPath(adminPath, R.path(adminPath, action.payload))
+        R.assoc('authenticating', false),
+        R.assoc('username', R.prop('username', action.payload)),
+        R.assoc('admin', R.prop('admin', action.payload))
       )(state)
     case SIGNOUT:
       return R.pipe(
-        R.assocPath(authenticatingPath, false),
-        R.assocPath(usernamePath, null),
-        R.assocPath(adminPath, false)
+        R.assoc('authenticating', false),
+        R.assoc('username', null),
+        R.assoc('admin', false)
       )(state)
     case SIGNOUT_SUCCEEDED:
       return state
     case SIGNOUT_FAILED:
       return state
     case CLEAR_AUTH_ERROR:
-      return R.pipe(R.assocPath(authenticatingPath, false), R.assocPath(errorPath, null))(state)
+      return R.pipe(R.assoc('authenticating', false), R.assoc('error', null))(state)
     default:
       return state
   }
@@ -93,7 +74,7 @@ export function authReducer(state: AuthState = initialState, action: Object = {}
 
 // Action Creators
 
-export function signin(username: string, password: string): AuthAction {
+export function signin(username: string, password: string): Action {
   return {
     type: SIGNIN,
     payload: {
@@ -103,7 +84,7 @@ export function signin(username: string, password: string): AuthAction {
   }
 }
 
-export function signinSucceeded(payload: Object): AuthAction {
+export function signinSucceeded(payload: Object): Action {
   const { accessToken } = payload
   const { user } = jwtDecode(accessToken)
 
@@ -116,7 +97,7 @@ export function signinSucceeded(payload: Object): AuthAction {
   }
 }
 
-export function signinFailed(error: Object): AuthAction {
+export function signinFailed(error: Object): Action {
   return {
     type: SIGNIN_FAILED,
     payload: {
@@ -128,7 +109,7 @@ export function signinFailed(error: Object): AuthAction {
   }
 }
 
-export function signinResume(): AuthAction {
+export function signinResume(): Action {
   const accessToken = localStorage.getItem('accessToken')
   const { user } = jwtDecode(accessToken)
 
@@ -141,25 +122,25 @@ export function signinResume(): AuthAction {
   }
 }
 
-export function signout(): AuthAction {
+export function signout(): Action {
   return {
     type: SIGNOUT
   }
 }
 
-export function signoutSucceeded(): AuthAction {
+export function signoutSucceeded(): Action {
   return {
     type: SIGNOUT_SUCCEEDED
   }
 }
 
-export function signoutFailed(): AuthAction {
+export function signoutFailed(): Action {
   return {
     type: SIGNOUT_FAILED
   }
 }
 
-export function clearAuthError(): AuthAction {
+export function clearAuthError(): Action {
   return {
     type: CLEAR_AUTH_ERROR
   }

@@ -2,7 +2,7 @@
 import R from 'ramda'
 import { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { subscribeTodos, unsubscribeTodos, toggleTodo, todosPath } from '../../ducks/todoPubSub'
+import { subscribeTodos, unsubscribeTodos, toggleTodo } from '../../ducks/todoPubSub'
 import TodoList from '../../components/Todo/TodoList'
 
 class TodoListContainer extends TodoList {
@@ -29,7 +29,7 @@ class TodoListContainer extends TodoList {
 }
 
 const mapStateToProps = (state: Object) => ({
-  todos: R.values(R.path(todosPath, state.todoPubSub))
+  todos: R.values(R.prop('todos', state.todoPubSub))
 })
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({

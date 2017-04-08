@@ -1,18 +1,12 @@
 // @flow
 import { connect } from 'react-redux'
-import { mapStatePathsToProps } from '../ducks/paths'
-import { signout, usernamePath, adminPath } from '../ducks/auth'
+import { signout } from '../ducks/auth'
 import Header from '../components/Header'
 
 const mapStateToProps = (state: Object) => ({
   path: state.routing.locationBeforeTransitions.pathname,
-  ...mapStatePathsToProps(
-    {
-      username: ['auth', ...usernamePath],
-      admin: ['auth', ...adminPath]
-    },
-    state
-  )
+  username: state.auth.username,
+  admin: state.auth.admin
 })
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({

@@ -5,7 +5,7 @@ import { errorMessagePath } from './paths'
 import TODO_UPDATED_SUBSCRIPTION from '../graphql/todoUpdatedSubscription.graphql'
 import ADD_TODO_MUTATION from '../graphql/addTodoMutation.graphql'
 import TOGGLE_TODO_MUTATION from '../graphql/toggleTodoMutation.graphql'
-import type { Todo, ErrorType } from '../types'
+import type { Action, Todo } from '../types'
 
 // Actions
 
@@ -24,29 +24,6 @@ const TOGGLE_FAILED = 'todo-pubsub/TOGGLE_FAILED'
 
 // Types
 
-type TodoAction = {
-  type?: string,
-  payload?: {
-    todo?: Todo,
-    error?: ErrorType
-  }
-}
-
-type TodoToggleAction = {
-  type?: string,
-  payload?: {
-    todoID: string
-  }
-}
-
-type TodoSubscribeAction = {
-  type?: string,
-  payload?: {
-    subid?: string,
-    error?: ErrorType
-  }
-}
-
 type TodoPubSubState = {
   subid: ?string,
   todos: { [id: string]: Todo },
@@ -54,18 +31,6 @@ type TodoPubSubState = {
   toggleError: ?string,
   receiveError: ?string
 }
-
-// Paths
-
-export const todosPath = ['todos']
-export const subidPath = ['subid']
-export const todoPath = ['todo']
-export const todoTextPath = ['todo', 'text']
-export const todoIDPath = ['todo', 'text']
-export const createErrorPath = ['createErrorPath']
-export const toggleErrorPath = ['toggleErrorPath']
-export const receiveErrorPath = ['receiveErrorPath']
-export const topTodoIDPath = ['todoID']
 
 // Reducer
 
@@ -77,39 +42,36 @@ const initialState: TodoPubSubState = {
   receiveError: null
 }
 
-export function todoPubSubReducer(
-  state: TodoPubSubState = initialState,
-  action: TodoAction | TodoToggleAction | TodoSubscribeAction = {}
-) {
+export function todoPubSubReducer(state: TodoPubSubState = initialState, action: Action = {}) {
   switch (action.type) {
     case SUBSCRIBE:
       return state
     case SUBSCRIBE_SUCCEEDED:
-      return R.assocPath(subidPath, R.path(subidPath, action.payload), state)
+      return R.assoc('subid', R.path('subid', action.payload), state)
     case UNSUBSCRIBE:
       return state
     case UNSUBSCRIBE_SUCCEEDED:
-      return R.assocPath(subidPath, null, state)
+      return R.assoc('subid', null, state)
     case RECEIVE_SUCCEEDED:
       return R.assocPath(
-        [...todosPath, R.path(todoIDPath, action.payload)],
-        R.path(todoPath, action.payload),
+        ['todos', R.path(['todo', 'id'], action.payload)],
+        R.prop('todo', action.payload),
         state
       )
     case RECEIVE_FAILED:
-      return R.assocPath(receiveErrorPath, R.path(errorMessagePath, action.payload), state)
+      return R.assoc('receiveError', R.path(errorMessagePath, action.payload), state)
     case CREATE:
       return state
     case CREATE_SUCCEEDED:
       return state
     case CREATE_FAILED:
-      return R.assocPath(createErrorPath, R.path(errorMessagePath, action.payload), state)
+      return R.assoc('createError', R.path(errorMessagePath, action.payload), state)
     case TOGGLE:
       return state
     case TOGGLE_SUCCEEDED:
       return state
     case TOGGLE_FAILED:
-      return R.assocPath(toggleErrorPath, R.path(errorMessagePath, action.payload), state)
+      return R.assoc('toggleError', R.path(errorMessagePath, action.payload), state)
     default:
       return state
   }
@@ -117,13 +79,13 @@ export function todoPubSubReducer(
 
 // Action Creators
 
-export function subscribeTodos(): TodoAction {
+export function subscribeTodos(): Action {
   return {
     type: SUBSCRIBE
   }
 }
 
-export function subscribeTodosSucceeded(subid: string): TodoAction {
+export function subscribeTodosSucceeded(subid: string): Action {
   return {
     type: SUBSCRIBE_SUCCEEDED,
     payload: {
@@ -132,13 +94,13 @@ export function subscribeTodosSucceeded(subid: string): TodoAction {
   }
 }
 
-export function unsubscribeTodos(): TodoSubscribeAction {
+export function unsubscribeTodos(): Action {
   return {
     type: UNSUBSCRIBE
   }
 }
 
-export function unsubscribeTodosSucceeded(subid: string): TodoSubscribeAction {
+export function unsubscribeTodosSucceeded(subid: string): Action {
   return {
     type: UNSUBSCRIBE_SUCCEEDED,
     payload: {
@@ -147,7 +109,7 @@ export function unsubscribeTodosSucceeded(subid: string): TodoSubscribeAction {
   }
 }
 
-export function todoReceiveSucceeded(todo: Object): TodoAction {
+export function todoReceiveSucceeded(todo: Object): Action {
   return {
     type: RECEIVE_SUCCEEDED,
     payload: {
@@ -156,7 +118,7 @@ export function todoReceiveSucceeded(todo: Object): TodoAction {
   }
 }
 
-export function todoReceiveFailed(error: Object): TodoAction {
+export function todoReceiveFailed(error: Object): Action {
   return {
     type: RECEIVE_FAILED,
     payload: {
@@ -165,7 +127,7 @@ export function todoReceiveFailed(error: Object): TodoAction {
   }
 }
 
-export function createTodo(todo: Object): TodoAction {
+export function createTodo(todo: Object): Action {
   return {
     type: CREATE,
     payload: {
@@ -174,7 +136,7 @@ export function createTodo(todo: Object): TodoAction {
   }
 }
 
-export function createTodoSucceeded(todo: Object): TodoAction {
+export function createTodoSucceeded(todo: Object): Action {
   return {
     type: CREATE_SUCCEEDED,
     payload: {
@@ -183,7 +145,7 @@ export function createTodoSucceeded(todo: Object): TodoAction {
   }
 }
 
-export function createTodoFailed(error: Object): TodoAction {
+export function createTodoFailed(error: Object): Action {
   return {
     type: CREATE_FAILED,
     paylaod: {
@@ -192,7 +154,7 @@ export function createTodoFailed(error: Object): TodoAction {
   }
 }
 
-export function toggleTodo(todoID: string): TodoAction {
+export function toggleTodo(todoID: string): Action {
   return {
     type: TOGGLE,
     payload: {
@@ -201,7 +163,7 @@ export function toggleTodo(todoID: string): TodoAction {
   }
 }
 
-export function toggleTodoSucceeded(todo: Object): TodoAction {
+export function toggleTodoSucceeded(todo: Object): Action {
   return {
     type: TOGGLE_SUCCEEDED,
     payload: {
@@ -210,7 +172,7 @@ export function toggleTodoSucceeded(todo: Object): TodoAction {
   }
 }
 
-export function toggleTodoFailed(error: Object): TodoAction {
+export function toggleTodoFailed(error: Object): Action {
   return {
     type: TOGGLE_FAILED,
     payload: {
@@ -270,7 +232,7 @@ export const todoCreateLogic = createLogic({
     return apolloClient
       .mutate({
         mutation: ADD_TODO_MUTATION,
-        variables: { text: R.path(todoTextPath, action.payload) }
+        variables: { text: R.path(['todo', 'text'], action.payload) }
       })
       .then(resp => resp.data.addTodo)
   }
@@ -289,7 +251,7 @@ export const todoToggleLogic = createLogic({
     return apolloClient
       .mutate({
         mutation: TOGGLE_TODO_MUTATION,
-        variables: { id: R.path(topTodoIDPath, action.payload) }
+        variables: { id: R.prop('todoID', action.payload) }
       })
       .then(resp => resp.data.toggleTodo)
   }

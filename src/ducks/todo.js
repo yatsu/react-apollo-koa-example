@@ -21,10 +21,6 @@ export type TodoState = {
   'todos': { [id: string]: Todo }
 }
 
-export const todosPath = ['todos']
-export const todoIDPath = ['todoID']
-export const todoTextPath = ['todo', 'text']
-
 // Reducer
 
 export const initialState: TodoState = {
@@ -38,13 +34,13 @@ export function todoReducer(state: TodoState = initialState, action: Object = {}
   switch (action.type) {
     case CREATE:
       return R.over(
-        R.lensPath(todosPath),
+        R.lensProp('todos'),
         (todos: { [id: string]: Todo }) =>
           R.assoc(
             R.keys(todos).length.toString(),
             {
               id: R.keys(todos).length.toString(),
-              text: R.path(todoTextPath, action.payload),
+              text: R.path(['todo', 'text'], action.payload),
               completed: false
             },
             todos
@@ -53,7 +49,7 @@ export function todoReducer(state: TodoState = initialState, action: Object = {}
       )
     case TOGGLE:
       return R.over(
-        R.lensPath([...todosPath, R.path(todoIDPath, action.payload)]),
+        R.lensPath(['todos', R.prop('todoID', action.payload)]),
         (todo: Todo) => R.assoc('completed', !todo.completed, todo),
         state
       )

@@ -1,3 +1,13 @@
+export type Action = {
+  type: string,
+  payload?: Object
+}
+
+export type ErrorType = {
+  message: string,
+  status?: number
+}
+
 export type Todo = {
   id: string,
   text: string,
@@ -6,9 +16,4 @@ export type Todo = {
 
 export type TodoList = {
   todos: Array<Todo>
-}
-
-export type ErrorType = {
-  message: string,
-  status?: number
 }

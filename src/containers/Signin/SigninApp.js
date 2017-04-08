@@ -1,8 +1,9 @@
 // @flow
+import R from 'ramda'
 import { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { mapStatePathsToProps, errorMessagePath } from '../../ducks/paths'
-import { signin, clearAuthError, authenticatingPath } from '../../ducks/auth'
+import { errorMessagePath } from '../../ducks/paths'
+import { signin, clearAuthError } from '../../ducks/auth'
 import Signin from '../../components/Signin/Signin'
 
 class SigninApp extends Signin {
@@ -26,15 +27,13 @@ class SigninApp extends Signin {
   }
 
   componentWillUnmount() {
-    this.usernameField.value = ''
-    this.passwordField.value = ''
     this.props.clearAuthError()
   }
 }
 
-const mapStatusToProps = mapStatePathsToProps({
-  authenticating: ['auth', ...authenticatingPath],
-  error: ['auth', ...errorMessagePath]
+const mapStateToProps = (state: Object) => ({
+  authenticating: state.auth.authenticating,
+  error: R.path(errorMessagePath, state.auth)
 })
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
@@ -47,4 +46,4 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
   }
 })
 
-export default connect(mapStatusToProps, mapDispatchToProps)(SigninApp)
+export default connect(mapStateToProps, mapDispatchToProps)(SigninApp)

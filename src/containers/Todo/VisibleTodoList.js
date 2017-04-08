@@ -1,11 +1,11 @@
 // @flow
 import R from 'ramda'
 import { connect } from 'react-redux'
-import { toggleTodo, todosPath } from '../../ducks/todo'
+import { toggleTodo } from '../../ducks/todo'
 import TodoList from '../../components/Todo/TodoList'
 
 const mapStateToProps = (state: Object) => ({
-  todos: R.values(R.path(todosPath, state.todo))
+  todos: R.values(R.prop('todos', state.todo))
 })
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
