@@ -85,6 +85,7 @@
     "caddy": "caddy",
     "console": "NODE_ENV=development babel-node --presets react-app"
   },
+  "proxy": "http://localhost:7000",
   "lint-staged": {
     "src/**/*.js": [
       "prettier-eslint --write",

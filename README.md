@@ -7,8 +7,7 @@ Setup
 =====
 
 
-Install [Node.js](https://nodejs.org/) and [Caddy](https://caddyserver.com/).
-Caddy is used as the reverse proxy.
+Install [Node.js](https://nodejs.org/).
 
 ```sh
 % npm install
@@ -17,8 +16,6 @@ Caddy is used as the reverse proxy.
 Copy `.env.default` to `.env` and edit it.
 
 Copy `config-default.json` to `config.json` and edit it.
-
-Copy `Caddyfile-dev` to `Caddyfile` and edit it.
 
 Usage
 =====
@@ -35,13 +32,7 @@ Launch the development web server which serves the static client-side files:
 % npm start
 ```
 
-Launch Caddy:
-
-```sh
-% caddy
-```
-
-Open the URL (e.g. `http://localhost:8000`) in your browser.
+Open the URL (e.g. `http://localhost:3000`) in your browser.
 
 Frameworks/Libraries
 ====================
