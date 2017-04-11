@@ -1,12 +1,9 @@
 // @flow
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import { Button, Form } from 'semantic-ui-react'
 
 class TodoField extends Component {
-  static propTypes = {
-    onSubmit: PropTypes.func.isRequired
-  };
-
   componentDidMount() {
     this.inputField.focus()
   }
@@ -43,6 +40,10 @@ class TodoField extends Component {
       </Form>
     )
   }
+}
+
+TodoField.propTypes = {
+  onSubmit: PropTypes.func.isRequired
 }
 
 export default TodoField

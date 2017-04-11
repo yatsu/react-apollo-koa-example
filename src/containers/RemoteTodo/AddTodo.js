@@ -1,20 +1,21 @@
 // @flow
-import React, { PureComponent, PropTypes } from 'react'
+import React, { PureComponent } from 'react'
+import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { compose, graphql } from 'react-apollo'
 import gql from 'graphql-tag'
 import TodoField from '../../components/Todo/TodoField'
 
 class AddTodo extends PureComponent {
-  static propTypes = {
-    createTodo: PropTypes.func.isRequired
-  };
-
   render() {
     const { createTodo } = this.props
 
     return <TodoField onSubmit={createTodo} />
   }
+}
+
+AddTodo.propTypes = {
+  createTodo: PropTypes.func.isRequired
 }
 
 const addTodoMutation = gql`

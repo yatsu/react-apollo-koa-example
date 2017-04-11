@@ -1,20 +1,11 @@
 // @flow
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import { Button, Form, Message } from 'semantic-ui-react'
 
 import './Signin.css'
 
 class Signin extends Component {
-  static propTypes = {
-    authenticating: PropTypes.bool.isRequired,
-    error: PropTypes.string,
-    onSubmit: PropTypes.func.isRequired
-  };
-
-  static defaultProps = {
-    error: null
-  };
-
   usernameField: any;
   passwordField: any;
 
@@ -90,6 +81,12 @@ class Signin extends Component {
       </div>
     )
   }
+}
+
+Signin.propTypes = {
+  authenticating: PropTypes.bool.isRequired,
+  error: PropTypes.string,
+  onSubmit: PropTypes.func.isRequired
 }
 
 export default Signin

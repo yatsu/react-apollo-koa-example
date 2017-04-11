@@ -1,24 +1,11 @@
 // @flow
 import R from 'ramda'
-import { PropTypes } from 'react'
+import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { subscribeTodos, unsubscribeTodos, toggleTodo } from '../../ducks/todoPubSub'
 import TodoList from '../../components/Todo/TodoList'
 
 class TodoListContainer extends TodoList {
-  static propTypes = {
-    todos: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        completed: PropTypes.bool.isRequired,
-        text: PropTypes.string.isRequired
-      })
-    ).isRequired,
-    subscribeTodos: PropTypes.func.isRequired,
-    unsubscribeTodos: PropTypes.func.isRequired,
-    onTodoClick: PropTypes.func.isRequired
-  };
-
   componentDidMount() {
     this.props.subscribeTodos()
   }
@@ -26,6 +13,19 @@ class TodoListContainer extends TodoList {
   componentWillUnmount() {
     this.props.unsubscribeTodos()
   }
+}
+
+TodoListContainer.propTypes = {
+  todos: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      completed: PropTypes.bool.isRequired,
+      text: PropTypes.string.isRequired
+    })
+  ).isRequired,
+  subscribeTodos: PropTypes.func.isRequired,
+  unsubscribeTodos: PropTypes.func.isRequired,
+  onTodoClick: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state: Object) => ({

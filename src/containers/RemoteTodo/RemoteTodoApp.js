@@ -1,6 +1,7 @@
 // @flow
 import R from 'ramda'
-import React, { PureComponent, PropTypes } from 'react'
+import React, { PureComponent } from 'react'
+import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { compose, graphql } from 'react-apollo'
 import gql from 'graphql-tag'
@@ -9,18 +10,6 @@ import TodoList from '../../components/Todo/TodoList'
 import AddTodo from './AddTodo'
 
 class RemoteTodoApp extends PureComponent {
-  static propTypes = {
-    todos: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.string,
-        text: PropTypes.string,
-        completed: PropTypes.bool
-      })
-    ).isRequired,
-    toggleTodo: PropTypes.func.isRequired,
-    refetchTodoList: PropTypes.func.isRequired
-  };
-
   render() {
     const { todos, toggleTodo, refetchTodoList } = this.props
 
@@ -33,6 +22,18 @@ class RemoteTodoApp extends PureComponent {
       </div>
     )
   }
+}
+
+RemoteTodoApp.propTypes = {
+  todos: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string,
+      text: PropTypes.string,
+      completed: PropTypes.bool
+    })
+  ).isRequired,
+  toggleTodo: PropTypes.func.isRequired,
+  refetchTodoList: PropTypes.func.isRequired
 }
 
 const todoListQuery = gql`

@@ -1,30 +1,25 @@
 // @flow
-import React, { PureComponent, PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import Header from './Header'
 import Footer from './Footer'
 
 import './App.css'
 
-class App extends PureComponent {
-  static propTypes = {
-    children: PropTypes.element
-  };
+const App = (props: Object) => {
+  const { children } = props
 
-  static defaultProps = {
-    children: null
-  };
+  return (
+    <div className="app">
+      <Header />
+      {children}
+      <Footer />
+    </div>
+  )
+}
 
-  render() {
-    const { children } = this.props
-
-    return (
-      <div className="app">
-        <Header />
-        {children}
-        <Footer />
-      </div>
-    )
-  }
+App.propTypes = {
+  children: PropTypes.element
 }
 
 export default App

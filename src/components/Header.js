@@ -1,5 +1,6 @@
 // @flow
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import { Link } from 'react-router'
 import { Button, Icon, Menu } from 'semantic-ui-react'
 import classnames from 'classnames'
@@ -8,17 +9,6 @@ import logo from '../logo.svg'
 import './Header.css'
 
 class Header extends Component {
-  static propTypes = {
-    path: PropTypes.string.isRequired,
-    username: PropTypes.string,
-    admin: PropTypes.bool.isRequired,
-    signout: PropTypes.func.isRequired
-  };
-
-  static defaultProps = {
-    username: null
-  };
-
   active(path: string) {
     return this.props.path === `/${path}`
   }
@@ -89,6 +79,13 @@ class Header extends Component {
       </Menu>
     )
   }
+}
+
+Header.propTypes = {
+  path: PropTypes.string.isRequired,
+  username: PropTypes.string,
+  admin: PropTypes.bool.isRequired,
+  signout: PropTypes.func.isRequired
 }
 
 export default Header

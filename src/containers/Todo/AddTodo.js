@@ -1,19 +1,20 @@
 // @flow
-import React, { PureComponent, PropTypes } from 'react'
+import React, { PureComponent } from 'react'
+import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import TodoField from '../../components/Todo/TodoField'
 import { createTodo } from '../../ducks/todo'
 
 class AddTodoContainer extends PureComponent {
-  static propTypes = {
-    onCreateTodo: PropTypes.func.isRequired
-  };
-
   render() {
     const { onCreateTodo } = this.props
 
     return <TodoField onSubmit={onCreateTodo} />
   }
+}
+
+AddTodoContainer.propTypes = {
+  onCreateTodo: PropTypes.func.isRequired
 }
 
 const mapStateToProps = () => ({})

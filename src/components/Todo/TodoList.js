@@ -1,21 +1,11 @@
 // @flow
 import R from 'ramda'
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import { List } from 'semantic-ui-react'
 import Todo from './Todo'
 
 class TodoList extends Component {
-  static propTypes = {
-    todos: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        completed: PropTypes.bool.isRequired,
-        text: PropTypes.string.isRequired
-      })
-    ).isRequired,
-    onTodoClick: PropTypes.func.isRequired
-  };
-
   handleTodoClick(event: Event, todoID: string) {
     event.preventDefault()
     const { onTodoClick } = this.props
@@ -42,6 +32,17 @@ class TodoList extends Component {
       </List>
     )
   }
+}
+
+TodoList.propTypes = {
+  todos: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      completed: PropTypes.bool.isRequired,
+      text: PropTypes.string.isRequired
+    })
+  ).isRequired,
+  onTodoClick: PropTypes.func.isRequired
 }
 
 export default TodoList

@@ -1,23 +1,12 @@
 // @flow
 import R from 'ramda'
-import { PropTypes } from 'react'
+import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { errorMessagePath } from '../../ducks/paths'
 import { signin, clearAuthError } from '../../ducks/auth'
 import Signin from '../../components/Signin/Signin'
 
 class SigninApp extends Signin {
-  static propTypes = {
-    authenticating: PropTypes.bool.isRequired,
-    error: PropTypes.string,
-    clearAuthError: PropTypes.func.isRequired,
-    onSubmit: PropTypes.func.isRequired
-  };
-
-  static defaultProps = {
-    error: null
-  };
-
   componentWillMount() {
     this.props.clearAuthError()
   }
@@ -29,6 +18,13 @@ class SigninApp extends Signin {
   componentWillUnmount() {
     this.props.clearAuthError()
   }
+}
+
+SigninApp.propTypes = {
+  authenticating: PropTypes.bool.isRequired,
+  error: PropTypes.string,
+  clearAuthError: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state: Object) => ({
