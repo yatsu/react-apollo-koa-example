@@ -3,6 +3,12 @@
     "react-app",
     "airbnb"
   ],
+  "plugins": [
+    "flowtype",
+    "import",
+    "jsx-a11y",
+    "react"
+  ],
   "rules": {
     "class-methods-use-this": "off",
     "comma-dangle": ["error", "never"],
@@ -15,6 +21,10 @@
     "react/prefer-stateless-function": ["error", { "ignorePureComponents": true }],
     "import/no-extraneous-dependencies": ["error", {
       "devDependencies": ["**/*.test.js", "**/stories/**/*.js"]
-    }]
+    }],
+    "import/no-named-default": "off",
+    "react/jsx-tag-spacing": "off",
+    "react/no-array-index-key": "off",
+    "react/require-default-props": "off"
   }
 }
