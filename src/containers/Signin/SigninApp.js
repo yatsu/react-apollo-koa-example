@@ -15,8 +15,15 @@ class SigninApp extends Signin {
     this.usernameField.focus()
   }
 
-  componentWillUnmount() {
-    this.props.clearAuthError()
+  componentWillReceiveProps(nextProps: Object) {
+    if (nextProps.error) {
+      setTimeout(
+        () => {
+          this.passwordField.select()
+        },
+        0
+      )
+    }
   }
 }
 
