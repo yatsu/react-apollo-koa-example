@@ -20,7 +20,7 @@
     "react/jsx-filename-extension": "off",
     "react/prefer-stateless-function": ["error", { "ignorePureComponents": true }],
     "import/no-extraneous-dependencies": ["error", {
-      "devDependencies": ["**/*.test.js", "**/stories/**/*.js"]
+      "devDependencies": ["**/*.test.js", "**/stories/**/*.js", "**/*_test.js"]
     }],
     "import/no-named-default": "off",
     "react/jsx-tag-spacing": "off",
