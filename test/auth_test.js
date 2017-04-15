@@ -8,3 +8,39 @@ describe('Todo page w/o auth', () => {
     expect(path).to.equal('/signin')
   })
 })
+
+describe('Signing in from the sign-in page', () => {
+  it('redirects the req to /', async () => {
+    const { username, path } = await Nightmare()
+      .goto(`${BASE_URL}/signin`)
+      .type('input[name=username]', 'user1')
+      .type('input[name=password]', 'user1pass')
+      .click('#signinButton')
+      .wait('#username')
+      .evaluate(() => ({
+        username: document.querySelector('#username').innerText,
+        path: document.location.pathname
+      }))
+      .end()
+    expect(username).to.equal('user1')
+    expect(path).to.equal('/')
+  })
+})
+
+describe('Signing in from /todo', () => {
+  it('redirects the req to /todo', async () => {
+    const { username, path } = await Nightmare()
+      .goto(`${BASE_URL}/todo`)
+      .type('input[name=username]', 'user1')
+      .type('input[name=password]', 'user1pass')
+      .click('#signinButton')
+      .wait('#username')
+      .evaluate(() => ({
+        username: document.querySelector('#username').innerText,
+        path: document.location.pathname
+      }))
+      .end()
+    expect(username).to.equal('user1')
+    expect(path).to.equal('/todo')
+  })
+})
