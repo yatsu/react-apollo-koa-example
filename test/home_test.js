@@ -1,37 +1,10 @@
 import Nightmare from 'nightmare'
 import { expect } from 'chai'
+import { BASE_URL } from './test_config'
 
 describe('The home page', () => {
-  it('has title "React Apollo Koa Example"', (done) => {
-    const nightmare = Nightmare()
-    nightmare
-      .goto('http://localhost:3000')
-      .evaluate(() => document.title)
-      .end()
-      .then((title) => {
-        expect(title).to.equal('React Apollo Koa Example')
-        done()
-      })
-      .catch((error) => {
-        console.error('Error', error)
-      })
-  })
-
-  it('can have debug in localStorage', (done) => {
-    const nightmare = Nightmare()
-    nightmare
-      .goto('http://localhost:3000')
-      .evaluate(() => {
-        localStorage.setItem('debug', 'example:*')
-        return localStorage.getItem('debug')
-      })
-      .end()
-      .then((debug) => {
-        expect(debug).to.equal('example:*')
-        done()
-      })
-      .catch((error) => {
-        console.error('Error', error)
-      })
+  it('has title "React Apollo Koa Example"', async () => {
+    const title = await Nightmare().goto(`${BASE_URL}`).evaluate(() => document.title).end()
+    expect(title).to.equal('React Apollo Koa Example')
   })
 })
