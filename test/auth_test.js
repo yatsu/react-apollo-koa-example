@@ -9,8 +9,24 @@ describe('Todo page w/o auth', () => {
   })
 })
 
-describe('Signing in from the sign-in page', () => {
-  it('redirects the req to /', async () => {
+describe('Signing in', () => {
+  it('fails with an incorrect password', async () => {
+    const { message, path } = await Nightmare()
+      .goto(`${BASE_URL}/signin`)
+      .type('input[name=username]', 'user1')
+      .type('input[name=password]', 'incorrect')
+      .click('#signinButton')
+      .wait('.negative')
+      .evaluate(() => ({
+        message: document.querySelector('.negative p').innerText,
+        path: document.location.pathname
+      }))
+      .end()
+    expect(message).to.equal('Username or password incorrect')
+    expect(path).to.equal('/signin')
+  })
+
+  it('redirects /signin to / after auth', async () => {
     const { username, path } = await Nightmare()
       .goto(`${BASE_URL}/signin`)
       .type('input[name=username]', 'user1')
@@ -25,10 +41,8 @@ describe('Signing in from the sign-in page', () => {
     expect(username).to.equal('user1')
     expect(path).to.equal('/')
   })
-})
 
-describe('Signing in from /todo', () => {
-  it('redirects the req to /todo', async () => {
+  it('redirects /todo to /todo after auth', async () => {
     const { username, path } = await Nightmare()
       .goto(`${BASE_URL}/todo`)
       .type('input[name=username]', 'user1')
