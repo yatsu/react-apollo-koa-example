@@ -82,6 +82,17 @@ See package.json for more information.
 The API server does not use DB and stores data on memory.
 All changes will be cleared when you stop the server.
 
+### Unit Tests
+
+* [Jest](https://facebook.github.io/jest/)
+* [Enzyme](http://airbnb.io/enzyme/) (Shallow rendering)
+
+### Integration Tests
+
+* [Mocha](https://mochajs.org/) (Test Runner)
+* [Chai](http://chaijs.com/) (Assertio)
+* [Nightmare](http://www.nightmarejs.org/) (Browser automation)
+
 ### Repo and code management
 
 * [Husky](https://github.com/typicode/husky) and
@@ -136,6 +147,20 @@ It has not been integrated with authentication.
 Read the following article to know about subscriptions.
 
 * [A proposal for GraphQL subscriptions](https://dev-blog.apollodata.com/a-proposal-for-graphql-subscriptions-1d89b1934c18#.vso7t15e5)
+
+Authentication
+--------------
+
+The Apollo subscription in this app is not integrated with the authentication yet.
+See the following guide to do that.
+
+* [Authentication | Apollo Tools Guide](http://dev.apollodata.com/tools/graphql-subscriptions/authentication.html)
+
+You might want to do it on subscribing to events instead of establishing a
+connection.
+See the following pull request to `subscriptions-transport-ws`.
+
+* [onSubscribe and use middleware to modify runtime SubscriptionOptions #78](https://github.com/apollographql/subscriptions-transport-ws/pull/78)
 
 Storybook
 ---------
