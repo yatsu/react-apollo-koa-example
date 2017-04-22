@@ -1,16 +1,16 @@
 // @flow
 import React from 'react'
-import { Divider } from 'semantic-ui-react'
+import { Container, Divider } from 'semantic-ui-react'
 import AddTodo from './AddTodo'
 import TodoList from './TodoList'
 
 const PubSubTodoApp = () => (
-  <div className="ui main text container main-content">
+  <Container text className="main main-content">
     <h1>Todo Example (GraphQL PubSub)</h1>
     <AddTodo />
     <Divider />
     <TodoList />
-  </div>
+  </Container>
 )
 
 export default PubSubTodoApp

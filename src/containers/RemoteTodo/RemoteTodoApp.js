@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { compose, graphql } from 'react-apollo'
 import gql from 'graphql-tag'
-import { Divider } from 'semantic-ui-react'
+import { Container, Divider } from 'semantic-ui-react'
 import TodoList from '../../components/Todo/TodoList'
 import AddTodo from './AddTodo'
 
@@ -14,12 +14,12 @@ class RemoteTodoApp extends PureComponent {
     const { todos, toggleTodo, refetchTodoList } = this.props
 
     return (
-      <div className="ui main text container main-content">
+      <Container text className="main main-content">
         <h1>Todo Example (GraphQL watchQuery)</h1>
         <AddTodo refetchTodoList={refetchTodoList} />
         <Divider />
         <TodoList todos={todos} onTodoClick={toggleTodo} />
-      </div>
+      </Container>
     )
   }
 }

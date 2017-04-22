@@ -20,7 +20,7 @@ class Header extends Component {
 
   renderUser() {
     const { username, admin } = this.props
-    if (!username) return ''
+    if (!username) return null
     const color = admin ? 'red' : 'green'
     return (
       <Menu.Item id="username">

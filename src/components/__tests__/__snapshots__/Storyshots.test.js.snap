@@ -331,7 +331,6 @@ exports[`Storyshots Header without auth 1`] = `
   </a>
   <div
     className="right menu">
-    
     <a
       className="item"
       id="signinLink"
@@ -353,7 +352,7 @@ exports[`Storyshots Header without auth 1`] = `
 
 exports[`Storyshots Signin Error 1`] = `
 <div
-  className="ui main text container main-content signin">
+  className="ui text container main main-content signin">
   <h1>
     Sign in
   </h1>
@@ -396,7 +395,6 @@ exports[`Storyshots Signin Error 1`] = `
     </div>
   </form>
   <div />
-  
   <div
     className="ui negative message">
     <div
@@ -412,7 +410,7 @@ exports[`Storyshots Signin Error 1`] = `
 
 exports[`Storyshots Signin Initial state 1`] = `
 <div
-  className="ui main text container main-content signin">
+  className="ui text container main main-content signin">
   <h1>
     Sign in
   </h1>
@@ -455,14 +453,12 @@ exports[`Storyshots Signin Initial state 1`] = `
     </div>
   </form>
   <div />
-  
-  
 </div>
 `;
 
 exports[`Storyshots Signin Signing in 1`] = `
 <div
-  className="ui main text container main-content signin">
+  className="ui text container main main-content signin">
   <h1>
     Sign in
   </h1>
@@ -511,6 +507,5 @@ exports[`Storyshots Signin Signing in 1`] = `
       Signing in...
     </p>
   </div>
-  
 </div>
 `;

@@ -1,7 +1,7 @@
 // @flow
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { Button, Form, Message } from 'semantic-ui-react'
+import { Button, Container, Form, Message } from 'semantic-ui-react'
 
 import './Signin.css'
 
@@ -16,14 +16,14 @@ class Signin extends Component {
 
   renderStatus() {
     const { authenticating } = this.props
-    if (authenticating === false) return ''
+    if (authenticating === false) return null
 
     return <Message><p>Signing in...</p></Message>
   }
 
   renderError() {
     const { error } = this.props
-    if (!error) return ''
+    if (!error) return null
 
     return (
       <Message negative>
@@ -37,7 +37,7 @@ class Signin extends Component {
     const { authenticating } = this.props
 
     return (
-      <div className="ui main text container main-content signin">
+      <Container text className="main main-content signin">
         <h1>Sign in</h1>
         <Form onSubmit={e => this.handleSubmit(e)}>
           <Form.Field>
@@ -78,7 +78,7 @@ class Signin extends Component {
         <div>{authenticating}</div>
         {this.renderStatus()}
         {this.renderError()}
-      </div>
+      </Container>
     )
   }
 }
