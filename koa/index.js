@@ -48,7 +48,7 @@ const router = Router()
 
 router.post('/graphql', async (ctx, next) => {
   if (ctx.isAuthenticated()) {
-    graphqlKoa({ schema: executableSchema })(ctx, next)
+    await convert(graphqlKoa({ schema: executableSchema }))(ctx, next)
   } else {
     ctx.body = {
       error: {
