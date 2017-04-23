@@ -10,8 +10,8 @@ function digest(password: string) {
 }
 
 async function fetchUser(info: Object | string | number, service?: string) {
-  // TODO: Implement User Fetch Logic based on Social Media Service Login profile
-  //       or Username
+  // TODO: Implement User Fetch Logic based on Social Media Service Login profile,
+  //       Username or ID
   switch (service) {
     case 'google':
     case 'facebook':
@@ -34,8 +34,6 @@ passport.deserializeUser(async (id, done) => {
   await fetchUser(id).then(user => done(null, user)).catch(err => done(err))
 })
 
-const LocalStrategy = require('passport-local').Strategy
-
 function generateTokens(username: string): Object {
   const accessToken = jwt.sign(
     { user: { username, admin: process.env.USER_ADMIN === 'true' }, type: 'access' },
@@ -49,6 +47,8 @@ function generateTokens(username: string): Object {
   )
   return { accessToken, refreshToken }
 }
+
+const LocalStrategy = require('passport-local').Strategy
 
 passport.use(
   new LocalStrategy((username, password, next) => {

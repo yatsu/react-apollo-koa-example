@@ -14,7 +14,7 @@ build
 .env
 npm-debug.log
 storybook-static
-Caddyfile
 
 /config.json
 /extracted_queries.json
+/Caddyfile
