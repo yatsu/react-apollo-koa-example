@@ -166,6 +166,8 @@ Read the following article to know about subscriptions.
 Authentication
 --------------
 
+This project integrates usage of Passport for the authentication service. Current supported strategies are Local, Google+, Facebook, and Twitter, but any additional strategy can be added easily. Note that though Passport is used, user management logic is not implemented. Ideally, you would create a UI to register new users by using this basic code as a reference. (This logic may be implemented in future versions.)
+
 The Apollo subscription in this app is not integrated with the authentication yet.
 See the following guide to do that.
 
