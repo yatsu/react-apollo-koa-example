@@ -53,8 +53,15 @@
     "jwt-decode": "^2.1.0",
     "koa": "^2.2.0",
     "koa-bodyparser": "^3.2.0",
+    "koa-convert": "^1.2.0",
+    "koa-generic-session": "^1.11.5",
     "koa-logger": "^2.0.1",
+    "koa-passport": "^3.0.0",
     "koa-router": "^7.0.1",
+    "passport-facebook": "^2.1.1",
+    "passport-google-oauth2": "^0.1.6",
+    "passport-local": "^1.0.0",
+    "passport-twitter": "^1.0.4",
     "persistgraphql": "^0.3.1",
     "prop-types": "^15.5.3",
     "ramda": "^0.23.0",
@@ -90,7 +97,6 @@
     "caddy": "caddy",
     "console": "NODE_ENV=development babel-node --presets react-app"
   },
-  "proxy": "http://localhost:7000",
   "lint-staged": {
     "src/**/*.js": [
       "prettier-eslint --write",

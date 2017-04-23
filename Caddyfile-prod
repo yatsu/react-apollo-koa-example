@@ -1,0 +1,40 @@
+example.com
+
+root build
+
+log access.log {
+    rotate {
+        size 100 # Rotate after 100 MB
+        age  14  # Keep log files for 14 days
+        keep 10  # Keep at most 10 log files
+    }
+}
+
+errors {
+    log error.log {
+        size 50 # Rotate after 50 MB
+        age  30 # Keep rotated files for 30 days
+        keep 5  # Keep at most 5 log files
+    }
+}
+
+proxy /graphql localhost:7000 {
+    transparent
+}
+
+proxy /graphiql localhost:7000 {
+    transparent
+}
+
+proxy /auth localhost:7000 {
+    transparent
+}
+
+proxy /api localhost:7000 {
+    transparent
+}
+
+proxy /graphql-sock localhost:7000 {
+    transparent
+    websocket
+}

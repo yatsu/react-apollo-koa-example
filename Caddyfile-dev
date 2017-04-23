@@ -1,0 +1,36 @@
+localhost:8000
+
+tls off
+log stdout
+errors visible
+timeouts none
+
+proxy /graphql localhost:7000 {
+    transparent
+}
+
+proxy /graphiql localhost:7000 {
+    transparent
+}
+
+proxy /graphql-sock localhost:7000 {
+    transparent
+    websocket
+}
+
+proxy /sockjs-node localhost:3000 {
+    transparent
+    websocket
+}
+
+proxy /auth localhost:7000 {
+    transparent
+}
+
+proxy /api localhost:7000 {
+    transparent
+}
+
+proxy / localhost:3000 {
+    transparent
+}

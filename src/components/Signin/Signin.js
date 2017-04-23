@@ -1,7 +1,7 @@
 // @flow
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { Button, Container, Form, Message } from 'semantic-ui-react'
+import { Button, Container, Form, Icon, Message } from 'semantic-ui-react'
 
 import './Signin.css'
 
@@ -9,9 +9,14 @@ class Signin extends Component {
   usernameField: any;
   passwordField: any;
 
-  handleSubmit(event: Event) {
+  handleLocalSubmit(event: Event) {
     event.preventDefault()
-    this.props.onSubmit(this.usernameField.value, this.passwordField.value)
+    this.props.onLocalSubmit(this.usernameField.value, this.passwordField.value)
+  }
+
+  handleSocialSubmit(event: Event, service: string) {
+    event.preventDefault()
+    window.location.replace(`/auth/${service}/signin`)
   }
 
   renderStatus() {
@@ -23,14 +28,15 @@ class Signin extends Component {
 
   renderError() {
     const { error } = this.props
-    if (!error) return null
-
-    return (
-      <Message negative>
-        <Message.Header>Sign in failed</Message.Header>
-        <p>{error}</p>
-      </Message>
-    )
+    if (error) {
+      return (
+        <Message negative>
+          <Message.Header>{error.type} signin failed with a {error.status} status!</Message.Header>
+          <p>{error.message}</p>
+        </Message>
+      )
+    }
+    return ''
   }
 
   render() {
@@ -39,7 +45,7 @@ class Signin extends Component {
     return (
       <Container text className="main main-content signin">
         <h1>Sign in</h1>
-        <Form onSubmit={e => this.handleSubmit(e)}>
+        <Form onSubmit={e => this.handleLocalSubmit(e)}>
           <Form.Field>
             <label htmlFor="username">Username</label>
             <input
@@ -66,15 +72,45 @@ class Signin extends Component {
           </Form.Field>
           <Form.Field>
             <Button
-              id="signinButton"
+              id="localSigninButton"
               positive
               disabled={authenticating}
-              onClick={e => this.handleSubmit(e)}
+              onClick={e => this.handleLocalSubmit(e)}
             >
               Sign in
             </Button>
           </Form.Field>
         </Form>
+        <h4 className="ui dividing header">
+          Sign in with a Social Media Account
+        </h4>
+        <Button
+          id="googleSigninButton"
+          disabled={authenticating}
+          className="google plus"
+          onClick={e => this.handleSocialSubmit(e, 'google')}
+        >
+          <Icon className="google plus" />
+          Google Plus
+        </Button>
+        <Button
+          id="facebookSigninButton"
+          disabled={authenticating}
+          className="facebook"
+          onClick={e => this.handleSocialSubmit(e, 'facebook')}
+        >
+          <i className="facebook icon" />
+          Facebook
+        </Button>
+        <Button
+          id="twitterSigninButton"
+          disabled={authenticating}
+          className="twitter"
+          onClick={e => this.handleSocialSubmit(e, 'twitter')}
+        >
+          <i className="twitter icon" />
+          Twitter
+        </Button>
         <div>{authenticating}</div>
         {this.renderStatus()}
         {this.renderError()}
@@ -86,7 +122,7 @@ class Signin extends Component {
 Signin.propTypes = {
   authenticating: PropTypes.bool.isRequired,
   error: PropTypes.string,
-  onSubmit: PropTypes.func.isRequired
+  onLocalSubmit: PropTypes.func.isRequired
 }
 
 export default Signin

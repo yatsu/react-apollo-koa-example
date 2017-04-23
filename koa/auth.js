@@ -1,48 +1,124 @@
 // @flow
 import crypto from 'crypto'
-import createDebug from 'debug'
 import jwt from 'jsonwebtoken'
+import passport from 'koa-passport'
 
-const debugAuth = createDebug('example:auth')
+require('dotenv').load()
 
 function digest(password: string) {
   return crypto.createHash('sha1').update(password).digest('hex')
 }
 
-function authError(status: number = 401, msg: string = 'Username or password incorrect') {
-  const error: Object = new Error(msg)
-  error.status = status
-  throw error
+async function fetchUser(info: Object | string | number, service?: string) {
+  // TODO: Implement User Fetch Logic based on Social Media Service Login profile
+  //       or Username
+  switch (service) {
+    case 'google':
+    case 'facebook':
+    case 'twitter':
+    default:
+  }
+  return {
+    id: 1,
+    username: process.env.USERNAME,
+    password: digest(process.env.USER_PASSWORD),
+    admin: process.env.USER_ADMIN
+  }
 }
 
-export async function signin(ctx: Object) {
-  const { username, password } = ctx.request.body
-  if (!username || !password) {
-    authError(400, 'Must provide username and password')
-  }
-  const accessExp = ctx.request.get('X-ACCESS-TOKEN-EXPIRES-IN')
-  const refreshExp = ctx.request.get('X-REFRESH-TOKEN-EXPIRES-IN')
-  debugAuth('accessExp: %s', accessExp)
-  debugAuth('refreshExp: %s', refreshExp)
+passport.serializeUser((user, done) => {
+  done(null, user.id)
+})
 
-  const storedPassword = digest(process.env.USER_PASSWORD || '')
-  if (!storedPassword || storedPassword !== digest(password)) {
-    authError()
-  }
+passport.deserializeUser(async (id, done) => {
+  await fetchUser(id).then(user => done(null, user)).catch(err => done(err))
+})
 
+const LocalStrategy = require('passport-local').Strategy
+
+function generateTokens(username: string): Object {
   const accessToken = jwt.sign(
     { user: { username, admin: process.env.USER_ADMIN === 'true' }, type: 'access' },
-    process.env.JWT_SECRET,
-    { expiresIn: accessExp || '2h' }
+    process.env.SESSION_SECRET,
+    { expiresIn: '2h' }
   )
   const refreshToken = jwt.sign(
     { user: { username, admin: process.env.USER_ADMIN === 'true' }, type: 'refresh' },
-    process.env.JWT_SECRET,
-    { expiresIn: refreshExp || '60d' }
+    process.env.SESSION_SECRET,
+    { expiresIn: '60d' }
   )
-  ctx.body = { accessToken, refreshToken }
+  return { accessToken, refreshToken }
 }
 
-export async function signout(ctx: Object) {
-  ctx.body = {}
-}
+passport.use(
+  new LocalStrategy((username, password, next) => {
+    fetchUser(username)
+      .then((user) => {
+        if (username === user.username && digest(password) === user.password) {
+          next(null, user, generateTokens(username))
+        } else {
+          next(null, false)
+        }
+      })
+      .catch(err => next(err))
+  })
+)
+
+const GoogleStrategy = require('passport-google-oauth2').Strategy
+
+passport.use(
+  new GoogleStrategy(
+    {
+      scope: ['email', 'profile'],
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: `http://${process.env.SERVER_HOST}:${process.env.PROXY_PORT}/signin`
+    },
+    (accessToken, refreshToken, profile, next) => {
+      fetchUser(profile)
+        .then((user) => {
+          next(null, user, generateTokens(user.username))
+        })
+        .catch(err => next(err))
+    }
+  )
+)
+
+const FacebookStrategy = require('passport-facebook').Strategy
+
+passport.use(
+  new FacebookStrategy(
+    {
+      profileFields: ['id', 'displayName', 'photos', 'email'],
+      clientID: process.env.FACEBOOK_CLIENT_ID,
+      clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+      callbackURL: `http://${process.env.SERVER_HOST}:${process.env.PROXY_PORT}/signin`
+    },
+    (accessToken, refreshToken, profile, next) => {
+      fetchUser(profile)
+        .then((user) => {
+          next(null, user, generateTokens(user.username))
+        })
+        .catch(err => next(err))
+    }
+  )
+)
+
+const TwitterStrategy = require('passport-twitter').Strategy
+
+passport.use(
+  new TwitterStrategy(
+    {
+      consumerKey: process.env.TWITTER_CUSTOMER_KEY,
+      consumerSecret: process.env.TWITTER_CUSTOMER_SECRET,
+      callbackURL: `http://${process.env.SERVER_HOST}:${process.env.PROXY_PORT}/signin`
+    },
+    (accessToken, refreshToken, profile, next) => {
+      fetchUser(profile)
+        .then((user) => {
+          next(null, user, generateTokens(user.username))
+        })
+        .catch(err => next(err))
+    }
+  )
+)

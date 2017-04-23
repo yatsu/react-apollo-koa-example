@@ -387,23 +387,54 @@ exports[`Storyshots Signin Error 1`] = `
       className="field">
       <button
         className="ui positive button"
-        id="signinButton"
+        id="localSigninButton"
         onClick={[Function]}
         tabIndex={undefined}>
         Sign in
       </button>
     </div>
   </form>
+  <h4
+    className="ui dividing header">
+    Sign in with a Social Media Account
+  </h4>
+  <button
+    className="ui button google plus"
+    id="googleSigninButton"
+    onClick={[Function]}
+    tabIndex={undefined}>
+    <i
+      aria-hidden="true"
+      className="icon google plus" />
+    Google Plus
+  </button>
+  <button
+    className="ui button facebook"
+    id="facebookSigninButton"
+    onClick={[Function]}
+    tabIndex={undefined}>
+    <i
+      className="facebook icon" />
+    Facebook
+  </button>
+  <button
+    className="ui button twitter"
+    id="twitterSigninButton"
+    onClick={[Function]}
+    tabIndex={undefined}>
+    <i
+      className="twitter icon" />
+    Twitter
+  </button>
   <div />
   <div
     className="ui negative message">
     <div
       className="header">
-      Sign in failed
+       signin failed with a 
+       status!
     </div>
-    <p>
-      Authentication failed
-    </p>
+    <p />
   </div>
 </div>
 `;
@@ -445,14 +476,47 @@ exports[`Storyshots Signin Initial state 1`] = `
       className="field">
       <button
         className="ui positive button"
-        id="signinButton"
+        id="localSigninButton"
         onClick={[Function]}
         tabIndex={undefined}>
         Sign in
       </button>
     </div>
   </form>
+  <h4
+    className="ui dividing header">
+    Sign in with a Social Media Account
+  </h4>
+  <button
+    className="ui button google plus"
+    id="googleSigninButton"
+    onClick={[Function]}
+    tabIndex={undefined}>
+    <i
+      aria-hidden="true"
+      className="icon google plus" />
+    Google Plus
+  </button>
+  <button
+    className="ui button facebook"
+    id="facebookSigninButton"
+    onClick={[Function]}
+    tabIndex={undefined}>
+    <i
+      className="facebook icon" />
+    Facebook
+  </button>
+  <button
+    className="ui button twitter"
+    id="twitterSigninButton"
+    onClick={[Function]}
+    tabIndex={undefined}>
+    <i
+      className="twitter icon" />
+    Twitter
+  </button>
   <div />
+  
 </div>
 `;
 
@@ -493,13 +557,45 @@ exports[`Storyshots Signin Signing in 1`] = `
       className="field">
       <button
         className="ui positive disabled button"
-        id="signinButton"
+        id="localSigninButton"
         onClick={[Function]}
         tabIndex={-1}>
         Sign in
       </button>
     </div>
   </form>
+  <h4
+    className="ui dividing header">
+    Sign in with a Social Media Account
+  </h4>
+  <button
+    className="ui disabled button google plus"
+    id="googleSigninButton"
+    onClick={[Function]}
+    tabIndex={-1}>
+    <i
+      aria-hidden="true"
+      className="icon google plus" />
+    Google Plus
+  </button>
+  <button
+    className="ui disabled button facebook"
+    id="facebookSigninButton"
+    onClick={[Function]}
+    tabIndex={-1}>
+    <i
+      className="facebook icon" />
+    Facebook
+  </button>
+  <button
+    className="ui disabled button twitter"
+    id="twitterSigninButton"
+    onClick={[Function]}
+    tabIndex={-1}>
+    <i
+      className="twitter icon" />
+    Twitter
+  </button>
   <div />
   <div
     className="ui message">
@@ -507,5 +603,6 @@ exports[`Storyshots Signin Signing in 1`] = `
       Signing in...
     </p>
   </div>
+  
 </div>
 `;
