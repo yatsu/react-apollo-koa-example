@@ -1,6 +1,5 @@
 // @flow
 import crypto from 'crypto'
-import jwt from 'jsonwebtoken'
 import passport from 'koa-passport'
 
 require('dotenv').load()
@@ -34,20 +33,6 @@ passport.deserializeUser(async (id, done) => {
   await fetchUser(id).then(user => done(null, user)).catch(err => done(err))
 })
 
-function generateTokens(username: string): Object {
-  const accessToken = jwt.sign(
-    { user: { username, admin: process.env.USER_ADMIN === 'true' }, type: 'access' },
-    process.env.SESSION_SECRET,
-    { expiresIn: '2h' }
-  )
-  const refreshToken = jwt.sign(
-    { user: { username, admin: process.env.USER_ADMIN === 'true' }, type: 'refresh' },
-    process.env.SESSION_SECRET,
-    { expiresIn: '60d' }
-  )
-  return { accessToken, refreshToken }
-}
-
 const LocalStrategy = require('passport-local').Strategy
 
 passport.use(
@@ -55,7 +40,7 @@ passport.use(
     fetchUser(username)
       .then((user) => {
         if (username === user.username && digest(password) === user.password) {
-          next(null, user, generateTokens(username))
+          next(null, user)
         } else {
           next(null, false)
         }
@@ -77,7 +62,7 @@ passport.use(
     (accessToken, refreshToken, profile, next) => {
       fetchUser(profile)
         .then((user) => {
-          next(null, user, generateTokens(user.username))
+          next(null, user, { accessToken, refreshToken })
         })
         .catch(err => next(err))
     }
@@ -97,7 +82,7 @@ passport.use(
     (accessToken, refreshToken, profile, next) => {
       fetchUser(profile)
         .then((user) => {
-          next(null, user, generateTokens(user.username))
+          next(null, user, { accessToken, refreshToken })
         })
         .catch(err => next(err))
     }
@@ -116,7 +101,7 @@ passport.use(
     (accessToken, refreshToken, profile, next) => {
       fetchUser(profile)
         .then((user) => {
-          next(null, user, generateTokens(user.username))
+          next(null, user, { accessToken, refreshToken })
         })
         .catch(err => next(err))
     }

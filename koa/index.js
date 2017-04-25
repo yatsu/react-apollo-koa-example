@@ -13,7 +13,7 @@ import { executableSchema } from './executableSchema'
 import subscriptionManager from './subscriptions'
 import { resolvers } from './resolvers'
 import queryMap from '../extracted_queries.json'
-import errorHandler from './error'
+import { errorHandler, generateTokens } from './utils'
 
 require('dotenv').config()
 
@@ -60,10 +60,10 @@ router.post('/graphql', async (ctx, next) => {
 })
 
 router.get('/graphql', graphqlKoa({ schema: executableSchema }))
-router.get('/graphiql', graphiqlKoa({ endpointURL: '/graphql' }))
+router.get('/graphiql', convert(graphiqlKoa({ endpointURL: '/graphql' })))
 
 router.post('/auth/signin', async (ctx, next) => {
-  await passport.authenticate('local', async (err, user, info) => {
+  await passport.authenticate('local', async (err, user) => {
     if (user === false) {
       ctx.body = {
         error: {
@@ -74,8 +74,9 @@ router.post('/auth/signin', async (ctx, next) => {
       }
       ctx.status = 401
     } else {
-      await ctx.login(user, info)
-      ctx.body = info
+      const tokens = generateTokens(user.username, ctx)
+      await ctx.login(user, tokens)
+      ctx.body = tokens
       ctx.status = 201
     }
   })(ctx, next)
@@ -108,14 +109,15 @@ router.get('/auth/social/signin/callback', async (ctx, next) => {
     ctx.body = { error }
     ctx.status = 401
   }
-  await passport.authenticate(service, async (err, user, info) => {
+  await passport.authenticate(service, async (err, user) => {
     if (user === false || err !== null) {
       error.message = `Social Login Callback Error: ${err}`
       ctx.body = { error }
       ctx.status = 401
     } else {
-      await ctx.login(user, info)
-      ctx.body = info
+      const tokens = generateTokens(user.username, ctx)
+      await ctx.login(user, tokens)
+      ctx.body = tokens
       ctx.status = 201
     }
   })(ctx, next)
