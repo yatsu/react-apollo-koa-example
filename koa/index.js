@@ -60,7 +60,7 @@ router.post('/graphql', async (ctx, next) => {
 })
 
 router.get('/graphql', graphqlKoa({ schema: executableSchema }))
-router.get('/graphiql', convert(graphiqlKoa({ endpointURL: '/graphql' })))
+router.get('/graphiql', graphiqlKoa({ endpointURL: '/graphql' }))
 
 router.post('/auth/signin', async (ctx, next) => {
   await passport.authenticate('local', async (err, user) => {
