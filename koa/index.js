@@ -13,16 +13,14 @@ import { executableSchema } from './executableSchema'
 import subscriptionManager from './subscriptions'
 import { resolvers } from './resolvers'
 import queryMap from '../extracted_queries.json'
-import { errorHandler, generateTokens } from './utils'
-
-require('dotenv').config()
+import { env, errorHandler, generateTokens } from './utils'
 
 const app = new Koa()
 
 app.proxy = true
 
 // Sessions
-app.keys = [process.env.SESSION_SECRET]
+app.keys = [env.get('SESSION_SECRET', '')]
 app.use(convert(session()))
 
 // Logger, Parser & Error Handler
@@ -137,7 +135,7 @@ router.post('/auth/signout', (ctx) => {
 app.use(router.routes())
 app.use(router.allowedMethods())
 
-const server = app.listen(process.env.SERVER_PORT, process.env.SERVER_HOST)
+const server = app.listen(env.get('SERVER_PORT', ''), env.get('SERVER_HOST', ''))
 
 // eslint-disable-next-line no-new
 new SubscriptionServer(

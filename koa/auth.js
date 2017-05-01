@@ -1,8 +1,7 @@
 // @flow
 import crypto from 'crypto'
 import passport from 'koa-passport'
-
-require('dotenv').load()
+import { env } from './utils'
 
 function digest(password: string) {
   return crypto.createHash('sha1').update(password).digest('hex')
@@ -19,9 +18,9 @@ async function fetchUser(info: Object | string | number, service?: string) {
   }
   return {
     id: 1,
-    username: process.env.USERNAME,
-    password: digest(process.env.USER_PASSWORD),
-    admin: process.env.USER_ADMIN
+    username: env.get('USERNAME', ''),
+    password: digest(env.get('USER_PASSWORD', '')),
+    admin: env.get('USER_ADMIN', '')
   }
 }
 
@@ -55,9 +54,9 @@ passport.use(
   new GoogleStrategy(
     {
       scope: ['email', 'profile'],
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: `http://${process.env.SERVER_HOST}:${process.env.PROXY_PORT}/signin`
+      clientID: env.get('GOOGLE_CLIENT_ID', ''),
+      clientSecret: env.get('GOOGLE_CLIENT_SECRET', ''),
+      callbackURL: `http://${env.get('SERVER_HOST')}:${env.get('PROXY_PORT')}/signin`
     },
     (accessToken, refreshToken, profile, next) => {
       fetchUser(profile)
@@ -75,9 +74,9 @@ passport.use(
   new FacebookStrategy(
     {
       profileFields: ['id', 'displayName', 'photos', 'email'],
-      clientID: process.env.FACEBOOK_CLIENT_ID,
-      clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-      callbackURL: `http://${process.env.SERVER_HOST}:${process.env.PROXY_PORT}/signin`
+      clientID: env.get('FACEBOOK_CLIENT_ID', ''),
+      clientSecret: env.get('FACEBOOK_CLIENT_SECRET', ''),
+      callbackURL: `http://${env.get('SERVER_HOST', '')}:${env.get('PROXY_PORT', '')}/signin`
     },
     (accessToken, refreshToken, profile, next) => {
       fetchUser(profile)
@@ -94,9 +93,9 @@ const TwitterStrategy = require('passport-twitter').Strategy
 passport.use(
   new TwitterStrategy(
     {
-      consumerKey: process.env.TWITTER_CUSTOMER_KEY,
-      consumerSecret: process.env.TWITTER_CUSTOMER_SECRET,
-      callbackURL: `http://${process.env.SERVER_HOST}:${process.env.PROXY_PORT}/signin`
+      consumerKey: env.get('TWITTER_CUSTOMER_KEY', ''),
+      consumerSecret: env.get('TWITTER_CUSTOMER_SECRET', ''),
+      callbackURL: `http://${env.get('SERVER_HOST', '')}:${env.get('PROXY_PORT', '')}/signin`
     },
     (accessToken, refreshToken, profile, next) => {
       fetchUser(profile)
