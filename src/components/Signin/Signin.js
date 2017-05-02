@@ -31,7 +31,7 @@ class Signin extends Component {
     if (error) {
       return (
         <Message negative>
-          <Message.Header>{error.type} signin failed with a {error.status} status!</Message.Header>
+          <Message.Header>Sign in failed</Message.Header>
           <p>{error.message}</p>
         </Message>
       )
@@ -82,7 +82,7 @@ class Signin extends Component {
           </Form.Field>
         </Form>
         <h4 className="ui dividing header">
-          Sign in with a Social Media Account
+          Sign in with a social media account
         </h4>
         <Button
           id="googleSigninButton"

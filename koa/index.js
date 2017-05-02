@@ -50,7 +50,7 @@ router.post('/graphql', async (ctx, next) => {
   } else {
     ctx.body = {
       error: {
-        message: 'Access Denied.'
+        message: 'Access denied.'
       }
     }
     ctx.status = 401
@@ -66,7 +66,7 @@ router.post('/auth/signin', async (ctx, next) => {
       ctx.body = {
         error: {
           type: 'Local',
-          message: 'User Name or Password Incorrect.',
+          message: 'Username or password incorrect.',
           status: 401
         }
       }
@@ -103,13 +103,13 @@ router.get('/auth/social/signin/callback', async (ctx, next) => {
   }
   const service = ctx.session.authenticatingService
   if (!service) {
-    error.message = 'An attempt was made to continue a social service login without the initial sequence.'
+    error.message = 'An attempt was made to continue a social sign in without the initial sequence.'
     ctx.body = { error }
     ctx.status = 401
   }
   await passport.authenticate(service, async (err, user) => {
     if (user === false || err !== null) {
-      error.message = `Social Login Callback Error: ${err}`
+      error.message = `Social sign in failed: ${err}`
       ctx.body = { error }
       ctx.status = 401
     } else {

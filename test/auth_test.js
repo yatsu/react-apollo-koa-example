@@ -22,7 +22,7 @@ describe('Signing in', () => {
         path: document.location.pathname
       }))
       .end()
-    expect(message).to.equal('User Name or Password Incorrect.')
+    expect(message).to.equal('Username or password incorrect.')
     expect(path).to.equal('/signin')
   })
 
