@@ -6,7 +6,6 @@ import dotenv from 'dotenv'
 const debugAuth = createDebug('example:auth')
 
 const denv = dotenv.config().parsed
-// eslint-disable-next-line no-confusing-arrow
 export function env(key: string, def: string): string {
   return denv[key] !== undefined ? denv[key] : def
 }
