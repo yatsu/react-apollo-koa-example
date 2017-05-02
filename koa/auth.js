@@ -18,9 +18,9 @@ async function fetchUser(info: Object | string | number, service?: string) {
   }
   return {
     id: 1,
-    username: env('USERNAME', ''),
-    password: digest(env('USER_PASSWORD', '')),
-    admin: env('USER_ADMIN', '')
+    username: env('USERNAME'),
+    password: digest(env('USER_PASSWORD')),
+    admin: env('USER_ADMIN')
   }
 }
 
@@ -54,8 +54,8 @@ passport.use(
   new GoogleStrategy(
     {
       scope: ['email', 'profile'],
-      clientID: env('GOOGLE_CLIENT_ID', ''),
-      clientSecret: env('GOOGLE_CLIENT_SECRET', ''),
+      clientID: env('GOOGLE_CLIENT_ID'),
+      clientSecret: env('GOOGLE_CLIENT_SECRET'),
       callbackURL: `http://${env('SERVER_HOST')}:${env('PROXY_PORT')}/signin`
     },
     (accessToken, refreshToken, profile, next) => {
@@ -74,9 +74,9 @@ passport.use(
   new FacebookStrategy(
     {
       profileFields: ['id', 'displayName', 'photos', 'email'],
-      clientID: env('FACEBOOK_CLIENT_ID', ''),
-      clientSecret: env('FACEBOOK_CLIENT_SECRET', ''),
-      callbackURL: `http://${env('SERVER_HOST', '')}:${env('PROXY_PORT', '')}/signin`
+      clientID: env('FACEBOOK_CLIENT_ID'),
+      clientSecret: env('FACEBOOK_CLIENT_SECRET'),
+      callbackURL: `http://${env('SERVER_HOST')}:${env('PROXY_PORT')}/signin`
     },
     (accessToken, refreshToken, profile, next) => {
       fetchUser(profile)
@@ -93,9 +93,9 @@ const TwitterStrategy = require('passport-twitter').Strategy
 passport.use(
   new TwitterStrategy(
     {
-      consumerKey: env('TWITTER_CUSTOMER_KEY', ''),
-      consumerSecret: env('TWITTER_CUSTOMER_SECRET', ''),
-      callbackURL: `http://${env('SERVER_HOST', '')}:${env('PROXY_PORT', '')}/signin`
+      consumerKey: env('TWITTER_CUSTOMER_KEY'),
+      consumerSecret: env('TWITTER_CUSTOMER_SECRET'),
+      callbackURL: `http://${env('SERVER_HOST')}:${env('PROXY_PORT')}/signin`
     },
     (accessToken, refreshToken, profile, next) => {
       fetchUser(profile)

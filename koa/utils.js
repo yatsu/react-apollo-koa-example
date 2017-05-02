@@ -6,8 +6,8 @@ import dotenv from 'dotenv'
 const debugAuth = createDebug('example:auth')
 
 const denv = dotenv.config().parsed
-// eslint-disable-next-line no-confusing-arrow
-export function env(key: string, def: string): string {
+
+export function env(key: string, def: string = ''): string {
   return denv[key] !== undefined ? denv[key] : def
 }
 
@@ -28,13 +28,13 @@ export function generateTokens(username: string, ctx: Object): Object {
   debugAuth('accessExp: %s', accessExp)
   debugAuth('refreshExp: %s', refreshExp)
   const accessToken = jwt.sign(
-    { user: { username, admin: env('USER_ADMIN', '') === 'true' }, type: 'access' },
-    env('SESSION_SECRET', ''),
+    { user: { username, admin: env('USER_ADMIN') === 'true' }, type: 'access' },
+    env('SESSION_SECRET'),
     { expiresIn: accessExp || '2h' }
   )
   const refreshToken = jwt.sign(
-    { user: { username, admin: env('USER_ADMIN', '') === 'true' }, type: 'refresh' },
-    env('SESSION_SECRET', ''),
+    { user: { username, admin: env('USER_ADMIN') === 'true' }, type: 'refresh' },
+    env('SESSION_SECRET'),
     { expiresIn: refreshExp || '60d' }
   )
   return { accessToken, refreshToken }
