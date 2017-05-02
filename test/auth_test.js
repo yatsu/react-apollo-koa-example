@@ -13,9 +13,9 @@ describe('Signing in', () => {
   it('fails with an incorrect password', async () => {
     const { message, path } = await Nightmare()
       .goto(`${BASE_URL}/signin`)
-      .type('input[name=username]', 'alice')
-      .type('input[name=password]', 'incorrect')
-      .click('#localSigninButton')
+      .insert('input[name=username]', 'alice')
+      .insert('input[name=password]', 'incorrect')
+      .click('#local-signin-button')
       .wait('.negative')
       .evaluate(() => ({
         message: document.querySelector('.negative p').innerText,
@@ -29,9 +29,9 @@ describe('Signing in', () => {
   it('redirects /signin to / after auth', async () => {
     const { username, path } = await Nightmare()
       .goto(`${BASE_URL}/signin`)
-      .type('input[name=username]', 'alice')
-      .type('input[name=password]', 'alicepass')
-      .click('#localSigninButton')
+      .insert('input[name=username]', 'alice')
+      .insert('input[name=password]', 'alicepass')
+      .click('#local-signin-button')
       .wait('#username')
       .evaluate(() => ({
         username: document.querySelector('#username').innerText,
@@ -45,9 +45,9 @@ describe('Signing in', () => {
   it('redirects /todo to /todo after auth', async () => {
     const { username, path } = await Nightmare()
       .goto(`${BASE_URL}/todo`)
-      .type('input[name=username]', 'alice')
-      .type('input[name=password]', 'alicepass')
-      .click('#localSigninButton')
+      .insert('input[name=username]', 'alice')
+      .insert('input[name=password]', 'alicepass')
+      .click('#local-signin-button')
       .wait('#username')
       .evaluate(() => ({
         username: document.querySelector('#username').innerText,

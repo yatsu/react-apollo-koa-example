@@ -72,7 +72,7 @@ class Signin extends Component {
           </Form.Field>
           <Form.Field>
             <Button
-              id="localSigninButton"
+              id="local-signin-button"
               positive
               disabled={authenticating}
               onClick={e => this.handleLocalSubmit(e)}
@@ -85,7 +85,7 @@ class Signin extends Component {
           Sign in with a social media account
         </h4>
         <Button
-          id="googleSigninButton"
+          id="google-signin-button"
           disabled={authenticating}
           className="google plus"
           onClick={e => this.handleSocialSubmit(e, 'google')}
@@ -94,7 +94,7 @@ class Signin extends Component {
           Google Plus
         </Button>
         <Button
-          id="facebookSigninButton"
+          id="facebook-signin-button"
           disabled={authenticating}
           className="facebook"
           onClick={e => this.handleSocialSubmit(e, 'facebook')}
@@ -103,7 +103,7 @@ class Signin extends Component {
           Facebook
         </Button>
         <Button
-          id="twitterSigninButton"
+          id="twitter-signin-button"
           disabled={authenticating}
           className="twitter"
           onClick={e => this.handleSocialSubmit(e, 'twitter')}

@@ -11,7 +11,7 @@ class Todo extends PureComponent {
     const { completed, text } = todo
 
     return (
-      <List.Item className={classNames({ completed })}>
+      <List.Item className={classNames('todo-item', { completed })}>
         <Checkbox label={text} checked={completed} onClick={onClick} />
       </List.Item>
     )

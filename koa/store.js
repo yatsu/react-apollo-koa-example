@@ -14,7 +14,8 @@ export type Todo = {
 export type User = {
   username: string,
   password: ?string,
-  admin: boolean
+  admin: boolean,
+  authenticatedBy: string
 }
 
 type UserMap = { [username: string]: User }

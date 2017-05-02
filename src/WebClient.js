@@ -21,13 +21,13 @@ class WebClient {
     return Rx.Observable.create((observer: Rx.Observer) => {
       const headers = args[args.length - 1] || {}
 
-      const xhrHeaders = localStorage.getItem('xhrHeaders')
-      if (xhrHeaders) {
+      const devHeaders = localStorage.getItem('devHeaders')
+      if (devHeaders) {
         R.forEachObjIndexed(
           (value: any, key: string) => {
             headers[key] = value
           },
-          JSON.parse(xhrHeaders)
+          JSON.parse(devHeaders)
         )
       }
 
@@ -82,7 +82,7 @@ class WebClient {
       const refreshToken = localStorage.getItem('refreshToken') || ''
       const body = new FormData()
       body.set('refresh_token', refreshToken)
-      this.post('/refresh_token', body, null, false).subscribe(
+      this.post('/auth/refresh', body, null, false).subscribe(
         (response: Object) => {
           localStorage.setItem('accessToken', response.accessToken)
           observer.next(response)

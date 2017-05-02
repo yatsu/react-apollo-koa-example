@@ -35,7 +35,7 @@ class TodoField extends Component {
           />
         </Form.Field>
         <Form.Field>
-          <Button primary>Add Todo</Button>
+          <Button id="add-todo-button" primary>Add Todo</Button>
         </Form.Field>
       </Form>
     )
