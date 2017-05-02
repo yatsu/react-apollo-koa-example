@@ -20,7 +20,7 @@ const app = new Koa()
 app.proxy = true
 
 // Sessions
-app.keys = [env.get('SESSION_SECRET', '')]
+app.keys = [env('SESSION_SECRET', '')]
 app.use(convert(session()))
 
 // Logger, Parser & Error Handler
@@ -135,7 +135,7 @@ router.post('/auth/signout', (ctx) => {
 app.use(router.routes())
 app.use(router.allowedMethods())
 
-const server = app.listen(env.get('SERVER_PORT', ''), env.get('SERVER_HOST', ''))
+const server = app.listen(env('SERVER_PORT', ''), env('SERVER_HOST', ''))
 
 // eslint-disable-next-line no-new
 new SubscriptionServer(

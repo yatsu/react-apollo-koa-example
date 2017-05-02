@@ -18,9 +18,9 @@ async function fetchUser(info: Object | string | number, service?: string) {
   }
   return {
     id: 1,
-    username: env.get('USERNAME', ''),
-    password: digest(env.get('USER_PASSWORD', '')),
-    admin: env.get('USER_ADMIN', '')
+    username: env('USERNAME', ''),
+    password: digest(env('USER_PASSWORD', '')),
+    admin: env('USER_ADMIN', '')
   }
 }
 
@@ -54,9 +54,9 @@ passport.use(
   new GoogleStrategy(
     {
       scope: ['email', 'profile'],
-      clientID: env.get('GOOGLE_CLIENT_ID', ''),
-      clientSecret: env.get('GOOGLE_CLIENT_SECRET', ''),
-      callbackURL: `http://${env.get('SERVER_HOST')}:${env.get('PROXY_PORT')}/signin`
+      clientID: env('GOOGLE_CLIENT_ID', ''),
+      clientSecret: env('GOOGLE_CLIENT_SECRET', ''),
+      callbackURL: `http://${env('SERVER_HOST')}:${env('PROXY_PORT')}/signin`
     },
     (accessToken, refreshToken, profile, next) => {
       fetchUser(profile)
@@ -74,9 +74,9 @@ passport.use(
   new FacebookStrategy(
     {
       profileFields: ['id', 'displayName', 'photos', 'email'],
-      clientID: env.get('FACEBOOK_CLIENT_ID', ''),
-      clientSecret: env.get('FACEBOOK_CLIENT_SECRET', ''),
-      callbackURL: `http://${env.get('SERVER_HOST', '')}:${env.get('PROXY_PORT', '')}/signin`
+      clientID: env('FACEBOOK_CLIENT_ID', ''),
+      clientSecret: env('FACEBOOK_CLIENT_SECRET', ''),
+      callbackURL: `http://${env('SERVER_HOST', '')}:${env('PROXY_PORT', '')}/signin`
     },
     (accessToken, refreshToken, profile, next) => {
       fetchUser(profile)
@@ -93,9 +93,9 @@ const TwitterStrategy = require('passport-twitter').Strategy
 passport.use(
   new TwitterStrategy(
     {
-      consumerKey: env.get('TWITTER_CUSTOMER_KEY', ''),
-      consumerSecret: env.get('TWITTER_CUSTOMER_SECRET', ''),
-      callbackURL: `http://${env.get('SERVER_HOST', '')}:${env.get('PROXY_PORT', '')}/signin`
+      consumerKey: env('TWITTER_CUSTOMER_KEY', ''),
+      consumerSecret: env('TWITTER_CUSTOMER_SECRET', ''),
+      callbackURL: `http://${env('SERVER_HOST', '')}:${env('PROXY_PORT', '')}/signin`
     },
     (accessToken, refreshToken, profile, next) => {
       fetchUser(profile)
