@@ -1,6 +1,6 @@
 {
-    "baseURL": "http://localhost:3000",
-    "graphqlURL": "http://localhost:3000/graphql",
-    "wsURL": "ws://localhost:3000/graphql-sock",
+    "baseURL": "http://localhost:8000",
+    "graphqlURL": "http://localhost:8000/graphql",
+    "wsURL": "ws://localhost:8000/graphql-sock",
     "persistedQueries": false
 }

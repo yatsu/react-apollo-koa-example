@@ -15,14 +15,14 @@ describe('Signing in', () => {
       .goto(`${BASE_URL}/signin`)
       .type('input[name=username]', 'user1')
       .type('input[name=password]', 'incorrect')
-      .click('#signinButton')
+      .click('#localSigninButton')
       .wait('.negative')
       .evaluate(() => ({
         message: document.querySelector('.negative p').innerText,
         path: document.location.pathname
       }))
       .end()
-    expect(message).to.equal('Username or password incorrect')
+    expect(message).to.equal('User Name or Password Incorrect.')
     expect(path).to.equal('/signin')
   })
 
@@ -31,7 +31,7 @@ describe('Signing in', () => {
       .goto(`${BASE_URL}/signin`)
       .type('input[name=username]', 'user1')
       .type('input[name=password]', 'user1pass')
-      .click('#signinButton')
+      .click('#localSigninButton')
       .wait('#username')
       .evaluate(() => ({
         username: document.querySelector('#username').innerText,
@@ -47,7 +47,7 @@ describe('Signing in', () => {
       .goto(`${BASE_URL}/todo`)
       .type('input[name=username]', 'user1')
       .type('input[name=password]', 'user1pass')
-      .click('#signinButton')
+      .click('#localSigninButton')
       .wait('#username')
       .evaluate(() => ({
         username: document.querySelector('#username').innerText,

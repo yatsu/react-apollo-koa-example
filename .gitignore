@@ -13,6 +13,7 @@ build
 .DS_Store
 .env
 npm-debug.log
+storybook-static
 
 /config.json
 /extracted_queries.json

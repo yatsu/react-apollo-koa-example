@@ -2,12 +2,12 @@
 import R from 'ramda'
 import { createLogic } from 'redux-logic'
 import jwtDecode from 'jwt-decode'
-import { errorStatusPath } from './paths'
-import { Action, ErrorType } from '../types'
+import { Action, AuthError } from '../types'
 
 // Actions
 
-const SIGNIN = 'auth/SIGNIN'
+const LOCAL_SIGNIN = 'auth/LOCAL_SIGNIN'
+const SOCIAL_SIGNIN_CALLBACK = 'auth/SOCIAL_SIGNIN_CALLBACK'
 const SIGNIN_SUCCEEDED = 'auth/SIGNIN_SUCCEEDED'
 const SIGNIN_FAILED = 'auth/SIGNIN_FAILED'
 const SIGNIN_RESUME = 'auth/SIGNIN_RESUME'
@@ -15,6 +15,7 @@ const SIGNOUT = 'auth/SIGNOUT'
 const SIGNOUT_SUCCEEDED = 'auth/SIGNOUT_SUCCEEDED'
 const SIGNOUT_FAILED = 'auth/SIGNOUT_FAILED'
 const CLEAR_AUTH_ERROR = 'auth/CLEAR_AUTH_ERROR'
+const SET_REDIRECT_PATH = 'auth/SET_REDIRECT_PATH'
 
 // Types
 
@@ -22,7 +23,7 @@ type AuthState = {
   username: ?string,
   admin: boolean,
   authenticating: boolean,
-  error: ?ErrorType
+  error: ?AuthError
 }
 
 // Reducer
@@ -36,7 +37,8 @@ const initialState: AuthState = {
 
 export function authReducer(state: AuthState = initialState, action: Object = {}) {
   switch (action.type) {
-    case SIGNIN:
+    case LOCAL_SIGNIN:
+    case SOCIAL_SIGNIN_CALLBACK:
       return R.pipe(R.assoc('authenticating', true), R.assoc('error', null))(state)
     case SIGNIN_SUCCEEDED:
       return R.pipe(
@@ -67,6 +69,8 @@ export function authReducer(state: AuthState = initialState, action: Object = {}
       return state
     case CLEAR_AUTH_ERROR:
       return R.pipe(R.assoc('authenticating', false), R.assoc('error', null))(state)
+    case SET_REDIRECT_PATH:
+      return R.pipe(R.assoc('redirectPath', R.prop('redirectPath', action.payload)))(state)
     default:
       return state
   }
@@ -74,12 +78,21 @@ export function authReducer(state: AuthState = initialState, action: Object = {}
 
 // Action Creators
 
-export function signin(username: string, password: string): Action {
+export function localSignin(username: string, password: string): Action {
   return {
-    type: SIGNIN,
+    type: LOCAL_SIGNIN,
     payload: {
       username,
       password
+    }
+  }
+}
+
+export function socialSigninCallback(socialSigninCallbackCode: string): Action {
+  return {
+    type: SOCIAL_SIGNIN_CALLBACK,
+    payload: {
+      socialSigninCallbackCode
     }
   }
 }
@@ -97,12 +110,13 @@ export function signinSucceeded(payload: Object): Action {
   }
 }
 
-export function signinFailed(error: Object): Action {
+export function signinFailed(error: AuthError): Action {
   return {
     type: SIGNIN_FAILED,
     payload: {
       error: {
-        message: error.xhr.response.error.message,
+        type: error.type,
+        message: error.message,
         status: error.status
       }
     }
@@ -146,10 +160,19 @@ export function clearAuthError(): Action {
   }
 }
 
+export function setRedirectPath(path: string): Action {
+  return {
+    type: SET_REDIRECT_PATH,
+    payload: {
+      redirectPath: path
+    }
+  }
+}
+
 // Logic
 
-export const signinLogic = createLogic({
-  type: SIGNIN,
+export const localSigninLogic = createLogic({
+  type: LOCAL_SIGNIN,
   latest: true,
 
   processOptions: {
@@ -162,12 +185,35 @@ export const signinLogic = createLogic({
     const { username, password } = action.payload
     const body = { username, password }
     const headers = { 'Content-Type': 'application/json' }
-    return webClient.post('api/signin', body, headers, false).map((payload) => {
+    return webClient.post('auth/signin', body, headers, false).map((payload) => {
       const { accessToken, refreshToken } = payload
       localStorage.setItem('accessToken', accessToken)
       localStorage.setItem('refreshToken', refreshToken)
       return payload
     })
+  }
+})
+
+export const socialSigninCallbackLogic = createLogic({
+  type: SOCIAL_SIGNIN_CALLBACK,
+  latest: true,
+
+  processOptions: {
+    dispatchReturn: true,
+    successType: signinSucceeded,
+    failType: signinFailed
+  },
+
+  process({ action, webClient }) {
+    const { socialSigninCallbackCode } = action.payload
+    return webClient
+      .get(`auth/social/signin/callback?code=${socialSigninCallbackCode}`, {}, false)
+      .map((payload) => {
+        const { accessToken, refreshToken } = payload
+        localStorage.setItem('accessToken', accessToken)
+        localStorage.setItem('refreshToken', refreshToken)
+        return payload
+      })
   }
 })
 
@@ -177,9 +223,10 @@ export const signoutLogic = createLogic({
 
   process({ webClient }) {
     const headers = { 'Content-Type': 'application/json' }
-    webClient.post('api/signout', {}, headers).subscribe()
+    webClient.post('auth/signout', {}, headers).subscribe()
     localStorage.removeItem('accessToken')
     localStorage.removeItem('refreshToken')
+    localStorage.removeItem('redirectTarget')
   }
 })
 
@@ -188,8 +235,19 @@ export const autoSignoutLogic = createLogic({
   latest: true,
 
   process({ action }, dispatch) {
-    if (R.path(errorStatusPath, action.payload) === 401) {
+    const { error } = action.payload
+    if (error && error.status === 401) {
       dispatch(signout())
     }
+  }
+})
+
+export const setRedirectPathLogic = createLogic({
+  type: SET_REDIRECT_PATH,
+  latest: true,
+
+  process({ action }) {
+    const { redirectPath } = action.payload
+    localStorage.setItem('redirectPath', redirectPath)
   }
 })

@@ -3,7 +3,8 @@ export type Action = {
   payload?: Object
 }
 
-export type ErrorType = {
+export type AuthError = {
+  type?: string,
   message: string,
   status?: number
 }

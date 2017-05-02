@@ -66,7 +66,7 @@ class WebClient {
               }
             )
           } else {
-            observer.error(error)
+            observer.error(error.xhr.response.error)
           }
         },
         () => {

@@ -43,22 +43,23 @@ const webClient = new WebClient()
 const store = configureStore({}, apolloClient, webClient)
 const history = syncHistoryWithStore(browserHistory, store)
 
-const withAuth = UserAuthWrapper({
+const userAuthenticated = UserAuthWrapper({
   authSelector: state => state.auth,
   predicate: auth => !!auth.username,
   redirectAction: replace,
   allowRedirectBack: true,
   failureRedirectPath: '/signin',
-  wrapperDisplayName: 'withAuth'
+  wrapperDisplayName: 'userAuthenticated'
 })
 
-const withoutAuth = UserAuthWrapper({
+const userNotAuthenticated = UserAuthWrapper({
   authSelector: state => state.auth,
   predicate: auth => !auth.username,
   redirectAction: replace,
   allowRedirectBack: false,
-  failureRedirectPath: (state, ownProps) => ownProps.location.query.redirect || '/',
-  wrapperDisplayName: 'withoutAuth'
+  failureRedirectPath: (state, ownProps) =>
+    ownProps.location.query.redirect || localStorage.getItem('redirectPath') || '/',
+  wrapperDisplayName: 'userNotAuthenticated'
 })
 
 const accessToken = localStorage.getItem('accessToken')
@@ -71,10 +72,10 @@ ReactDOM.render(
     <Router history={history}>
       <Route path="/" component={App}>
         <IndexRoute component={HomeApp} />
-        <Route path="signin" component={withoutAuth(SigninApp)} />
-        <Route path="todo" component={withAuth(TodoApp)} />
-        <Route path="todo-remote" component={withAuth(RemoteTodoApp)} />
-        <Route path="todo-pubsub" component={withAuth(PubSubTodoApp)} />
+        <Route path="signin" component={userNotAuthenticated(SigninApp)} />
+        <Route path="todo" component={userAuthenticated(TodoApp)} />
+        <Route path="todo-remote" component={userAuthenticated(RemoteTodoApp)} />
+        <Route path="todo-pubsub" component={userAuthenticated(PubSubTodoApp)} />
         <Route path="*" component={NotFound} />
       </Route>
     </Router>
