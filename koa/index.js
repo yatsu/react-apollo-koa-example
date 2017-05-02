@@ -13,26 +13,39 @@ import { executableSchema } from './executableSchema'
 import subscriptionManager from './subscriptions'
 import { resolvers } from './resolvers'
 import queryMap from '../extracted_queries.json'
-import { env, errorHandler, generateTokens } from './utils'
+import errorHandler from './error'
+import env from './env'
+import {
+  localSignin,
+  googleSignin,
+  facebookSignin,
+  twitterSignin,
+  signinCallback,
+  signinFailed,
+  signout
+} from './auth'
 
 const app = new Koa()
 
 app.proxy = true
 
 // Sessions
+
 app.keys = [env('SESSION_SECRET')]
 app.use(convert(session()))
 
-// Logger, Parser & Error Handler
+// Logger, parser and error handler
+
 app.use(logger())
 app.use(bodyParser())
 app.use(errorHandler)
 
 // Authentication
-require('./auth')
 
 app.use(passport.initialize())
 app.use(passport.session())
+
+// GraphQL persisted query
 
 app.use(async (ctx: Object, next: () => {}) => {
   if (ctx.path === '/graphql' && ctx.request.body.id) {
@@ -41,6 +54,8 @@ app.use(async (ctx: Object, next: () => {}) => {
   }
   await next()
 })
+
+// Routes
 
 const router = Router()
 
@@ -60,80 +75,18 @@ router.post('/graphql', async (ctx, next) => {
 router.get('/graphql', graphqlKoa({ schema: executableSchema }))
 router.get('/graphiql', graphiqlKoa({ endpointURL: '/graphql' }))
 
-router.post('/auth/signin', async (ctx, next) => {
-  await passport.authenticate('local', async (err, user) => {
-    if (user === false) {
-      ctx.body = {
-        error: {
-          type: 'Local',
-          message: 'Username or password incorrect.',
-          status: 401
-        }
-      }
-      ctx.status = 401
-    } else {
-      const tokens = generateTokens(user.username, ctx)
-      await ctx.login(user, tokens)
-      ctx.body = tokens
-      ctx.status = 201
-    }
-  })(ctx, next)
-})
-
-router.get('/auth/google/signin', async (ctx, next) => {
-  ctx.session.authenticatingService = 'google'
-  await passport.authenticate('google')(ctx, next)
-})
-
-router.get('/auth/facebook/signin', async (ctx, next) => {
-  ctx.session.authenticatingService = 'facebook'
-  await passport.authenticate('facebook')(ctx, next)
-})
-
-router.get('/auth/twitter/signin', async (ctx, next) => {
-  ctx.session.authenticatingService = 'twitter'
-  await passport.authenticate('twitter')(ctx, next)
-})
-
-router.get('/auth/social/signin/callback', async (ctx, next) => {
-  const error = {
-    type: 'Social',
-    message: '',
-    status: 401
-  }
-  const service = ctx.session.authenticatingService
-  if (!service) {
-    error.message = 'An attempt was made to continue a social sign in without the initial sequence.'
-    ctx.body = { error }
-    ctx.status = 401
-  }
-  await passport.authenticate(service, async (err, user) => {
-    if (user === false || err !== null) {
-      error.message = `Social sign in failed: ${err}`
-      ctx.body = { error }
-      ctx.status = 401
-    } else {
-      const tokens = generateTokens(user.username, ctx)
-      await ctx.login(user, tokens)
-      ctx.body = tokens
-      ctx.status = 201
-    }
-  })(ctx, next)
-})
-
-router.put('/auth/social/singin/failed', async (ctx) => {
-  delete ctx.session.authenticatingService
-  ctx.status = 201
-})
-
-router.post('/auth/signout', (ctx) => {
-  ctx.logout()
-  ctx.body = {}
-  ctx.status = 201
-})
+router.post('/auth/signin', localSignin)
+router.get('/auth/google/signin', googleSignin)
+router.get('/auth/facebook/signin', facebookSignin)
+router.get('/auth/twitter/signin', twitterSignin)
+router.get('/auth/social/signin/callback', signinCallback)
+router.put('/auth/social/singin/failed', signinFailed)
+router.post('/auth/signout', signout)
 
 app.use(router.routes())
 app.use(router.allowedMethods())
+
+// Launching server
 
 const server = app.listen(env('SERVER_PORT'), env('SERVER_HOST'))
 

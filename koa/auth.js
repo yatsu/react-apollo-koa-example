@@ -1,11 +1,12 @@
 // @flow
 import createDebug from 'debug'
+import jwt from 'jsonwebtoken'
 import passport from 'koa-passport'
 import digest from './digest'
-import { env } from './utils'
+import env from './env'
 import { getUser, getOrCreateUser } from './store'
 
-const debug = createDebug('example:auth')
+const debugAuth = createDebug('example:auth')
 
 passport.serializeUser((user, done) => {
   done(null, user.username)
@@ -22,10 +23,10 @@ passport.use(
   new LocalStrategy(async (username, password, done) => {
     const user = await getUser(username)
     if (user && username === user.username && digest(password) === user.password) {
-      debug('local auth succeeded', username)
+      debugAuth('local auth succeeded', username)
       done(null, user)
     } else {
-      debug('local auth failed')
+      debugAuth('local auth failed')
       done(null, false)
     }
   })
@@ -42,7 +43,7 @@ passport.use(
       callbackURL: `http://${env('SERVER_HOST')}:${env('PROXY_PORT')}/signin`
     },
     async (accessToken, refreshToken, profile, done) => {
-      debug('google auth succeeded', profile)
+      debugAuth('google auth succeeded', profile)
       const user = await getOrCreateUser(profile.displayName, 'google')
       done(null, user, { accessToken, refreshToken })
     }
@@ -60,7 +61,7 @@ passport.use(
       callbackURL: `http://${env('SERVER_HOST')}:${env('PROXY_PORT')}/signin`
     },
     async (accessToken, refreshToken, profile, done) => {
-      debug('facebokk auth succeeded', profile)
+      debugAuth('facebokk auth succeeded', profile)
       const user = await getOrCreateUser(profile.displayName, 'facebook')
       done(null, user, { accessToken, refreshToken })
     }
@@ -82,3 +83,93 @@ passport.use(
     }
   )
 )
+
+function generateTokens(username: string, ctx: Object): Object {
+  const accessExp = ctx.request.get('X-ACCESS-TOKEN-EXPIRES-IN')
+  const refreshExp = ctx.request.get('X-REFRESH-TOKEN-EXPIRES-IN')
+  debugAuth('accessExp: %s', accessExp)
+  debugAuth('refreshExp: %s', refreshExp)
+  const accessToken = jwt.sign(
+    { user: { username, admin: env('USER_ADMIN') === 'true' }, type: 'access' },
+    env('SESSION_SECRET'),
+    { expiresIn: accessExp || '2h' }
+  )
+  const refreshToken = jwt.sign(
+    { user: { username, admin: env('USER_ADMIN') === 'true' }, type: 'refresh' },
+    env('SESSION_SECRET'),
+    { expiresIn: refreshExp || '60d' }
+  )
+  return { accessToken, refreshToken }
+}
+
+export async function localSignin(ctx: Object, next: () => void) {
+  await passport.authenticate('local', async (err, user) => {
+    if (user === false) {
+      ctx.body = {
+        error: {
+          type: 'Local',
+          message: 'Username or password incorrect.',
+          status: 401
+        }
+      }
+      ctx.status = 401
+    } else {
+      const tokens = generateTokens(user.username, ctx)
+      await ctx.login(user, tokens)
+      ctx.body = tokens
+      ctx.status = 201
+    }
+  })(ctx, next)
+}
+
+export async function googleSignin(ctx: Object, next: () => void) {
+  ctx.session.authenticatingService = 'google'
+  await passport.authenticate('google')(ctx, next)
+}
+
+export async function facebookSignin(ctx: Object, next: () => void) {
+  ctx.session.authenticatingService = 'facebook'
+  await passport.authenticate('facebook')(ctx, next)
+}
+
+export async function twitterSignin(ctx: Object, next: () => void) {
+  ctx.session.authenticatingService = 'twitter'
+  await passport.authenticate('twitter')(ctx, next)
+}
+
+export async function signinCallback(ctx: Object, next: () => void) {
+  const error = {
+    type: 'Social',
+    message: '',
+    status: 401
+  }
+  const service = ctx.session.authenticatingService
+  if (!service) {
+    error.message = 'An attempt was made to continue a social sign in without the initial sequence.'
+    ctx.body = { error }
+    ctx.status = 401
+  }
+  await passport.authenticate(service, async (err, user) => {
+    if (user === false || err !== null) {
+      error.message = `Social sign in failed: ${err}`
+      ctx.body = { error }
+      ctx.status = 401
+    } else {
+      const tokens = generateTokens(user.username, ctx)
+      await ctx.login(user, tokens)
+      ctx.body = tokens
+      ctx.status = 201
+    }
+  })(ctx, next)
+}
+
+export async function signinFailed(ctx: Object) {
+  delete ctx.session.authenticatingService
+  ctx.status = 201
+}
+
+export async function signout(ctx: Object) {
+  ctx.logout()
+  ctx.body = {}
+  ctx.status = 201
+}
