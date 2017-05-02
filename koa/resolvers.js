@@ -1,16 +1,11 @@
 // @flow
 import createDebug from 'debug'
 import { PubSub } from 'graphql-subscriptions'
+import { todos } from './store'
 
 const debug = createDebug('server:resolvers')
 
 const pubsub = new PubSub()
-
-const todos = [
-  { id: '1', text: 'Make America great again', completed: false },
-  { id: '2', text: 'Quit TPP', completed: false }
-]
-const todoList = {}
 
 const resolvers = {
   TodoList: {
@@ -20,7 +15,7 @@ const resolvers = {
   },
   Query: {
     todoList() {
-      return todoList
+      return true
     }
   },
   Mutation: {
@@ -51,7 +46,5 @@ const resolvers = {
     }
   }
 }
-
-// export default resolvers
 
 export { resolvers, pubsub }

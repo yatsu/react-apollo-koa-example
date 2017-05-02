@@ -88,11 +88,11 @@ export function localSignin(username: string, password: string): Action {
   }
 }
 
-export function socialSigninCallback(socialSigninCallbackCode: string): Action {
+export function socialSigninCallback(callbackArgs: Object): Action {
   return {
     type: SOCIAL_SIGNIN_CALLBACK,
     payload: {
-      socialSigninCallbackCode
+      callbackArgs
     }
   }
 }
@@ -205,15 +205,15 @@ export const socialSigninCallbackLogic = createLogic({
   },
 
   process({ action, webClient }) {
-    const { socialSigninCallbackCode } = action.payload
-    return webClient
-      .get(`auth/social/signin/callback?code=${socialSigninCallbackCode}`, {}, false)
-      .map((payload) => {
-        const { accessToken, refreshToken } = payload
-        localStorage.setItem('accessToken', accessToken)
-        localStorage.setItem('refreshToken', refreshToken)
-        return payload
-      })
+    const query = R.compose(R.join('&'), R.map(R.join('=')), R.toPairs)(
+      action.payload.callbackArgs
+    )
+    return webClient.get(`auth/social/signin/callback?${query}`, {}, false).map((payload) => {
+      const { accessToken, refreshToken } = payload
+      localStorage.setItem('accessToken', accessToken)
+      localStorage.setItem('refreshToken', refreshToken)
+      return payload
+    })
   }
 })
 

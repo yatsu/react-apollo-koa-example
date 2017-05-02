@@ -13,7 +13,7 @@ describe('Signing in', () => {
   it('fails with an incorrect password', async () => {
     const { message, path } = await Nightmare()
       .goto(`${BASE_URL}/signin`)
-      .type('input[name=username]', 'user1')
+      .type('input[name=username]', 'alice')
       .type('input[name=password]', 'incorrect')
       .click('#localSigninButton')
       .wait('.negative')
@@ -29,8 +29,8 @@ describe('Signing in', () => {
   it('redirects /signin to / after auth', async () => {
     const { username, path } = await Nightmare()
       .goto(`${BASE_URL}/signin`)
-      .type('input[name=username]', 'user1')
-      .type('input[name=password]', 'user1pass')
+      .type('input[name=username]', 'alice')
+      .type('input[name=password]', 'alicepass')
       .click('#localSigninButton')
       .wait('#username')
       .evaluate(() => ({
@@ -38,15 +38,15 @@ describe('Signing in', () => {
         path: document.location.pathname
       }))
       .end()
-    expect(username).to.equal('user1')
+    expect(username).to.equal('alice')
     expect(path).to.equal('/')
   })
 
   it('redirects /todo to /todo after auth', async () => {
     const { username, path } = await Nightmare()
       .goto(`${BASE_URL}/todo`)
-      .type('input[name=username]', 'user1')
-      .type('input[name=password]', 'user1pass')
+      .type('input[name=username]', 'alice')
+      .type('input[name=password]', 'alicepass')
       .click('#localSigninButton')
       .wait('#username')
       .evaluate(() => ({
@@ -54,7 +54,7 @@ describe('Signing in', () => {
         path: document.location.pathname
       }))
       .end()
-    expect(username).to.equal('user1')
+    expect(username).to.equal('alice')
     expect(path).to.equal('/todo')
   })
 })

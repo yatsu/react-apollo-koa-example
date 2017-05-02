@@ -1,5 +1,7 @@
 // @flow
+import createDebug from 'debug'
 import PropTypes from 'prop-types'
+import R from 'ramda'
 import { connect } from 'react-redux'
 import {
   localSignin,
@@ -11,6 +13,8 @@ import {
 import Signin from '../../components/Signin/Signin'
 import { AuthError } from '../../types'
 
+const debugAuth = createDebug('example:auth')
+
 class SigninApp extends Signin {
   componentWillMount() {
     const redirectPath = this.props.location.query.redirect
@@ -20,26 +24,15 @@ class SigninApp extends Signin {
   }
 
   componentDidMount() {
-    const result = this.props.location.query
-    if (result.error) {
-      let type = 'Local'
-      let message = ''
-      let status = 401
-      switch (result.error) {
-        case 'access_denied':
-          type = 'Social'
-          message = 'Did you provide the right credentials?'
-          break
-        default:
-          type = 'Social'
-          message = 'Unknown Error has occured when attemting to login with a Social Account.'
-          status = 501
-      }
-      this.props.onSigninFailed({ type, message, status })
-    } else if (result.code) {
-      this.props.onSocialSigninCallback(result.code)
-    } else {
+    const { query } = this.props.location
+    if (R.isEmpty(query) || query.redirect) {
+      this.passwordField.value = ''
       this.usernameField.select()
+    } else if (query.error) {
+      debugAuth('social auth error', query.error)
+      this.props.onSigninFailed({ message: 'System error', status: 500 })
+    } else {
+      this.props.onSocialSigninCallback(query)
     }
   }
 
@@ -47,7 +40,7 @@ class SigninApp extends Signin {
     if (nextProps.error) {
       setTimeout(
         () => {
-          this.usernameField.select()
+          this.passwordField.select()
         },
         0
       )
@@ -76,8 +69,8 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
   onLocalSubmit(username, password) {
     dispatch(localSignin(username, password))
   },
-  onSocialSigninCallback(code) {
-    dispatch(socialSigninCallback(code))
+  onSocialSigninCallback(callbackArgs) {
+    dispatch(socialSigninCallback(callbackArgs))
   },
   onSigninFailed(error, location) {
     dispatch(signinFailed(error, location))
