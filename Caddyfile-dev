@@ -1,4 +1,4 @@
-localhost:8000
+:8000
 
 tls off
 log stdout
