@@ -66,7 +66,7 @@ class WebClient {
               }
             )
           } else {
-            observer.error(error.xhr.response.error)
+            observer.error(R.pathOr(error, ['xhr', 'response', 'error'], error))
           }
         },
         () => {
