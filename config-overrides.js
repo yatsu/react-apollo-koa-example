@@ -1,3 +1,4 @@
+/* eslint-disable */
 module.exports = function override(config, env) {
   var path = require('path');
 
