@@ -59,21 +59,18 @@ app.use(async (ctx: Object, next: () => {}) => {
 
 const router = Router()
 
-router.post('/graphql', async (ctx, next) => {
+async function authenticated(ctx: Object, next: () => {}) {
   if (ctx.isAuthenticated()) {
-    await convert(graphqlKoa({ schema: executableSchema }))(ctx, next)
-  } else {
-    ctx.body = {
-      error: {
-        message: 'Access denied.'
-      }
-    }
-    ctx.status = 401
+    await next()
+    return
   }
-})
-
-router.get('/graphql', graphqlKoa({ schema: executableSchema }))
-router.get('/graphiql', graphiqlKoa({ endpointURL: '/graphql' }))
+  ctx.body = {
+    error: {
+      message: 'Access denied.'
+    }
+  }
+  ctx.status = 401
+}
 
 router.post('/auth/signin', localSignin)
 router.get('/auth/google/signin', googleSignin)
@@ -82,6 +79,14 @@ router.get('/auth/twitter/signin', twitterSignin)
 router.get('/auth/social/signin/callback', signinCallback)
 router.put('/auth/social/singin/failed', signinFailed)
 router.post('/auth/signout', signout)
+
+router.post('/graphql', authenticated, async (ctx, next) => {
+  await convert(graphqlKoa({ schema: executableSchema }))(ctx, next)
+})
+
+if (process.env !== 'production') {
+  router.get('/graphiql', graphiqlKoa({ endpointURL: '/graphql' }))
+}
 
 app.use(router.routes())
 app.use(router.allowedMethods())

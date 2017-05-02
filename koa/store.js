@@ -5,13 +5,13 @@
 import R from 'ramda'
 import digest from './digest'
 
-type Todo = {
+export type Todo = {
   id: string,
   text: string,
   completed: boolean
 }
 
-type User = {
+export type User = {
   username: string,
   password: ?string,
   admin: boolean

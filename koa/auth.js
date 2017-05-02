@@ -2,9 +2,11 @@
 import createDebug from 'debug'
 import jwt from 'jsonwebtoken'
 import passport from 'koa-passport'
+import R from 'ramda'
 import digest from './digest'
 import env from './env'
 import { getUser, getOrCreateUser } from './store'
+import type { User } from './store'
 
 const debugAuth = createDebug('example:auth')
 
@@ -84,20 +86,27 @@ passport.use(
   )
 )
 
-function generateTokens(username: string, ctx: Object): Object {
-  const accessExp = ctx.request.get('X-ACCESS-TOKEN-EXPIRES-IN')
-  const refreshExp = ctx.request.get('X-REFRESH-TOKEN-EXPIRES-IN')
-  debugAuth('accessExp: %s', accessExp)
-  debugAuth('refreshExp: %s', refreshExp)
+function devHeader(ctx: Object, header: string, def: string): string {
+  if (env('NODE_ENV', 'production') === 'production') {
+    return def
+  }
+  return ctx.request.get(header) || def
+}
+
+function generateTokens(user: User, ctx: Object): { accessToken: string, refreshToken: string } {
+  const accessExp = devHeader(ctx, 'X-ACCESS-TOKEN-EXPIRES-IN', '2h')
+  const refreshExp = devHeader(ctx, 'X-REFRESH-TOKEN-EXPIRES-IN', '60d')
+  debugAuth('accessExp', accessExp)
+  debugAuth('refreshExp', refreshExp)
   const accessToken = jwt.sign(
-    { user: { username, admin: env('USER_ADMIN') === 'true' }, type: 'access' },
+    { user: R.omit(['password'], user), type: 'access' },
     env('SESSION_SECRET'),
-    { expiresIn: accessExp || '2h' }
+    { expiresIn: accessExp }
   )
   const refreshToken = jwt.sign(
-    { user: { username, admin: env('USER_ADMIN') === 'true' }, type: 'refresh' },
+    { user: R.omit(['password'], user), type: 'refresh' },
     env('SESSION_SECRET'),
-    { expiresIn: refreshExp || '60d' }
+    { expiresIn: refreshExp }
   )
   return { accessToken, refreshToken }
 }
@@ -107,14 +116,13 @@ export async function localSignin(ctx: Object, next: () => void) {
     if (user === false) {
       ctx.body = {
         error: {
-          type: 'Local',
           message: 'Username or password incorrect.',
           status: 401
         }
       }
       ctx.status = 401
     } else {
-      const tokens = generateTokens(user.username, ctx)
+      const tokens = generateTokens(user, ctx)
       await ctx.login(user, tokens)
       ctx.body = tokens
       ctx.status = 201
@@ -155,7 +163,7 @@ export async function signinCallback(ctx: Object, next: () => void) {
       ctx.body = { error }
       ctx.status = 401
     } else {
-      const tokens = generateTokens(user.username, ctx)
+      const tokens = generateTokens(user, ctx)
       await ctx.login(user, tokens)
       ctx.body = tokens
       ctx.status = 201
