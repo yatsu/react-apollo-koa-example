@@ -6,7 +6,7 @@ import { BASE_URL } from './test_config'
 
 describe('Refreshing token caused by token expiration', () => {
   describe('with a valid refresh token', () => {
-    it('succeeds and subsequent refresh and retry also succeed', async () => {
+    it('succeeds and retrying previous request also succeeds', async () => {
       const todo = uuid.v4()
       const { accessToken, refreshToken } = await Nightmare()
         .goto(`${BASE_URL}/todo-pubsub`)
@@ -42,7 +42,7 @@ describe('Refreshing token caused by token expiration', () => {
   })
 
   describe('with an expired refresh token', () => {
-    it('fails and subsequent refresh also fails', async () => {
+    it('fails and the user will be signed out', async () => {
       const todo = uuid.v4()
       const { path } = await Nightmare()
         .goto(`${BASE_URL}/todo-pubsub`)
