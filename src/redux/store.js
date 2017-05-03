@@ -20,46 +20,49 @@ export default function configureStore(
 ) {
   const rootReducer = configureRootReducer(apolloClient)
 
+  const apolloRequest = (method: string) =>
+    (options: Object): Rx.Observable =>
+      Rx.Observable.create((observer: Rx.Observer) => {
+        Rx.Observable.fromPromise(apolloClient[method](options)).subscribe(
+          (resp: Object) => {
+            debugGraphQL(`${method} response`, resp)
+            observer.next(resp)
+            observer.complete()
+          },
+          (error: Object) => {
+            debugGraphQL(`${method} error`, error)
+            if (R.path(['graphQLErrors', 0, 'message'], error) === 'Access denied.') {
+              webClient.tokenRefresh().subscribe(
+                () => {
+                  Rx.Observable.fromPromise(apolloClient[method](options)).subscribe(
+                    (retryResp: Object) => {
+                      debugGraphQL(`${method} retry response`, retryResp)
+                      observer.next(retryResp)
+                      observer.complete()
+                    },
+                    (retryError: Object) => {
+                      debugGraphQL(`${method} retry error`, retryError)
+                      observer.error(retryError)
+                    }
+                  )
+                },
+                (refreshError: Object) => {
+                  debugGraphQL('token refresh failed', refreshError)
+                  observer.error(error)
+                }
+              )
+            } else {
+              observer.error(error)
+            }
+          }
+        )
+      })
+
   const logicMiddleware = createLogicMiddleware(rootLogic, {
     apolloClient,
     apollo: {
-      mutate(options: Object) {
-        return Rx.Observable.create((observer: Rx.Observer) => {
-          Rx.Observable.fromPromise(apolloClient.mutate(options)).subscribe(
-            (resp: Object) => {
-              debugGraphQL('mutate response', resp)
-              observer.next(resp)
-              observer.complete()
-            },
-            (error: Object) => {
-              debugGraphQL('mutate error', error)
-              if (R.path(['graphQLErrors', 0, 'message'], error) === 'Access denied.') {
-                webClient.tokenRefresh().subscribe(
-                  () => {
-                    Rx.Observable.fromPromise(apolloClient.mutate(options)).subscribe(
-                      (retryResp: Object) => {
-                        debugGraphQL('mutate retry response', retryResp)
-                        observer.next(retryResp)
-                        observer.complete()
-                      },
-                      (retryError: Object) => {
-                        debugGraphQL('mutate retry error', retryError)
-                        observer.error(retryError)
-                      }
-                    )
-                  },
-                  (refreshError: Object) => {
-                    debugGraphQL('token refresh failed', refreshError)
-                    observer.error(error)
-                  }
-                )
-              } else {
-                observer.error(error)
-              }
-            }
-          )
-        })
-      }
+      query: apolloRequest('query'),
+      mutate: apolloRequest('mutate')
     },
     webClient,
     subscriptions: { todo: null }
