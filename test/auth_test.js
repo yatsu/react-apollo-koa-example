@@ -15,7 +15,7 @@ describe('Signing in', () => {
       .goto(`${BASE_URL}/signin`)
       .insert('input[name=username]', 'alice')
       .insert('input[name=password]', 'incorrect')
-      .click('#local-signin-button')
+      .click('#signin-button')
       .wait('.negative')
       .evaluate(() => ({
         message: document.querySelector('.negative p').innerText,
@@ -31,7 +31,7 @@ describe('Signing in', () => {
       .goto(`${BASE_URL}/signin`)
       .insert('input[name=username]', 'alice')
       .insert('input[name=password]', 'alicepass')
-      .click('#local-signin-button')
+      .click('#signin-button')
       .wait('#username')
       .evaluate(() => ({
         username: document.querySelector('#username').innerText,
@@ -47,7 +47,7 @@ describe('Signing in', () => {
       .goto(`${BASE_URL}/todo`)
       .insert('input[name=username]', 'alice')
       .insert('input[name=password]', 'alicepass')
-      .click('#local-signin-button')
+      .click('#signin-button')
       .wait('#username')
       .evaluate(() => ({
         username: document.querySelector('#username').innerText,

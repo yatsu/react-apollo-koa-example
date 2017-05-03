@@ -1,90 +1,15 @@
 // @flow
 import createDebug from 'debug'
 import jwt from 'jsonwebtoken'
-import passport from 'koa-passport'
+import jwtDecode from 'jwt-decode'
+import ms from 'ms'
 import R from 'ramda'
 import digest from './digest'
 import env from './env'
-import { getUser, getOrCreateUser } from './store'
+import { getUser } from './store'
 import type { User } from './store'
 
 const debugAuth = createDebug('example:auth')
-
-passport.serializeUser((user, done) => {
-  done(null, user.username)
-})
-
-passport.deserializeUser(async (username, done) => {
-  const user = await getUser(username)
-  done(null, user)
-})
-
-const LocalStrategy = require('passport-local').Strategy
-
-passport.use(
-  new LocalStrategy(async (username, password, done) => {
-    const user = await getUser(username)
-    if (user && username === user.username && digest(password) === user.password) {
-      debugAuth('local auth succeeded', username)
-      done(null, user)
-    } else {
-      debugAuth('local auth failed')
-      done(null, false)
-    }
-  })
-)
-
-const GoogleStrategy = require('passport-google-oauth2').Strategy
-
-passport.use(
-  new GoogleStrategy(
-    {
-      scope: ['profile'],
-      clientID: env('GOOGLE_CLIENT_ID'),
-      clientSecret: env('GOOGLE_CLIENT_SECRET'),
-      callbackURL: `http://${env('SERVER_HOST')}:${env('PROXY_PORT')}/signin`
-    },
-    async (accessToken, refreshToken, profile, done) => {
-      debugAuth('google auth succeeded', profile)
-      const user = await getOrCreateUser(profile.displayName, 'google')
-      done(null, user, { accessToken, refreshToken })
-    }
-  )
-)
-
-const FacebookStrategy = require('passport-facebook').Strategy
-
-passport.use(
-  new FacebookStrategy(
-    {
-      profileFields: ['displayName'],
-      clientID: env('FACEBOOK_CLIENT_ID'),
-      clientSecret: env('FACEBOOK_CLIENT_SECRET'),
-      callbackURL: `http://${env('SERVER_HOST')}:${env('PROXY_PORT')}/signin`
-    },
-    async (accessToken, refreshToken, profile, done) => {
-      debugAuth('facebokk auth succeeded', profile)
-      const user = await getOrCreateUser(profile.displayName, 'facebook')
-      done(null, user, { accessToken, refreshToken })
-    }
-  )
-)
-
-const TwitterStrategy = require('passport-twitter').Strategy
-
-passport.use(
-  new TwitterStrategy(
-    {
-      consumerKey: env('TWITTER_CUSTOMER_KEY'),
-      consumerSecret: env('TWITTER_CUSTOMER_SECRET'),
-      callbackURL: `http://${env('SERVER_HOST')}:${env('PROXY_PORT')}/signin`
-    },
-    async (accessToken, refreshToken, profile, done) => {
-      const user = await getOrCreateUser(profile.username, 'twitter')
-      done(null, user, { accessToken, refreshToken })
-    }
-  )
-)
 
 function devHeader(ctx: Object, header: string, def: string): string {
   if (env('NODE_ENV', 'production') === 'production') {
@@ -94,90 +19,97 @@ function devHeader(ctx: Object, header: string, def: string): string {
 }
 
 function generateTokens(user: User, ctx: Object): { accessToken: string, refreshToken: string } {
-  const accessExp = devHeader(ctx, 'X-ACCESS-TOKEN-EXPIRES-IN', '2h')
-  const refreshExp = devHeader(ctx, 'X-REFRESH-TOKEN-EXPIRES-IN', '60d')
+  debugAuth('env', env('ACCESS_TOKEN_EXPIRES_IN'))
+  const accessExp = devHeader(
+    ctx,
+    'X-ACCESS-TOKEN-EXPIRES-IN',
+    env('ACCESS_TOKEN_EXPIRES_IN', '2h')
+  )
+  const refreshExp = devHeader(
+    ctx,
+    'X-REFRESH-TOKEN-EXPIRES-IN',
+    env('REFRESH_TOKEN_EXPIRES_IN', '60d')
+  )
   debugAuth('accessExp', accessExp)
   debugAuth('refreshExp', refreshExp)
+
+  // call `parseInt(numStr)` if `numStr` is a minus number because
+  // ms('numStr') returns undefined in that case
+  // (minus numbers are required by tests)
   const accessToken = jwt.sign(
-    { user: R.omit(['password'], user), type: 'access' },
-    env('SESSION_SECRET'),
-    { expiresIn: accessExp }
+    {
+      user: R.omit(['password'], user),
+      type: 'access',
+      iat: Math.floor(Date.now() / 1000),
+      exp: Math.floor(Date.now() / 1000) + (ms(accessExp) || parseInt(accessExp, 10))
+    },
+    env('SESSION_SECRET')
   )
   const refreshToken = jwt.sign(
-    { user: R.omit(['password'], user), type: 'refresh' },
-    env('SESSION_SECRET'),
-    { expiresIn: refreshExp }
+    {
+      user: R.omit(['password'], user),
+      type: 'refresh',
+      iat: Math.floor(Date.now() / 1000),
+      exp: Math.floor(Date.now() / 1000) + (ms(refreshExp) || parseInt(refreshExp, 10))
+    },
+    env('SESSION_SECRET')
   )
   return { accessToken, refreshToken }
 }
 
-export async function localSignin(ctx: Object, next: () => void) {
-  await passport.authenticate('local', async (err, user) => {
-    if (user === false) {
-      ctx.body = {
-        error: {
-          message: 'Username or password incorrect.',
-          status: 401
-        }
-      }
-      ctx.status = 401
-    } else {
-      const tokens = generateTokens(user, ctx)
-      await ctx.login(user, tokens)
-      ctx.body = tokens
-      ctx.status = 201
-    }
-  })(ctx, next)
-}
-
-export async function googleSignin(ctx: Object, next: () => void) {
-  ctx.session.authenticatingService = 'google'
-  await passport.authenticate('google')(ctx, next)
-}
-
-export async function facebookSignin(ctx: Object, next: () => void) {
-  ctx.session.authenticatingService = 'facebook'
-  await passport.authenticate('facebook')(ctx, next)
-}
-
-export async function twitterSignin(ctx: Object, next: () => void) {
-  ctx.session.authenticatingService = 'twitter'
-  await passport.authenticate('twitter')(ctx, next)
-}
-
-export async function signinCallback(ctx: Object, next: () => void) {
-  const error = {
-    type: 'Social',
-    message: '',
-    status: 401
+export async function jwtUser(ctx: Object, next: () => {}) {
+  try {
+    const { user } = jwt.verify(
+      ctx.request.header.authorization.split(' ')[1],
+      env('SESSION_SECRET')
+    )
+    ctx.state.user = user
+  } catch (error) {
+    debugAuth('auth failed', error)
   }
-  const service = ctx.session.authenticatingService
-  if (!service) {
-    error.message = 'An attempt was made to continue a social sign in without the initial sequence.'
-    ctx.body = { error }
+  await next()
+}
+
+export async function authenticated(ctx: Object, next: () => {}) {
+  try {
+    const { user } = jwt.verify(
+      ctx.request.header.authorization.split(' ')[1],
+      env('SESSION_SECRET')
+    )
+    ctx.state.user = user
+    await next()
+  } catch (error) {
+    debugAuth('auth failed', error)
+    ctx.body = {
+      error: {
+        message: 'Access denied.'
+      }
+    }
     ctx.status = 401
   }
-  await passport.authenticate(service, async (err, user) => {
-    if (user === false || err !== null) {
-      error.message = `Social sign in failed: ${err}`
-      ctx.body = { error }
-      ctx.status = 401
-    } else {
-      const tokens = generateTokens(user, ctx)
-      await ctx.login(user, tokens)
-      ctx.body = tokens
-      ctx.status = 201
-    }
-  })(ctx, next)
 }
 
-export async function signinFailed(ctx: Object) {
-  delete ctx.session.authenticatingService
-  ctx.status = 201
+export async function signin(ctx: Object) {
+  const { username, password } = ctx.request.body
+  if (!username || !password) {
+    ctx.throw(401, 'Must provide username and password.')
+  }
+  const user = getUser(username)
+  const storedPassword = user ? user.password : null
+  if (digest(password) !== storedPassword) {
+    ctx.throw(401, 'Username or password incorrect.')
+  }
+  ctx.body = generateTokens(user, ctx)
 }
 
 export async function signout(ctx: Object) {
-  ctx.logout()
   ctx.body = {}
+}
+
+export async function tokenRefresh(ctx: Object) {
+  const { refreshToken } = ctx.request.body
+  const { user } = jwtDecode(refreshToken)
+  const tokens = generateTokens(user, ctx)
+  ctx.body = tokens
   ctx.status = 201
 }

@@ -1,13 +1,15 @@
 // @flow
+import createDebug from 'debug'
+import jwtDecode from 'jwt-decode'
 import R from 'ramda'
 import { createLogic } from 'redux-logic'
-import jwtDecode from 'jwt-decode'
 import { Action, AuthError } from '../types'
+
+const debugAuth = createDebug('example:auth')
 
 // Actions
 
-const LOCAL_SIGNIN = 'auth/LOCAL_SIGNIN'
-const SOCIAL_SIGNIN_CALLBACK = 'auth/SOCIAL_SIGNIN_CALLBACK'
+const SIGNIN = 'auth/SIGNIN'
 const SIGNIN_SUCCEEDED = 'auth/SIGNIN_SUCCEEDED'
 const SIGNIN_FAILED = 'auth/SIGNIN_FAILED'
 const SIGNIN_RESUME = 'auth/SIGNIN_RESUME'
@@ -15,7 +17,6 @@ const SIGNOUT = 'auth/SIGNOUT'
 const SIGNOUT_SUCCEEDED = 'auth/SIGNOUT_SUCCEEDED'
 const SIGNOUT_FAILED = 'auth/SIGNOUT_FAILED'
 const CLEAR_AUTH_ERROR = 'auth/CLEAR_AUTH_ERROR'
-const SET_REDIRECT_PATH = 'auth/SET_REDIRECT_PATH'
 
 // Types
 
@@ -37,8 +38,7 @@ const initialState: AuthState = {
 
 export function authReducer(state: AuthState = initialState, action: Object = {}) {
   switch (action.type) {
-    case LOCAL_SIGNIN:
-    case SOCIAL_SIGNIN_CALLBACK:
+    case SIGNIN:
       return R.pipe(R.assoc('authenticating', true), R.assoc('error', null))(state)
     case SIGNIN_SUCCEEDED:
       return R.pipe(
@@ -69,8 +69,6 @@ export function authReducer(state: AuthState = initialState, action: Object = {}
       return state
     case CLEAR_AUTH_ERROR:
       return R.pipe(R.assoc('authenticating', false), R.assoc('error', null))(state)
-    case SET_REDIRECT_PATH:
-      return R.pipe(R.assoc('redirectPath', R.prop('redirectPath', action.payload)))(state)
     default:
       return state
   }
@@ -78,21 +76,12 @@ export function authReducer(state: AuthState = initialState, action: Object = {}
 
 // Action Creators
 
-export function localSignin(username: string, password: string): Action {
+export function signin(username: string, password: string): Action {
   return {
-    type: LOCAL_SIGNIN,
+    type: SIGNIN,
     payload: {
       username,
       password
-    }
-  }
-}
-
-export function socialSigninCallback(callbackArgs: Object): Action {
-  return {
-    type: SOCIAL_SIGNIN_CALLBACK,
-    payload: {
-      callbackArgs
     }
   }
 }
@@ -111,11 +100,11 @@ export function signinSucceeded(payload: Object): Action {
 }
 
 export function signinFailed(error: AuthError): Action {
+  debugAuth('signinFailed', error)
   return {
     type: SIGNIN_FAILED,
     payload: {
       error: {
-        type: error.type,
         message: error.message,
         status: error.status
       }
@@ -160,19 +149,10 @@ export function clearAuthError(): Action {
   }
 }
 
-export function setRedirectPath(path: string): Action {
-  return {
-    type: SET_REDIRECT_PATH,
-    payload: {
-      redirectPath: path
-    }
-  }
-}
-
 // Logic
 
-export const localSigninLogic = createLogic({
-  type: LOCAL_SIGNIN,
+export const signinLogic = createLogic({
+  type: SIGNIN,
   latest: true,
 
   processOptions: {
@@ -194,29 +174,6 @@ export const localSigninLogic = createLogic({
   }
 })
 
-export const socialSigninCallbackLogic = createLogic({
-  type: SOCIAL_SIGNIN_CALLBACK,
-  latest: true,
-
-  processOptions: {
-    dispatchReturn: true,
-    successType: signinSucceeded,
-    failType: signinFailed
-  },
-
-  process({ action, webClient }) {
-    const query = R.compose(R.join('&'), R.map(R.join('=')), R.toPairs)(
-      action.payload.callbackArgs
-    )
-    return webClient.get(`auth/social/signin/callback?${query}`, {}, false).map((payload) => {
-      const { accessToken, refreshToken } = payload
-      localStorage.setItem('accessToken', accessToken)
-      localStorage.setItem('refreshToken', refreshToken)
-      return payload
-    })
-  }
-})
-
 export const signoutLogic = createLogic({
   type: SIGNOUT,
   latest: true,
@@ -226,7 +183,6 @@ export const signoutLogic = createLogic({
     webClient.post('auth/signout', {}, headers).subscribe()
     localStorage.removeItem('accessToken')
     localStorage.removeItem('refreshToken')
-    localStorage.removeItem('redirectTarget')
   }
 })
 
@@ -235,19 +191,13 @@ export const autoSignoutLogic = createLogic({
   latest: true,
 
   process({ action }, dispatch) {
-    const { error } = action.payload
-    if (error && error.status === 401) {
+    if (R.path(['error', 'status'], action.payload) === 401) {
+      dispatch(signout())
+    } else if (
+      R.path(['error', 'graphQLErrors', 0, 'message'], action.payload) === 'Access denied.'
+    ) {
+      // TODO: Try to refresh token
       dispatch(signout())
     }
-  }
-})
-
-export const setRedirectPathLogic = createLogic({
-  type: SET_REDIRECT_PATH,
-  latest: true,
-
-  process({ action }) {
-    const { redirectPath } = action.payload
-    localStorage.setItem('redirectPath', redirectPath)
   }
 })

@@ -148,7 +148,7 @@ export function createTodoSucceeded(todo: Object): Action {
 export function createTodoFailed(error: Object): Action {
   return {
     type: CREATE_FAILED,
-    paylaod: {
+    payload: {
       error
     }
   }

@@ -4,7 +4,6 @@ export type Action = {
 }
 
 export type AuthError = {
-  type?: string,
   message: string,
   status?: number
 }
@@ -17,4 +16,10 @@ export type Todo = {
 
 export type TodoList = {
   todos: Array<Todo>
+}
+
+export type User = {
+  username: string,
+  password: ?string,
+  admin: boolean
 }

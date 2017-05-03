@@ -1,10 +1,5 @@
 // @flow
-import {
-  localSigninLogic,
-  socialSigninCallbackLogic,
-  signoutLogic,
-  setRedirectPathLogic
-} from '../ducks/auth'
+import { signinLogic, signoutLogic, autoSignoutLogic } from '../ducks/auth'
 import {
   todoSubscribeLogic,
   todoUnsubscribeLogic,
@@ -13,10 +8,9 @@ import {
 } from '../ducks/todoPubSub'
 
 const rootLogic = [
-  localSigninLogic,
-  socialSigninCallbackLogic,
+  signinLogic,
   signoutLogic,
-  setRedirectPathLogic,
+  autoSignoutLogic,
   todoSubscribeLogic,
   todoUnsubscribeLogic,
   todoCreateLogic,

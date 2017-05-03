@@ -4,8 +4,6 @@ import logger from 'koa-logger'
 import bodyParser from 'koa-bodyparser'
 import Router from 'koa-router'
 import convert from 'koa-convert'
-import session from 'koa-generic-session'
-import passport from 'koa-passport'
 import R from 'ramda'
 import { graphqlKoa, graphiqlKoa } from 'graphql-server-koa'
 import { SubscriptionServer } from 'subscriptions-transport-ws'
@@ -15,35 +13,17 @@ import { resolvers } from './resolvers'
 import queryMap from '../extracted_queries.json'
 import errorHandler from './error'
 import env from './env'
-import {
-  localSignin,
-  googleSignin,
-  facebookSignin,
-  twitterSignin,
-  signinCallback,
-  signinFailed,
-  signout
-} from './auth'
+import { jwtUser, signin, signout, tokenRefresh } from './auth'
 
 const app = new Koa()
 
 app.proxy = true
-
-// Sessions
-
-app.keys = [env('SESSION_SECRET')]
-app.use(convert(session()))
 
 // Logger, parser and error handler
 
 app.use(logger())
 app.use(bodyParser())
 app.use(errorHandler)
-
-// Authentication
-
-app.use(passport.initialize())
-app.use(passport.session())
 
 // GraphQL persisted query
 
@@ -59,30 +39,22 @@ app.use(async (ctx: Object, next: () => {}) => {
 
 const router = Router()
 
-async function authenticated(ctx: Object, next: () => {}) {
-  if (ctx.isAuthenticated()) {
-    await next()
-    return
-  }
-  ctx.body = {
-    error: {
-      message: 'Access denied.'
-    }
-  }
-  ctx.status = 401
-}
-
-router.post('/auth/signin', localSignin)
-router.get('/auth/google/signin', googleSignin)
-router.get('/auth/facebook/signin', facebookSignin)
-router.get('/auth/twitter/signin', twitterSignin)
-router.get('/auth/social/signin/callback', signinCallback)
-router.put('/auth/social/singin/failed', signinFailed)
+router.post('/auth/signin', signin)
 router.post('/auth/signout', signout)
+router.post('/auth/tokenRefresh', tokenRefresh)
 
-router.post('/graphql', authenticated, async (ctx, next) => {
-  await convert(graphqlKoa({ schema: executableSchema }))(ctx, next)
+router.post('/graphql', jwtUser, async (ctx, next) => {
+  await convert(graphqlKoa({ schema: executableSchema, context: { ctx } }))(ctx, next)
 })
+
+// router.post(
+//   '/graphql',
+//   jwtUser,
+//   graphqlKoa(ctx => ({
+//     schema: executableSchema,
+//     context: { ctx }
+//   }))
+// )
 
 if (process.env !== 'production') {
   router.get('/graphiql', graphiqlKoa({ endpointURL: '/graphql' }))

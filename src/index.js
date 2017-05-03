@@ -32,6 +32,19 @@ const networkInterfaceWithSubscriptions = addGraphQLSubscriptions(
   wsClient
 )
 
+networkInterfaceWithSubscriptions.use([
+  {
+    applyMiddleware(req, next) {
+      if (!req.options.headers) {
+        req.options.headers = {}
+      }
+      const token = localStorage.getItem('accessToken')
+      req.options.headers.authorization = token ? `Bearer ${token}` : null
+      next()
+    }
+  }
+])
+
 const apolloClient = createApolloClient({
   networkInterface: networkInterfaceWithSubscriptions,
   initialState: window.__APOLLO_STATE__,
@@ -57,8 +70,7 @@ const userNotAuthenticated = UserAuthWrapper({
   predicate: auth => !auth.username,
   redirectAction: replace,
   allowRedirectBack: false,
-  failureRedirectPath: (state, ownProps) =>
-    ownProps.location.query.redirect || localStorage.getItem('redirectPath') || '/',
+  failureRedirectPath: (state, ownProps) => ownProps.location.query.redirect || '/',
   wrapperDisplayName: 'userNotAuthenticated'
 })
 
