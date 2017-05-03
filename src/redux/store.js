@@ -23,7 +23,6 @@ export default function configureStore(
   const logicMiddleware = createLogicMiddleware(rootLogic, {
     apolloClient,
     apollo: {
-      // eslint-disable-next-line consistent-return
       mutate(options: Object) {
         return Rx.Observable.create((observer: Rx.Observer) => {
           Rx.Observable.fromPromise(apolloClient.mutate(options)).subscribe(
