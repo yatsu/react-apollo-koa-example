@@ -7,7 +7,7 @@ import R from 'ramda'
 import digest from './digest'
 import env from './env'
 import { getUser } from './store'
-import type { User } from './store'
+import type { User } from '../src/types'
 
 const debugAuth = createDebug('example:auth')
 

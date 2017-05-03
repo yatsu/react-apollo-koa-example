@@ -41,7 +41,7 @@ const router = Router()
 
 router.post('/auth/signin', signin)
 router.post('/auth/signout', signout)
-router.post('/auth/tokenRefresh', tokenRefresh)
+router.post('/auth/refresh', tokenRefresh)
 
 router.post('/graphql', jwtUser, async (ctx, next) => {
   await convert(graphqlKoa({ schema: executableSchema, context: { ctx } }))(ctx, next)

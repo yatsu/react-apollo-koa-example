@@ -50,7 +50,6 @@ class WebClient {
           if (error.status === 401 && authEnabled && !retried) {
             this.tokenRefresh().subscribe(
               () => {
-                this.debugAuth('token refreshed')
                 this.request(method, args, auth, true).subscribe(
                   (response: Object) => {
                     observer.next(response)
@@ -80,15 +79,16 @@ class WebClient {
     this.debugAuth('refreshing token')
     return Rx.Observable.create((observer: Rx.Observer) => {
       const refreshToken = localStorage.getItem('refreshToken') || ''
-      const body = new FormData()
-      body.set('refresh_token', refreshToken)
-      this.post('/auth/refresh', body, null, false).subscribe(
+      this.post('/auth/refresh', { refreshToken }, null, false).subscribe(
         (response: Object) => {
+          this.debugAuth('token refreshed')
           localStorage.setItem('accessToken', response.accessToken)
           observer.next(response)
         },
         (error: Object) => {
           this.debugAuth('refreshing token failed', error.xhr.response.error.message)
+          localStorage.removeItem('accessToken')
+          localStorage.removeItem('refreshToken')
           observer.error(error)
         },
         () => {

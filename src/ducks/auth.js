@@ -190,13 +190,12 @@ export const autoSignoutLogic = createLogic({
   type: new RegExp('[/_](REJECTED|FAILED)$'),
   latest: true,
 
-  process({ action }, dispatch) {
-    if (R.path(['error', 'status'], action.payload) === 401) {
-      dispatch(signout())
-    } else if (
+  process({ action }, dispatch: Dispatch) {
+    debugAuth('auto', action)
+    if (
+      R.path(['error', 'status'], action.payload) === 401 ||
       R.path(['error', 'graphQLErrors', 0, 'message'], action.payload) === 'Access denied.'
     ) {
-      // TODO: Try to refresh token
       dispatch(signout())
     }
   }

@@ -228,13 +228,13 @@ export const todoCreateLogic = createLogic({
     failType: createTodoFailed
   },
 
-  process({ apolloClient, action }) {
-    return apolloClient
+  process({ apollo, action }) {
+    return apollo
       .mutate({
         mutation: ADD_TODO_MUTATION,
         variables: { text: R.path(['todo', 'text'], action.payload) }
       })
-      .then(resp => resp.data.addTodo)
+      .map(resp => resp.data.addTodo)
   }
 })
 
