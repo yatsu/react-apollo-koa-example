@@ -86,7 +86,10 @@ class WebClient {
           observer.next(response)
         },
         (error: Object) => {
-          this.debugAuth('refreshing token failed', error.xhr.response.error.message)
+          this.debugAuth(
+            'refreshing token failed',
+            R.pathOr(error, ['xhr', 'response', 'error'], error)
+          )
           localStorage.removeItem('accessToken')
           localStorage.removeItem('refreshToken')
           observer.error(error)

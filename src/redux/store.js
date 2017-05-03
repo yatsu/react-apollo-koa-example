@@ -47,7 +47,7 @@ export default function configureStore(
                   )
                 },
                 (refreshError: Object) => {
-                  debugGraphQL('token refresh failed', refreshError)
+                  debugGraphQL('token refresh failed', refreshError, error)
                   observer.error(error)
                 }
               )

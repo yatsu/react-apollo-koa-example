@@ -1,7 +1,6 @@
 // @flow
 import createDebug from 'debug'
 import jwt from 'jsonwebtoken'
-import jwtDecode from 'jwt-decode'
 import ms from 'ms'
 import R from 'ramda'
 import digest from './digest'
@@ -41,7 +40,7 @@ function generateTokens(user: User, ctx: Object): { accessToken: string, refresh
       user: R.omit(['password'], user),
       type: 'access',
       iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(Date.now() / 1000) + (ms(accessExp) || parseInt(accessExp, 10))
+      exp: Math.floor((Date.now() + (ms(accessExp) || parseInt(accessExp, 10))) / 1000)
     },
     env('SESSION_SECRET')
   )
@@ -50,7 +49,7 @@ function generateTokens(user: User, ctx: Object): { accessToken: string, refresh
       user: R.omit(['password'], user),
       type: 'refresh',
       iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(Date.now() / 1000) + (ms(refreshExp) || parseInt(refreshExp, 10))
+      exp: Math.floor((Date.now() + (ms(refreshExp) || parseInt(refreshExp, 10))) / 1000)
     },
     env('SESSION_SECRET')
   )
@@ -108,8 +107,18 @@ export async function signout(ctx: Object) {
 
 export async function tokenRefresh(ctx: Object) {
   const { refreshToken } = ctx.request.body
-  const { user } = jwtDecode(refreshToken)
-  const tokens = generateTokens(user, ctx)
-  ctx.body = tokens
-  ctx.status = 201
+  try {
+    const { user } = jwt.verify(refreshToken, env('SESSION_SECRET'))
+    const tokens = generateTokens(user, ctx)
+    ctx.body = tokens
+    ctx.status = 201
+  } catch (error) {
+    debugAuth('auth failed', error)
+    ctx.body = {
+      error: {
+        message: 'Access denied.'
+      }
+    }
+    ctx.status = 401
+  }
 }

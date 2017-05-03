@@ -191,7 +191,6 @@ export const autoSignoutLogic = createLogic({
   latest: true,
 
   process({ action }, dispatch: Dispatch) {
-    debugAuth('auto', action)
     if (
       R.path(['error', 'status'], action.payload) === 401 ||
       R.path(['error', 'graphQLErrors', 0, 'message'], action.payload) === 'Access denied.'
