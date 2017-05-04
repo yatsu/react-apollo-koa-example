@@ -113,12 +113,6 @@ export async function tokenRefresh(ctx: Object) {
     ctx.body = tokens
     ctx.status = 201
   } catch (error) {
-    debugAuth('auth failed', error)
-    ctx.body = {
-      error: {
-        message: 'Access denied.'
-      }
-    }
-    ctx.status = 401
+    ctx.throw(401, 'Access denied.')
   }
 }
