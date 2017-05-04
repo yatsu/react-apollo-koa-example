@@ -105,7 +105,7 @@ export function signinFailed(error: AuthError): Action {
     type: SIGNIN_FAILED,
     payload: {
       error: {
-        message: error.message,
+        message: R.pathOr(error.message, ['xhr', 'response', 'error', 'message'], error),
         status: error.status
       }
     }
@@ -165,11 +165,11 @@ export const signinLogic = createLogic({
     const { username, password } = action.payload
     const body = { username, password }
     const headers = { 'Content-Type': 'application/json' }
-    return webClient.post('auth/signin', body, headers, false).map((payload) => {
-      const { accessToken, refreshToken } = payload
+    return webClient.post('auth/signin', body, headers, false).map((result) => {
+      const { accessToken, refreshToken } = result.response
       localStorage.setItem('accessToken', accessToken)
       localStorage.setItem('refreshToken', refreshToken)
-      return payload
+      return result.response
     })
   }
 })

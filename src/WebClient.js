@@ -12,67 +12,28 @@ class WebClient {
     this.debugAuth = createDebug('example:auth')
   }
 
-  request(
-    method: (...rest: Array<any>) => Rx.Observable,
-    args: Array<any>,
-    auth: ?boolean,
-    retried: ?boolean
-  ) {
-    return Rx.Observable.create((observer: Rx.Observer) => {
-      const headers = args[args.length - 1] || {}
+  request(method: (...rest: Array<any>) => Rx.Observable, args: Array<any>, auth: ?boolean) {
+    const headers = args[args.length - 1] || {}
 
-      const devHeaders = localStorage.getItem('devHeaders')
-      if (devHeaders) {
-        R.forEachObjIndexed(
-          (value: any, key: string) => {
-            headers[key] = value
-          },
-          JSON.parse(devHeaders)
-        )
-      }
-
-      const authEnabled = auth === undefined || auth
-      if (authEnabled) {
-        const accessToken = localStorage.getItem('accessToken')
-        if (accessToken) {
-          headers.Authorization = `Bearer ${accessToken}`
-        }
-      }
-
-      const options: Array<any> = [...args.slice(0, args.length - 1), headers]
-
-      const req = method(...options)
-      req.subscribe(
-        (result: Object) => {
-          observer.next(result.response)
+    const devHeaders = localStorage.getItem('devHeaders')
+    if (devHeaders) {
+      R.forEachObjIndexed(
+        (value: any, key: string) => {
+          headers[key] = value
         },
-        (error: Object) => {
-          if (error.status === 401 && authEnabled && !retried) {
-            this.tokenRefresh().subscribe(
-              () => {
-                this.request(method, args, auth, true).subscribe(
-                  (response: Object) => {
-                    observer.next(response)
-                  },
-                  (retryError: Object) => {
-                    observer.error(retryError)
-                  },
-                  () => observer.complete()
-                )
-              },
-              (refreshError: Object) => {
-                observer.error(refreshError)
-              }
-            )
-          } else {
-            observer.error(R.pathOr(error, ['xhr', 'response', 'error'], error))
-          }
-        },
-        () => {
-          observer.complete()
-        }
+        JSON.parse(devHeaders)
       )
-    })
+    }
+
+    const authEnabled = auth === undefined || auth
+    if (authEnabled) {
+      const accessToken = localStorage.getItem('accessToken')
+      if (accessToken) {
+        headers.Authorization = `Bearer ${accessToken}`
+      }
+    }
+
+    return method(...[...args.slice(0, args.length - 1), headers])
   }
 
   tokenRefresh() {
@@ -80,10 +41,11 @@ class WebClient {
     return Rx.Observable.create((observer: Rx.Observer) => {
       const refreshToken = localStorage.getItem('refreshToken') || ''
       this.post('/auth/refresh', { refreshToken }, null, false).subscribe(
-        (response: Object) => {
+        (result: Object) => {
           this.debugAuth('token refreshed')
-          localStorage.setItem('accessToken', response.accessToken)
-          observer.next(response)
+          const { accessToken } = result.response
+          localStorage.setItem('accessToken', accessToken)
+          observer.next(result.response)
         },
         (error: Object) => {
           this.debugAuth(
