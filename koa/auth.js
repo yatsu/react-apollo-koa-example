@@ -59,7 +59,7 @@ function generateTokens(user: User, ctx: Object): { accessToken: string, refresh
 export async function jwtUser(ctx: Object, next: () => {}) {
   try {
     const { user } = jwt.verify(
-      ctx.request.header.authorization.split(' ')[1],
+      ctx.request.header.authorization ? ctx.request.header.authorization.split(' ')[1] : '',
       env('SESSION_SECRET')
     )
     ctx.state.user = user
@@ -72,7 +72,7 @@ export async function jwtUser(ctx: Object, next: () => {}) {
 export async function authenticated(ctx: Object, next: () => {}) {
   try {
     const { user } = jwt.verify(
-      ctx.request.header.authorization.split(' ')[1],
+      ctx.request.header.authorization ? ctx.request.header.authorization.split(' ')[1] : '',
       env('SESSION_SECRET')
     )
     ctx.state.user = user

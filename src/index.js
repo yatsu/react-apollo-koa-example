@@ -2,10 +2,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Router, Route, IndexRoute, browserHistory } from 'react-router'
+import { Provider } from 'react-redux'
 import { replace, syncHistoryWithStore } from 'react-router-redux'
 import { UserAuthWrapper } from 'redux-auth-wrapper'
 import { SubscriptionClient, addGraphQLSubscriptions } from 'subscriptions-transport-ws'
-import { ApolloProvider } from 'react-apollo'
 import WebClient from './WebClient'
 import App from './containers/App'
 import HomeApp from './containers/Home/HomeApp'
@@ -80,7 +80,7 @@ if (accessToken) {
 }
 
 ReactDOM.render(
-  <ApolloProvider store={store} client={apolloClient}>
+  <Provider store={store}>
     <Router history={history}>
       <Route path="/" component={App}>
         <IndexRoute component={HomeApp} />
@@ -91,6 +91,6 @@ ReactDOM.render(
         <Route path="*" component={NotFound} />
       </Route>
     </Router>
-  </ApolloProvider>,
+  </Provider>,
   document.getElementById('root')
 )

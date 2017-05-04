@@ -302,7 +302,7 @@ anymatch@^1.3.0:
     arrify "^1.0.0"
     micromatch "^2.1.5"
 
-apollo-client@^1.0.2, apollo-client@^1.1.2:
+apollo-client@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/apollo-client/-/apollo-client-1.1.2.tgz#5b511d8eeb68b623dc5960c0f2f6ca8811fef9db"
   dependencies:
@@ -3694,7 +3694,7 @@ graphql-anywhere@^0.2.4:
     lodash.merge "^4.6.0"
     lodash.pick "^4.2.0"
 
-graphql-anywhere@^3.0.0, graphql-anywhere@^3.0.1:
+graphql-anywhere@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/graphql-anywhere/-/graphql-anywhere-3.0.1.tgz#73531db861174c8f212eafb9f8e84944b38b4e5a"
 
@@ -5205,7 +5205,7 @@ lodash.isempty@4.4.0:
   version "4.4.0"
   resolved "https://registry.yarnpkg.com/lodash.isempty/-/lodash.isempty-4.4.0.tgz#6f86cbedd8be4ec987be9aaf33c9684db1b31e7e"
 
-lodash.isequal@^4.1.1, lodash.isequal@^4.2.0:
+lodash.isequal@^4.2.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/lodash.isequal/-/lodash.isequal-4.5.0.tgz#415c4478f2bcc30120c22ce10ed3226f7d3e18e0"
 
@@ -6680,12 +6680,6 @@ prop-types@^15.0.0, prop-types@^15.5.2, prop-types@^15.5.3, prop-types@^15.5.6, 
   dependencies:
     fbjs "^0.8.9"
 
-prop-types@^15.5.8:
-  version "15.5.8"
-  resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.5.8.tgz#6b7b2e141083be38c8595aa51fc55775c7199394"
-  dependencies:
-    fbjs "^0.8.9"
-
 proxy-addr@~1.1.3:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/proxy-addr/-/proxy-addr-1.1.4.tgz#27e545f6960a44a627d9b44467e35c1b6b4ce2f3"
@@ -6785,24 +6779,6 @@ react-addons-test-utils@^15.5.1:
     fbjs "^0.8.4"
     object-assign "^4.1.0"
 
-react-apollo@^1.1.3:
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/react-apollo/-/react-apollo-1.1.3.tgz#f7259d84c3fd69f4ed616bc3c3f30fd7c4779ae3"
-  dependencies:
-    apollo-client "^1.0.2"
-    graphql-anywhere "^3.0.0"
-    graphql-tag "^2.0.0"
-    hoist-non-react-statics "^1.2.0"
-    invariant "^2.2.1"
-    lodash.flatten "^4.2.0"
-    lodash.isequal "^4.1.1"
-    lodash.isobject "^3.0.2"
-    lodash.pick "^4.4.0"
-    object-assign "^4.0.1"
-    prop-types "^15.5.8"
-  optionalDependencies:
-    react-dom "0.14.x || 15.* || ^15.0.0 || ^16.0.0-alpha"
-
 react-app-rewired@^0.6.0:
   version "0.6.5"
   resolved "https://registry.yarnpkg.com/react-app-rewired/-/react-app-rewired-0.6.5.tgz#52cd6641bdf78a1b28d946f4c72c519dc0dc4624"
@@ -6837,7 +6813,7 @@ react-docgen@^2.12.1:
     node-dir "^0.1.10"
     recast "^0.11.5"
 
-"react-dom@0.14.x || 15.* || ^15.0.0 || ^16.0.0-alpha", react-dom@^15.5.3:
+react-dom@^15.5.3:
   version "15.5.3"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-15.5.3.tgz#2ee127ce942df55da53111ae303316e68072b5c5"
   dependencies:

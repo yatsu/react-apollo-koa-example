@@ -2,43 +2,27 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { compose, graphql } from 'react-apollo'
-import gql from 'graphql-tag'
 import TodoField from '../../components/Todo/TodoField'
+import { createTodo } from '../../ducks/todoRemote'
 
 class AddTodo extends PureComponent {
   render() {
-    const { createTodo } = this.props
+    const { onCreateTodo } = this.props
 
-    return <TodoField onSubmit={createTodo} />
+    return <TodoField onSubmit={onCreateTodo} />
   }
 }
 
 AddTodo.propTypes = {
-  createTodo: PropTypes.func.isRequired
+  onCreateTodo: PropTypes.func.isRequired
 }
 
-const addTodoMutation = gql`
-  mutation addTodo($text: String!) {
-    addTodo(text: $text) {
-      id
-      text
-      completed
-    }
+const mapStateToProps = () => ({})
+
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+  onCreateTodo(text: string) {
+    dispatch(createTodo({ text }))
   }
-`
+})
 
-const mergeProps = (stateProps: Object, dispatchProps: Object, ownProps: Object) => ownProps
-
-export default compose(
-  graphql(addTodoMutation, {
-    props: ({ ownProps, mutate }) => ({
-      createTodo(text) {
-        mutate({ variables: { text } }).then(() => {
-          ownProps.refetchTodoList()
-        })
-      }
-    })
-  }),
-  connect(() => ({}), () => ({}), mergeProps)
-)(AddTodo)
+export default connect(mapStateToProps, mapDispatchToProps)(AddTodo)
