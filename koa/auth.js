@@ -78,13 +78,7 @@ export async function authenticated(ctx: Object, next: () => {}) {
     ctx.state.user = user
     await next()
   } catch (error) {
-    debugAuth('auth failed', error)
-    ctx.body = {
-      error: {
-        message: 'Access denied.'
-      }
-    }
-    ctx.status = 401
+    ctx.throw(401, 'Access denied.')
   }
 }
 

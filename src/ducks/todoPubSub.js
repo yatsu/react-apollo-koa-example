@@ -189,12 +189,12 @@ export const todoSubscribeLogic = createLogic({
   type: SUBSCRIBE,
 
   // eslint-disable-next-line no-unused-vars
-  process({ apolloClient, subscriptions }, dispatch, done) {
+  process({ apollo, subscriptions }, dispatch, done) {
     if (subscriptions.todo) {
       dispatch(subscribeTodosSucceeded(subscriptions.todo._networkSubscriptionId))
       return
     }
-    const sub = apolloClient.subscribe({ query: TODO_UPDATED_SUBSCRIPTION }).subscribe({
+    const sub = apollo.subscribe({ query: TODO_UPDATED_SUBSCRIPTION }).subscribe({
       next(payload) {
         dispatch(todoReceiveSucceeded(payload.todoUpdated))
       },
@@ -211,7 +211,7 @@ export const todoUnsubscribeLogic = createLogic({
   type: UNSUBSCRIBE,
   latest: true,
 
-  process({ apolloClient, subscriptions }, dispatch) {
+  process({ subscriptions }, dispatch) {
     const sub = subscriptions.todo
     sub.unsubscribe()
     subscriptions.todo = null
@@ -247,12 +247,12 @@ export const todoToggleLogic = createLogic({
     failType: toggleTodoFailed
   },
 
-  process({ apolloClient, action }) {
-    return apolloClient
+  process({ apollo, action }) {
+    return apollo
       .mutate({
         mutation: TOGGLE_TODO_MUTATION,
         variables: { id: R.prop('todoID', action.payload) }
       })
-      .then(resp => resp.data.toggleTodo)
+      .map(resp => resp.data.toggleTodo)
   }
 })

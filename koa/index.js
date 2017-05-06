@@ -9,11 +9,12 @@ import { graphqlKoa, graphiqlKoa } from 'graphql-server-koa'
 import { SubscriptionServer } from 'subscriptions-transport-ws'
 import { executableSchema } from './executableSchema'
 import subscriptionManager from './subscriptions'
-import { resolvers } from './resolvers'
 import queryMap from '../extracted_queries.json'
 import errorHandler from './error'
 import env from './env'
-import { jwtUser, signin, signout, tokenRefresh } from './auth'
+import { todos } from './store'
+import { signin, signout, tokenRefresh } from './auth'
+import type { Todo } from '../src/types'
 
 const app = new Koa()
 
@@ -27,7 +28,7 @@ app.use(errorHandler)
 
 // GraphQL persisted query
 
-app.use(async (ctx: Object, next: () => {}) => {
+app.use(async (ctx: Object, next: () => void) => {
   if (ctx.path === '/graphql' && ctx.request.body.id) {
     const invertedMap = R.invertObj(queryMap)
     ctx.request.body.query = invertedMap[ctx.request.body.id]
@@ -43,13 +44,12 @@ router.post('/auth/signin', signin)
 router.post('/auth/signout', signout)
 router.post('/auth/refresh', tokenRefresh)
 
-router.post('/graphql', jwtUser, async (ctx, next) => {
+router.post('/graphql', async (ctx: Object, next: () => void) => {
   await convert(graphqlKoa({ schema: executableSchema, context: { ctx } }))(ctx, next)
 })
 
 // router.post(
 //   '/graphql',
-//   jwtUser,
 //   graphqlKoa(ctx => ({
 //     schema: executableSchema,
 //     context: { ctx }
@@ -71,12 +71,15 @@ const server = app.listen(env('SERVER_PORT'), env('SERVER_HOST'))
 new SubscriptionServer(
   {
     subscriptionManager,
-    onSubscribe(message, params) {
+    onSubscribe(message: string, params: Object) {
       setTimeout(
         () => {
-          resolvers.TodoList.todos().forEach((todo) => {
-            subscriptionManager.pubsub.publish('todoUpdated', todo)
-          })
+          R.forEach(
+            (todo: Todo) => {
+              subscriptionManager.pubsub.publish('todoUpdated', todo)
+            },
+            todos
+          )
         },
         0
       )

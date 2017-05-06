@@ -59,10 +59,12 @@ export default function configureStore(
       })
 
   const logicMiddleware = createLogicMiddleware(rootLogic, {
-    apolloClient,
     apollo: {
       query: apolloRequest('query'),
-      mutate: apolloRequest('mutate')
+      mutate: apolloRequest('mutate'),
+      subscribe(...args: Array<any>) {
+        return apolloClient.subscribe(...args)
+      }
     },
     webClient,
     subscriptions: { todo: null }
