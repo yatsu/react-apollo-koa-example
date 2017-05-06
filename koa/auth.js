@@ -42,7 +42,7 @@ function generateTokens(user: User, ctx: Object): { accessToken: string, refresh
       iat: Math.floor(Date.now() / 1000),
       exp: Math.floor((Date.now() + (ms(accessExp) || parseInt(accessExp, 10))) / 1000)
     },
-    env('SESSION_SECRET')
+    env('AUTH_SECRET')
   )
   const refreshToken = jwt.sign(
     {
@@ -51,7 +51,7 @@ function generateTokens(user: User, ctx: Object): { accessToken: string, refresh
       iat: Math.floor(Date.now() / 1000),
       exp: Math.floor((Date.now() + (ms(refreshExp) || parseInt(refreshExp, 10))) / 1000)
     },
-    env('SESSION_SECRET')
+    env('AUTH_SECRET')
   )
   return { accessToken, refreshToken }
 }
@@ -60,7 +60,7 @@ export async function jwtUser(ctx: Object, next: () => {}) {
   try {
     const { user } = jwt.verify(
       ctx.request.header.authorization ? ctx.request.header.authorization.split(' ')[1] : '',
-      env('SESSION_SECRET')
+      env('AUTH_SECRET')
     )
     ctx.state.user = user
   } catch (error) {
@@ -73,7 +73,7 @@ export async function authenticated(ctx: Object, next: () => {}) {
   try {
     const { user } = jwt.verify(
       ctx.request.header.authorization ? ctx.request.header.authorization.split(' ')[1] : '',
-      env('SESSION_SECRET')
+      env('AUTH_SECRET')
     )
     ctx.state.user = user
     await next()
@@ -108,7 +108,7 @@ export async function signout(ctx: Object) {
 export async function tokenRefresh(ctx: Object) {
   const { refreshToken } = ctx.request.body
   try {
-    const { user } = jwt.verify(refreshToken, env('SESSION_SECRET'))
+    const { user } = jwt.verify(refreshToken, env('AUTH_SECRET'))
     const tokens = generateTokens(user, ctx)
     ctx.body = tokens
     ctx.status = 201
