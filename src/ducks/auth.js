@@ -190,12 +190,13 @@ export const autoSignoutLogic = createLogic({
   type: new RegExp('[/_](REJECTED|FAILED)$'),
   latest: true,
 
-  process({ action }, dispatch: Dispatch) {
+  process({ action }, dispatch: Dispatch, done: () => void) {
     if (
       R.path(['error', 'status'], action.payload) === 401 ||
       R.path(['error', 'graphQLErrors', 0, 'message'], action.payload) === 'Access denied.'
     ) {
       dispatch(signout())
     }
+    done()
   }
 })

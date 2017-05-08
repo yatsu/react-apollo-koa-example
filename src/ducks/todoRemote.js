@@ -1,7 +1,6 @@
 // @flow
 import R from 'ramda'
 import { createLogic } from 'redux-logic'
-import { errorMessagePath } from './paths'
 import TODO_LIST_QUERY from '../graphql/todoListQuery.graphql'
 import ADD_TODO_MUTATION from '../graphql/addTodoMutation.graphql'
 import TOGGLE_TODO_MUTATION from '../graphql/toggleTodoMutation.graphql'
@@ -58,14 +57,14 @@ export function todoRemoteReducer(state: TodoRemoteState = initialState, action:
     case FETCH_FAILED:
       return R.pipe(
         R.assoc('fetching', true),
-        R.assoc('fetchError', R.path(errorMessagePath, action.payload))
+        R.assoc('fetchError', R.path(['error', 'message'], action.payload))
       )(state)
     case CREATE:
       return state
     case CREATE_SUCCEEDED:
       return state
     case CREATE_FAILED:
-      return R.assoc('createError', R.path(errorMessagePath, action.payload), state)
+      return R.assoc('createError', R.path(['error', 'message'], action.payload), state)
     case TOGGLE:
       return state
     case TOGGLE_SUCCEEDED:
@@ -75,7 +74,7 @@ export function todoRemoteReducer(state: TodoRemoteState = initialState, action:
         state
       )
     case TOGGLE_FAILED:
-      return R.assoc('toggleError', R.path(errorMessagePath, action.payload), state)
+      return R.assoc('toggleError', R.path(['error', 'message'], action.payload), state)
     default:
       return state
   }

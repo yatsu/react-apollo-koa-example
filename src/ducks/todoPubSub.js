@@ -1,7 +1,6 @@
 // @flow
 import R from 'ramda'
 import { createLogic } from 'redux-logic'
-import { errorMessagePath } from './paths'
 import TODO_UPDATED_SUBSCRIPTION from '../graphql/todoUpdatedSubscription.graphql'
 import ADD_TODO_MUTATION from '../graphql/addTodoMutation.graphql'
 import TOGGLE_TODO_MUTATION from '../graphql/toggleTodoMutation.graphql'
@@ -59,19 +58,19 @@ export function todoPubSubReducer(state: TodoPubSubState = initialState, action:
         state
       )
     case RECEIVE_FAILED:
-      return R.assoc('receiveError', R.path(errorMessagePath, action.payload), state)
+      return R.assoc('receiveError', R.path(['error', 'message'], action.payload), state)
     case CREATE:
       return state
     case CREATE_SUCCEEDED:
       return state
     case CREATE_FAILED:
-      return R.assoc('createError', R.path(errorMessagePath, action.payload), state)
+      return R.assoc('createError', R.path(['error', 'message'], action.payload), state)
     case TOGGLE:
       return state
     case TOGGLE_SUCCEEDED:
       return state
     case TOGGLE_FAILED:
-      return R.assoc('toggleError', R.path(errorMessagePath, action.payload), state)
+      return R.assoc('toggleError', R.path(['error', 'message'], action.payload), state)
     default:
       return state
   }
@@ -189,7 +188,7 @@ export const todoSubscribeLogic = createLogic({
   type: SUBSCRIBE,
 
   // eslint-disable-next-line no-unused-vars
-  process({ apollo, subscriptions }, dispatch, done) {
+  process({ apollo, subscriptions }, dispatch: Dispatch, done: () => void) {
     if (subscriptions.todo) {
       dispatch(subscribeTodosSucceeded(subscriptions.todo._networkSubscriptionId))
       return
@@ -211,11 +210,12 @@ export const todoUnsubscribeLogic = createLogic({
   type: UNSUBSCRIBE,
   latest: true,
 
-  process({ subscriptions }, dispatch) {
+  process({ subscriptions }, dispatch: Dispatch, done: () => void) {
     const sub = subscriptions.todo
     sub.unsubscribe()
     subscriptions.todo = null
     dispatch(unsubscribeTodosSucceeded(sub._networkSubscriptionId))
+    done()
   }
 })
 

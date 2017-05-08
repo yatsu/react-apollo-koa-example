@@ -2,7 +2,6 @@
 import R from 'ramda'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { errorMessagePath } from '../../ducks/paths'
 import { signin, clearAuthError } from '../../ducks/auth'
 import Signin from '../../components/Signin/Signin'
 
@@ -41,7 +40,7 @@ SigninApp.propTypes = {
 
 const mapStateToProps = (state: Object) => ({
   authenticating: state.auth.authenticating,
-  error: R.path(errorMessagePath, state.auth)
+  error: R.path(['error', 'message'], state.auth)
 })
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
