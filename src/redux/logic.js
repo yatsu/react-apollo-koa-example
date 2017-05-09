@@ -1,6 +1,7 @@
 // @flow
 import {
   localSigninLogic,
+  socialSigninLogic,
   socialSigninCallbackLogic,
   signoutLogic,
   setRedirectPathLogic
@@ -14,6 +15,7 @@ import {
 
 const rootLogic = [
   localSigninLogic,
+  socialSigninLogic,
   socialSigninCallbackLogic,
   signoutLogic,
   setRedirectPathLogic,

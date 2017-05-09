@@ -32,6 +32,25 @@ const networkInterfaceWithSubscriptions = addGraphQLSubscriptions(
   wsClient
 )
 
+networkInterfaceWithSubscriptions.use([
+  {
+    applyMiddleware(req, next) {
+      if (!req.options.headers) {
+        req.options.headers = {} // Create the header object if needed.
+      }
+      if (localStorage.accessToken) {
+        req.options.headers.Authorization = `Bearer ${localStorage.accessToken}`
+      }
+      if (localStorage.xhrHeaders) {
+        req.options.headers['X-Session-Token'] = JSON.parse(localStorage.xhrHeaders)[
+          'X-Session-Token'
+        ]
+      }
+      next()
+    }
+  }
+])
+
 const apolloClient = createApolloClient({
   networkInterface: networkInterfaceWithSubscriptions,
   initialState: window.__APOLLO_STATE__,

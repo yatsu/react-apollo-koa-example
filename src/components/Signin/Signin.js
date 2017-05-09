@@ -16,7 +16,7 @@ class Signin extends Component {
 
   handleSocialSubmit(event: Event, service: string) {
     event.preventDefault()
-    window.location.replace(`/auth/${service}/signin`)
+    this.props.onSocialSubmit(service)
   }
 
   renderStatus() {
@@ -122,7 +122,8 @@ class Signin extends Component {
 Signin.propTypes = {
   authenticating: PropTypes.bool.isRequired,
   error: PropTypes.string,
-  onLocalSubmit: PropTypes.func.isRequired
+  onLocalSubmit: PropTypes.func.isRequired,
+  onSocialSubmit: PropTypes.func.isRequired
 }
 
 export default Signin

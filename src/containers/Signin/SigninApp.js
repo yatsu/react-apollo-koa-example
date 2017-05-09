@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import {
   localSignin,
+  socialSignin,
   socialSigninCallback,
   signinFailed,
   clearAuthError,
@@ -64,6 +65,7 @@ SigninApp.propTypes = {
   error: PropTypes.shape(AuthError),
   clearAuthError: PropTypes.func.isRequired,
   onLocalSubmit: PropTypes.func.isRequired,
+  onSocialSubmit: PropTypes.func.isRequired,
   onSocialSigninCallback: PropTypes.func.isRequired
 }
 
@@ -75,6 +77,9 @@ const mapStateToProps = (state: Object) => ({
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   onLocalSubmit(username, password) {
     dispatch(localSignin(username, password))
+  },
+  onSocialSubmit(service) {
+    dispatch(socialSignin(service))
   },
   onSocialSigninCallback(code) {
     dispatch(socialSigninCallback(code))

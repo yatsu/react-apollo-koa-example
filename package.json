@@ -54,12 +54,12 @@
     "koa": "^2.2.0",
     "koa-bodyparser": "^3.2.0",
     "koa-convert": "^1.2.0",
-    "koa-generic-session": "^1.11.5",
     "koa-logger": "^2.0.1",
     "koa-passport": "^3.0.0",
     "koa-router": "^7.0.1",
     "passport-facebook": "^2.1.1",
     "passport-google-oauth2": "^0.1.6",
+    "passport-jwt": "^2.2.1",
     "passport-local": "^1.0.0",
     "passport-twitter": "^1.0.4",
     "persistgraphql": "^0.3.1",
@@ -77,7 +77,8 @@
     "redux-logic": "^0.11.9",
     "rxjs": "^5.0.3",
     "semantic-ui-react": "^0.67.1",
-    "subscriptions-transport-ws": "^0.5.5-alpha.0"
+    "subscriptions-transport-ws": "^0.5.5-alpha.0",
+    "uuid": "^3.0.1"
   },
   "scripts": {
     "start": "react-app-rewired start",
