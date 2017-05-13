@@ -18,7 +18,6 @@ function devHeader(ctx: Object, header: string, def: string): string {
 }
 
 function generateTokens(user: User, ctx: Object): { accessToken: string, refreshToken: string } {
-  debugAuth('env', env('ACCESS_TOKEN_EXPIRES_IN'))
   const accessExp = devHeader(
     ctx,
     'X-ACCESS-TOKEN-EXPIRES-IN',
