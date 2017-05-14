@@ -1,5 +1,11 @@
 // @flow
-import { signinLogic, signoutLogic, autoSignoutLogic } from '../ducks/auth'
+import {
+  signinLogic,
+  signoutLogic,
+  autoSignoutLogic,
+  githubSigninLogic,
+  authCallbackLogic
+} from '../ducks/auth'
 import { todosFetchLogic, todoCreateLogic, todoToggleLogic } from '../ducks/todoRemote'
 import {
   todoSubscribeLogic,
@@ -12,6 +18,8 @@ const rootLogic = [
   signinLogic,
   signoutLogic,
   autoSignoutLogic,
+  githubSigninLogic,
+  authCallbackLogic,
   todosFetchLogic,
   todoCreateLogic,
   todoToggleLogic,

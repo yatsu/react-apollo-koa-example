@@ -2,7 +2,7 @@
 import R from 'ramda'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { signin, clearAuthError } from '../../ducks/auth'
+import { signin, clearAuthError, githubSignin } from '../../ducks/auth'
 import Signin from '../../components/Signin/Signin'
 
 class SigninApp extends Signin {
@@ -50,6 +50,10 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 
   clearAuthError() {
     dispatch(clearAuthError())
+  },
+
+  githubSignin(redirect: ?string) {
+    dispatch(githubSignin(redirect))
   }
 })
 

@@ -403,6 +403,23 @@ exports[`Storyshots Signin Error 1`] = `
       Authentication failed
     </p>
   </div>
+  <div
+    className="ui horizontal divider">
+    or
+  </div>
+  <h4>
+    Sign in via
+  </h4>
+  <button
+    className="ui button"
+    id="github-signin-button"
+    onClick={[Function]}
+    tabIndex={undefined}>
+    <i
+      aria-hidden="true"
+      className="github icon" />
+    Github
+  </button>
 </div>
 `;
 
@@ -449,6 +466,23 @@ exports[`Storyshots Signin Initial state 1`] = `
     </div>
   </form>
   <div />
+  <div
+    className="ui horizontal divider">
+    or
+  </div>
+  <h4>
+    Sign in via
+  </h4>
+  <button
+    className="ui button"
+    id="github-signin-button"
+    onClick={[Function]}
+    tabIndex={undefined}>
+    <i
+      aria-hidden="true"
+      className="github icon" />
+    Github
+  </button>
 </div>
 `;
 
@@ -501,5 +535,22 @@ exports[`Storyshots Signin Signing in 1`] = `
       Signing in...
     </p>
   </div>
+  <div
+    className="ui horizontal divider">
+    or
+  </div>
+  <h4>
+    Sign in via
+  </h4>
+  <button
+    className="ui disabled button"
+    id="github-signin-button"
+    onClick={[Function]}
+    tabIndex={-1}>
+    <i
+      aria-hidden="true"
+      className="github icon" />
+    Github
+  </button>
 </div>
 `;

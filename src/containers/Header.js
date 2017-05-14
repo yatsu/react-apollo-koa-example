@@ -4,9 +4,9 @@ import { signout } from '../ducks/auth'
 import Header from '../components/Header'
 
 const mapStateToProps = (state: Object) => ({
-  path: state.routing.locationBeforeTransitions.pathname,
   username: state.auth.username,
-  admin: state.auth.admin
+  admin: state.auth.admin,
+  path: window.location.pathname
 })
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({

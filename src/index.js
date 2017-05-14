@@ -13,6 +13,7 @@ import SigninApp from './containers/Signin/SigninApp'
 import TodoApp from './containers/Todo/TodoApp'
 import RemoteTodoApp from './containers/RemoteTodo/RemoteTodoApp'
 import PubSubTodoApp from './containers/PubSubTodo/PubSubTodoApp'
+import AuthCallback from './containers/Signin/AuthCallback'
 import NotFound from './components/NotFound'
 import configureStore from './redux/store'
 import createApolloClient from './apollo/create-apollo-client'
@@ -88,6 +89,7 @@ ReactDOM.render(
         <Route path="todo" component={userAuthenticated(TodoApp)} />
         <Route path="todo-remote" component={userAuthenticated(RemoteTodoApp)} />
         <Route path="todo-pubsub" component={userAuthenticated(PubSubTodoApp)} />
+        <Route path="authcb/(:service)(/:redirect)" component={AuthCallback} />
         <Route path="*" component={NotFound} />
       </Route>
     </Router>

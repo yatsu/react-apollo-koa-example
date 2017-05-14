@@ -3,9 +3,11 @@ import createDebug from 'debug'
 import jwt from 'jsonwebtoken'
 import ms from 'ms'
 import R from 'ramda'
+import request from 'request-promise-native'
+import oauth2 from 'simple-oauth2'
 import digest from './digest'
 import env from './env'
-import { getUser } from './store'
+import { getUser, getOrCreateUser } from './store'
 import type { User } from '../src/types'
 
 const debugAuth = createDebug('example:auth')
@@ -107,5 +109,57 @@ export async function tokenRefresh(ctx: Object) {
     ctx.status = 201
   } catch (error) {
     ctx.throw(401, 'Access denied.')
+  }
+}
+
+const githubAuth = oauth2.create({
+  client: {
+    id: env('GITHUB_CLIENT_ID'),
+    secret: env('GITHUB_CLIENT_SECRET')
+  },
+  auth: {
+    tokenHost: 'https://github.com',
+    tokenPath: '/login/oauth/access_token',
+    authorizePath: '/login/oauth/authorize'
+  }
+})
+
+export function githubAuthRedirect(ctx: Object) {
+  const redirect = ctx.params.redirect || ''
+  const url = githubAuth.authorizationCode.authorizeURL({
+    redirect_uri: `http://${env('SERVER_HOST')}:${env('PROXY_PORT')}/authcb/github/${redirect}`,
+    scope: 'notifications',
+    state: '3(#0/!~'
+  })
+  ctx.body = { url }
+}
+
+export async function githubAuthCB(ctx: Object) {
+  const { code } = ctx.request.body
+  const tokenConfig = { code }
+
+  try {
+    const result = await githubAuth.authorizationCode.getToken(tokenConfig)
+    if (result.error) {
+      debugAuth('Authentication error', result.error, result.error_description)
+      ctx.throw(401, 'Authentication failed.')
+    }
+    const token = result.access_token
+    const checkResult = await request.post(
+      `https://${env('GITHUB_CLIENT_ID')}:${env('GITHUB_CLIENT_SECRET')}@` +
+        `api.github.com/applications/${env('GITHUB_CLIENT_ID')}/tokens/${token}`,
+      {
+        headers: {
+          'User-Agent': 'request'
+        },
+        json: true
+      }
+    )
+    const username = checkResult.user.login
+    const user = getOrCreateUser(username, 'github')
+    ctx.body = generateTokens(user, ctx)
+  } catch (error) {
+    debugAuth('Authentication error', error)
+    ctx.throw(401, 'Authentication failed.')
   }
 }

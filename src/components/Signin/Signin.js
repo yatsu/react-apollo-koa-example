@@ -1,7 +1,7 @@
 // @flow
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { Button, Container, Form, Message } from 'semantic-ui-react'
+import { Button, Container, Divider, Form, Icon, Message } from 'semantic-ui-react'
 
 import './Signin.css'
 
@@ -12,6 +12,11 @@ class Signin extends Component {
   handleSubmit(event: Event) {
     event.preventDefault()
     this.props.onSubmit(this.usernameField.value, this.passwordField.value)
+  }
+
+  handleGithubSignin(event: Event) {
+    event.preventDefault()
+    this.props.githubSignin(this.props.location.query.redirect)
   }
 
   renderStatus() {
@@ -76,15 +81,31 @@ class Signin extends Component {
         <div>{authenticating}</div>
         {this.renderStatus()}
         {this.renderError()}
+        <Divider horizontal>or</Divider>
+        <h4>Sign in via</h4>
+        <Button
+          id="github-signin-button"
+          disabled={authenticating}
+          onClick={e => this.handleGithubSignin(e)}
+        >
+          <Icon name="github" />
+          Github
+        </Button>
       </Container>
     )
   }
 }
 
 Signin.propTypes = {
+  location: PropTypes.shape({
+    query: PropTypes.shape({
+      redirect: PropTypes.string
+    }).isRequired
+  }).isRequired,
   authenticating: PropTypes.bool.isRequired,
   error: PropTypes.string,
-  onSubmit: PropTypes.func.isRequired
+  onSubmit: PropTypes.func.isRequired,
+  githubSignin: PropTypes.func.isRequired
 }
 
 export default Signin

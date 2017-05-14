@@ -21,5 +21,6 @@ export type TodoList = {
 export type User = {
   username: string,
   password: ?string,
-  admin: boolean
+  admin: boolean,
+  authService: ?string
 }

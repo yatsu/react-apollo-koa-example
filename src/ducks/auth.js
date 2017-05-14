@@ -1,11 +1,9 @@
 // @flow
-import createDebug from 'debug'
 import jwtDecode from 'jwt-decode'
 import R from 'ramda'
+import { browserHistory } from 'react-router'
 import { createLogic } from 'redux-logic'
 import { Action, AuthError } from '../types'
-
-const debugAuth = createDebug('example:auth')
 
 // Actions
 
@@ -17,6 +15,8 @@ const SIGNOUT = 'auth/SIGNOUT'
 const SIGNOUT_SUCCEEDED = 'auth/SIGNOUT_SUCCEEDED'
 const SIGNOUT_FAILED = 'auth/SIGNOUT_FAILED'
 const CLEAR_AUTH_ERROR = 'auth/CLEAR_AUTH_ERROR'
+const GITHUB_SIGNIN = 'auth/GITHUB_SIGNIN'
+const AUTH_CALLBACK = 'auth/AUTH_CALLBACK'
 
 // Types
 
@@ -69,6 +69,10 @@ export function authReducer(state: AuthState = initialState, action: Object = {}
       return state
     case CLEAR_AUTH_ERROR:
       return R.pipe(R.assoc('authenticating', false), R.assoc('error', null))(state)
+    case GITHUB_SIGNIN:
+      return R.assoc('authenticating', true, state)
+    case AUTH_CALLBACK:
+      return R.pipe(R.assoc('authenticating', true), R.assoc('error', null))(state)
     default:
       return state
   }
@@ -100,7 +104,6 @@ export function signinSucceeded(payload: Object): Action {
 }
 
 export function signinFailed(error: AuthError): Action {
-  debugAuth('signinFailed', error)
   return {
     type: SIGNIN_FAILED,
     payload: {
@@ -149,6 +152,26 @@ export function clearAuthError(): Action {
   }
 }
 
+export function githubSignin(redirect: ?string): Action {
+  return {
+    type: GITHUB_SIGNIN,
+    payload: {
+      redirect
+    }
+  }
+}
+
+export function authCallback(service: string, code: string, redirect: ?string): Action {
+  return {
+    type: AUTH_CALLBACK,
+    payload: {
+      service,
+      code,
+      redirect
+    }
+  }
+}
+
 // Logic
 
 export const signinLogic = createLogic({
@@ -165,7 +188,7 @@ export const signinLogic = createLogic({
     const { username, password } = action.payload
     const body = { username, password }
     const headers = { 'Content-Type': 'application/json' }
-    return webClient.post('auth/signin', body, headers, false).map((result) => {
+    return webClient.post('/auth/signin', body, headers, false).map((result) => {
       const { accessToken, refreshToken } = result.response
       localStorage.setItem('accessToken', accessToken)
       localStorage.setItem('refreshToken', refreshToken)
@@ -180,7 +203,7 @@ export const signoutLogic = createLogic({
 
   process({ webClient }) {
     const headers = { 'Content-Type': 'application/json' }
-    webClient.post('auth/signout', {}, headers).subscribe()
+    webClient.post('/auth/signout', {}, headers).subscribe()
     localStorage.removeItem('accessToken')
     localStorage.removeItem('refreshToken')
   }
@@ -198,5 +221,52 @@ export const autoSignoutLogic = createLogic({
       dispatch(signout())
     }
     done()
+  }
+})
+
+export const githubSigninLogic = createLogic({
+  type: GITHUB_SIGNIN,
+  latest: true,
+
+  process({ action, webClient }, dispatch: Dispatch, done: () => void) {
+    const headers = { 'Content-Type': 'application/json' }
+    const { redirect } = action.payload
+    return webClient
+      .post(`/auth/github/${redirect || ''}`, {}, headers, false)
+      .subscribe((result: Object) => {
+        const { url } = result.response
+        window.location = url
+        done()
+      })
+  }
+})
+
+export const authCallbackLogic = createLogic({
+  type: AUTH_CALLBACK,
+  latest: true,
+
+  process({ action, webClient }, dispatch: Dispatch, done: () => void) {
+    const { service, code, redirect } = action.payload
+    const headers = { 'Content-Type': 'application/json' }
+    const body = { code }
+    return webClient.post(`/auth/cb/${service}`, body, headers, false).subscribe(
+      (result: Object) => {
+        const { accessToken, refreshToken } = result.response
+        localStorage.setItem('accessToken', accessToken)
+        localStorage.setItem('refreshToken', refreshToken)
+        if (redirect) {
+          browserHistory.replace(redirect)
+        } else {
+          browserHistory.replace('')
+        }
+        dispatch(signinSucceeded(result.response))
+        done()
+      },
+      (error: Object) => {
+        browserHistory.replace('/signin')
+        dispatch(signinFailed(error))
+        done()
+      }
+    )
   }
 })

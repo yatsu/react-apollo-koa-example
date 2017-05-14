@@ -13,7 +13,7 @@ import queryMap from '../extracted_queries.json'
 import errorHandler from './error'
 import env from './env'
 import { todos } from './store'
-import { signin, signout, tokenRefresh } from './auth'
+import { signin, signout, tokenRefresh, githubAuthRedirect, githubAuthCB } from './auth'
 import type { Todo } from '../src/types'
 
 const app = new Koa()
@@ -43,6 +43,10 @@ const router = Router()
 router.post('/auth/signin', signin)
 router.post('/auth/signout', signout)
 router.post('/auth/refresh', tokenRefresh)
+
+router.post('/auth/github', githubAuthRedirect)
+router.post('/auth/github/:redirect', githubAuthRedirect)
+router.post('/auth/cb/github', githubAuthCB)
 
 router.post('/graphql', async (ctx: Object, next: () => void) => {
   await convert(graphqlKoa({ schema: executableSchema, context: { ctx } }))(ctx, next)
