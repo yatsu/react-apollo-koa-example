@@ -165,14 +165,6 @@ Read the following article to know about subscriptions.
 Authentication
 --------------
 
-`master` branch of this app uses localStorage to store access token and refresh
-token, so that the server can be used with native apps which do not have
-cookies.
-
-[passport](https://github.com/yatsu/react-apollo-koa-example/tree/passport)
-branch uses a cookie instead, and also uses [Passport](http://passportjs.org/) 
-for authentication.
-
 The Apollo subscription in this app is not integrated with the authentication
 yet.  See the following guide to do that.
 
