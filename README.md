@@ -8,10 +8,10 @@ and is not [eject](https://github.com/facebookincubator/create-react-app/blob/ma
 Some settings are overwritten on runtime though.
 
 [passport](https://github.com/yatsu/react-apollo-koa-example/tree/passport)
-branch implements [Passport](http://passportjs.org/) integration which allows
-signining in with Google+, Facebook, etc.
-`passport` branch uses a cookie to store a session, whereas the `master` branch
-uses localStorage.
+branch uses [Passport](http://passportjs.org/) to integrate authentication with
+social services such as Google+, Facebook, etc., whereas `master` branch uses
+[simple-oauth2](https://github.com/lelylan/simple-oauth2) to authenticate with
+GitHub.
 
 ![screen image](https://raw.githubusercontent.com/yatsu/react-apollo-koa-example/master/docs/screen.png)
 
@@ -64,6 +64,7 @@ Frameworks/Libraries
   [react-router-redux](https://github.com/reactjs/react-router-redux)
   (URL routes management)
 * [redux-auth-wrapper](https://github.com/mjrussell/redux-auth-wrapper)
+  and [simple-oauth2](https://github.com/lelylan/simple-oauth2)
   (Authentication)
 * [redux-logic](https://github.com/jeffbski/redux-logic)
   with [RxJS](https://github.com/ReactiveX/rxjs)
