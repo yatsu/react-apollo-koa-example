@@ -44,7 +44,7 @@ class WebClient {
       const req = method(...options)
       req.subscribe(
         (result: Object) => {
-          observer.next(result.response)
+          observer.next(result)
         },
         (error: Object) => {
           if (error.status === 401 && authEnabled && !retried) {

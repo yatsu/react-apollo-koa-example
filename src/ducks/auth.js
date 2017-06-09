@@ -7,6 +7,7 @@ import { Action, AuthError } from '../types'
 // Actions
 
 const LOCAL_SIGNIN = 'auth/LOCAL_SIGNIN'
+const SOCIAL_SIGNIN = 'auth/SOCIAL_SIGNIN'
 const SOCIAL_SIGNIN_CALLBACK = 'auth/SOCIAL_SIGNIN_CALLBACK'
 const SIGNIN_SUCCEEDED = 'auth/SIGNIN_SUCCEEDED'
 const SIGNIN_FAILED = 'auth/SIGNIN_FAILED'
@@ -38,6 +39,7 @@ const initialState: AuthState = {
 export function authReducer(state: AuthState = initialState, action: Object = {}) {
   switch (action.type) {
     case LOCAL_SIGNIN:
+    case SOCIAL_SIGNIN:
     case SOCIAL_SIGNIN_CALLBACK:
       return R.pipe(R.assoc('authenticating', true), R.assoc('error', null))(state)
     case SIGNIN_SUCCEEDED:
@@ -88,10 +90,21 @@ export function localSignin(username: string, password: string): Action {
   }
 }
 
+export function socialSignin(service: string): Action {
+  return {
+    type: SOCIAL_SIGNIN,
+    payload: {
+      service
+    }
+  }
+}
+
 export function socialSigninCallback(socialSigninCallbackCode: string): Action {
+  const authService = localStorage.getItem('authService')
   return {
     type: SOCIAL_SIGNIN_CALLBACK,
     payload: {
+      authService,
       socialSigninCallbackCode
     }
   }
@@ -186,11 +199,28 @@ export const localSigninLogic = createLogic({
     const body = { username, password }
     const headers = { 'Content-Type': 'application/json' }
     return webClient.post('auth/signin', body, headers, false).map((payload) => {
-      const { accessToken, refreshToken } = payload
+      localStorage.setItem(
+        'xhrHeaders',
+        JSON.stringify({ 'X-Session-Token': payload.xhr.getResponseHeader('X-Session-Token') })
+      )
+      // const sessionToken = payload.xhr.getResponseHeader('X-SESSION-TOKEN')
+      const { accessToken, refreshToken } = payload.response
+      // localStorage.setItem('sessionToken', sessionToken)
       localStorage.setItem('accessToken', accessToken)
       localStorage.setItem('refreshToken', refreshToken)
-      return payload
+      return payload.response
     })
+  }
+})
+
+export const socialSigninLogic = createLogic({
+  type: SOCIAL_SIGNIN,
+  latest: true,
+
+  process({ action }) {
+    const { service } = action.payload
+    localStorage.setItem('authService', service)
+    window.location.replace(`/auth/${service}/signin`)
   }
 })
 
@@ -205,14 +235,23 @@ export const socialSigninCallbackLogic = createLogic({
   },
 
   process({ action, webClient }) {
-    const { socialSigninCallbackCode } = action.payload
+    const { authService, socialSigninCallbackCode } = action.payload
     return webClient
-      .get(`auth/social/signin/callback?code=${socialSigninCallbackCode}`, {}, false)
+      .get(
+        `auth/social/signin/callback?code=${socialSigninCallbackCode}&service=${authService}`,
+        {},
+        false
+      )
       .map((payload) => {
-        const { accessToken, refreshToken } = payload
+        localStorage.setItem(
+          'xhrHeaders',
+          JSON.stringify({ 'X-Session-Token': payload.xhr.getResponseHeader('X-Session-Token') })
+        )
+        const { accessToken, refreshToken } = payload.response
         localStorage.setItem('accessToken', accessToken)
         localStorage.setItem('refreshToken', refreshToken)
-        return payload
+        localStorage.removeItem('authService')
+        return payload.response
       })
   }
 })
@@ -223,7 +262,8 @@ export const signoutLogic = createLogic({
 
   process({ webClient }) {
     const headers = { 'Content-Type': 'application/json' }
-    webClient.post('auth/signout', {}, headers).subscribe()
+    webClient.post('auth/signout', {}, headers, true).subscribe()
+    localStorage.removeItem('xhrHeaders')
     localStorage.removeItem('accessToken')
     localStorage.removeItem('refreshToken')
     localStorage.removeItem('redirectTarget')
