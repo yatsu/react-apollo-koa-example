@@ -73,6 +73,7 @@
     "request": "^2.81.0",
     "request-promise-native": "^1.0.4",
     "rxjs": "^5.0.3",
+    "semantic-ui-css": "^2.2.10",
     "semantic-ui-react": "^0.67.1",
     "simple-oauth2": "^1.2.0",
     "subscriptions-transport-ws": "^0.5.5-alpha.0"
