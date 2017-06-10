@@ -3,7 +3,6 @@ import Koa from 'koa'
 import logger from 'koa-logger'
 import bodyParser from 'koa-bodyparser'
 import Router from 'koa-router'
-import convert from 'koa-convert'
 import R from 'ramda'
 import { graphqlKoa, graphiqlKoa } from 'graphql-server-koa'
 import { SubscriptionServer } from 'subscriptions-transport-ws'
@@ -48,17 +47,13 @@ router.post('/auth/github', githubAuthRedirect)
 router.post('/auth/github/:redirect', githubAuthRedirect)
 router.post('/auth/cb/github', githubAuthCB)
 
-router.post('/graphql', async (ctx: Object, next: () => void) => {
-  await convert(graphqlKoa({ schema: executableSchema, context: { ctx } }))(ctx, next)
-})
-
-// router.post(
-//   '/graphql',
-//   graphqlKoa(ctx => ({
-//     schema: executableSchema,
-//     context: { ctx }
-//   }))
-// )
+router.post(
+  '/graphql',
+  graphqlKoa(ctx => ({
+    schema: executableSchema,
+    context: { ctx }
+  }))
+)
 
 if (process.env !== 'production') {
   router.get('/graphiql', graphiqlKoa({ endpointURL: '/graphql' }))
