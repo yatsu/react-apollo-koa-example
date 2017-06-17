@@ -23,39 +23,41 @@ export default function configureStore(
   const apolloRequest = (method: string) =>
     (options: Object): Rx.Observable =>
       Rx.Observable.create((observer: Rx.Observer) => {
-        Rx.Observable.fromPromise(apolloClient[method](options)).subscribe(
-          (resp: Object) => {
-            debugGraphQL(`${method} response`, resp)
-            observer.next(resp)
-            observer.complete()
-          },
-          (error: Object) => {
-            debugGraphQL(`${method} error`, error)
-            if (R.path(['graphQLErrors', 0, 'message'], error) === 'Access denied.') {
-              webClient.tokenRefresh().subscribe(
-                () => {
-                  Rx.Observable.fromPromise(apolloClient[method](options)).subscribe(
-                    (retryResp: Object) => {
-                      debugGraphQL(`${method} retry response`, retryResp)
-                      observer.next(retryResp)
-                      observer.complete()
-                    },
-                    (retryError: Object) => {
-                      debugGraphQL(`${method} retry error`, retryError)
-                      observer.error(retryError)
-                    }
-                  )
-                },
-                (refreshError: Object) => {
-                  debugGraphQL('token refresh failed', refreshError, error)
-                  observer.error(error)
-                }
-              )
-            } else {
-              observer.error(error)
+        Rx.Observable
+          .fromPromise(apolloClient[method](R.dissoc('notifyOnNetworkStatusChange', options)))
+          .subscribe(
+            (resp: Object) => {
+              debugGraphQL(`${method} response`, resp)
+              observer.next(resp)
+              observer.complete()
+            },
+            (error: Object) => {
+              debugGraphQL(`${method} error`, error)
+              if (R.path(['graphQLErrors', 0, 'message'], error) === 'Access denied.') {
+                webClient.tokenRefresh().subscribe(
+                  () => {
+                    Rx.Observable.fromPromise(apolloClient[method](options)).subscribe(
+                      (retryResp: Object) => {
+                        debugGraphQL(`${method} retry response`, retryResp)
+                        observer.next(retryResp)
+                        observer.complete()
+                      },
+                      (retryError: Object) => {
+                        debugGraphQL(`${method} retry error`, retryError)
+                        observer.error(retryError)
+                      }
+                    )
+                  },
+                  (refreshError: Object) => {
+                    debugGraphQL('token refresh failed', refreshError, error)
+                    observer.error(error)
+                  }
+                )
+              } else {
+                observer.error(error)
+              }
             }
-          }
-        )
+          )
       })
 
   const logicMiddleware = createLogicMiddleware(rootLogic, {
