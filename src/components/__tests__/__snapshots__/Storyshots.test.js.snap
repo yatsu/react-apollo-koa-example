@@ -45,6 +45,7 @@ exports[`Storyshots Header GraphQL Subscription tab 1`] = `
       onClick={[Function]}>
       <button
         className="ui button"
+        disabled={undefined}
         id="signinLink"
         onClick={[Function]}
         tabIndex={undefined}>
@@ -105,6 +106,7 @@ exports[`Storyshots Header GraphQL tab 1`] = `
       onClick={[Function]}>
       <button
         className="ui button"
+        disabled={undefined}
         id="signinLink"
         onClick={[Function]}
         tabIndex={undefined}>
@@ -165,6 +167,7 @@ exports[`Storyshots Header Local tab 1`] = `
       onClick={[Function]}>
       <button
         className="ui button"
+        disabled={undefined}
         id="signinLink"
         onClick={[Function]}
         tabIndex={undefined}>
@@ -225,6 +228,7 @@ exports[`Storyshots Header with admin user 1`] = `
       onClick={[Function]}>
       <button
         className="ui button"
+        disabled={undefined}
         id="signinLink"
         onClick={[Function]}
         tabIndex={undefined}>
@@ -285,6 +289,7 @@ exports[`Storyshots Header with normal user 1`] = `
       onClick={[Function]}>
       <button
         className="ui button"
+        disabled={undefined}
         id="signinLink"
         onClick={[Function]}
         tabIndex={undefined}>
@@ -338,6 +343,7 @@ exports[`Storyshots Header without auth 1`] = `
       style={Object {}}>
       <button
         className="ui button"
+        disabled={undefined}
         onClick={[Function]}
         tabIndex={undefined}>
         <i
@@ -385,6 +391,7 @@ exports[`Storyshots Signin Error 1`] = `
       className="field">
       <button
         className="ui positive button"
+        disabled={undefined}
         id="signin-button"
         onClick={[Function]}
         tabIndex={undefined}>
@@ -412,6 +419,7 @@ exports[`Storyshots Signin Error 1`] = `
   </h4>
   <button
     className="ui button"
+    disabled={undefined}
     id="github-signin-button"
     onClick={[Function]}
     tabIndex={undefined}>
@@ -458,6 +466,7 @@ exports[`Storyshots Signin Initial state 1`] = `
       className="field">
       <button
         className="ui positive button"
+        disabled={undefined}
         id="signin-button"
         onClick={[Function]}
         tabIndex={undefined}>
@@ -475,6 +484,7 @@ exports[`Storyshots Signin Initial state 1`] = `
   </h4>
   <button
     className="ui button"
+    disabled={undefined}
     id="github-signin-button"
     onClick={[Function]}
     tabIndex={undefined}>
@@ -521,6 +531,7 @@ exports[`Storyshots Signin Signing in 1`] = `
       className="field">
       <button
         className="ui positive disabled button"
+        disabled={true}
         id="signin-button"
         onClick={[Function]}
         tabIndex={-1}>
@@ -544,6 +555,7 @@ exports[`Storyshots Signin Signing in 1`] = `
   </h4>
   <button
     className="ui disabled button"
+    disabled={true}
     id="github-signin-button"
     onClick={[Function]}
     tabIndex={-1}>

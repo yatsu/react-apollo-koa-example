@@ -8,24 +8,24 @@ import type { Action, Todo } from '../types'
 
 // Actions
 
-const SUBSCRIBE = 'todo-pubsub/SUBSCRIBE'
-const SUBSCRIBE_SUCCEEDED = 'todo-pubsub/SUBSCRIBE_SUCCEEDED'
-const UNSUBSCRIBE = 'todo-pubsub/UNSUBSCRIBE'
-const UNSUBSCRIBE_SUCCEEDED = 'todo-pubsub/UNSUBSCRIBE_SUCCEEDED'
-const RECEIVE_SUCCEEDED = 'todo-pubsub/RECEIVE_SUCCEEDED'
-const RECEIVE_FAILED = 'todo-pubsub/RECEIVE_FAILED'
-const CREATE = 'todo-pubsub/CREATE'
-const CREATE_SUCCEEDED = 'todo-pubsub/CREATE_SUCCEEDED'
-const CREATE_FAILED = 'todo-pubsub/CREATE_FAILED'
-const TOGGLE = 'todo-pubsub/TOGGLE'
-const TOGGLE_SUCCEEDED = 'todo-pubsub/TOGGLE_SUCCEEDED'
-const TOGGLE_FAILED = 'todo-pubsub/TOGGLE_FAILED'
+export const SUBSCRIBE = 'todo-pubsub/SUBSCRIBE'
+export const SUBSCRIBE_SUCCEEDED = 'todo-pubsub/SUBSCRIBE_SUCCEEDED'
+export const UNSUBSCRIBE = 'todo-pubsub/UNSUBSCRIBE'
+export const UNSUBSCRIBE_SUCCEEDED = 'todo-pubsub/UNSUBSCRIBE_SUCCEEDED'
+export const RECEIVE_SUCCEEDED = 'todo-pubsub/RECEIVE_SUCCEEDED'
+export const RECEIVE_FAILED = 'todo-pubsub/RECEIVE_FAILED'
+export const CREATE = 'todo-pubsub/CREATE'
+export const CREATE_SUCCEEDED = 'todo-pubsub/CREATE_SUCCEEDED'
+export const CREATE_FAILED = 'todo-pubsub/CREATE_FAILED'
+export const TOGGLE = 'todo-pubsub/TOGGLE'
+export const TOGGLE_SUCCEEDED = 'todo-pubsub/TOGGLE_SUCCEEDED'
+export const TOGGLE_FAILED = 'todo-pubsub/TOGGLE_FAILED'
 
 // Types
 
 type TodoPubSubState = {
   subid: ?string,
-  todos: { [id: string]: Todo },
+  todos: { [string]: Todo },
   createError: ?string,
   toggleError: ?string,
   receiveError: ?string
@@ -33,7 +33,7 @@ type TodoPubSubState = {
 
 // Reducer
 
-const initialState: TodoPubSubState = {
+export const initialState: TodoPubSubState = {
   subid: null,
   todos: {},
   createError: null,
@@ -179,8 +179,6 @@ export function toggleTodoFailed(error: Object): Action {
     }
   }
 }
-
-// GraphQL Queries
 
 // Logic
 

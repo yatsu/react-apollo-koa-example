@@ -30,6 +30,7 @@
     "react-app-rewired": "^0.6.0",
     "react-scripts": "0.9.5",
     "react-test-renderer": "^15.6.1",
+    "redux-logic-test": "^1.0.5",
     "stylefmt": "^5.3.2",
     "stylelint": "^7.9.0",
     "stylelint-config-standard": "^16.0.0",

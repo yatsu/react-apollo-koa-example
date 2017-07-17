@@ -7118,6 +7118,12 @@ promise@7.1.1, promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
+prop-types@15.5.8:
+  version "15.5.8"
+  resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.5.8.tgz#6b7b2e141083be38c8595aa51fc55775c7199394"
+  dependencies:
+    fbjs "^0.8.9"
+
 prop-types@^15.0.0, prop-types@^15.5.2, prop-types@^15.5.3, prop-types@^15.5.6, prop-types@~15.5.0:
   version "15.5.6"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.5.6.tgz#797a915b1714b645ebb7c5d6cc690346205bd2aa"
@@ -7606,6 +7612,14 @@ redux-auth-wrapper@^1.0.0:
     hoist-non-react-statics "1.2.0"
     lodash.isempty "4.4.0"
 
+redux-logic-test@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/redux-logic-test/-/redux-logic-test-1.0.5.tgz#263c5bbc71c10ff915b1ec86b8639cc6964d3a19"
+  dependencies:
+    is-observable "^0.2.0"
+    is-promise "^2.1.0"
+    loose-envify "^1.2.0"
+
 redux-logic@^0.11.9:
   version "0.11.9"
   resolved "https://registry.yarnpkg.com/redux-logic/-/redux-logic-0.11.9.tgz#4e714cc0aaf04e1b1a5e01ade4c38d1b5f02962d"
@@ -7893,20 +7907,21 @@ schema-utils@^0.3.0:
   dependencies:
     ajv "^5.0.0"
 
-semantic-ui-css@^2.2.10:
-  version "2.2.10"
-  resolved "https://registry.yarnpkg.com/semantic-ui-css/-/semantic-ui-css-2.2.10.tgz#f8f4470dbeffca0f0f3ff4fb71a35c71e88ad89c"
+semantic-ui-css@^2.2.11:
+  version "2.2.11"
+  resolved "https://registry.yarnpkg.com/semantic-ui-css/-/semantic-ui-css-2.2.11.tgz#875aabb28897cc08d637d69f18ebbce6a28d49bb"
   dependencies:
     jquery x.*
 
-semantic-ui-react@^0.67.1:
-  version "0.67.2"
-  resolved "https://registry.yarnpkg.com/semantic-ui-react/-/semantic-ui-react-0.67.2.tgz#30c1271239fae724a96117cea087bf3084f8480e"
+semantic-ui-react@^0.71.1:
+  version "0.71.1"
+  resolved "https://registry.yarnpkg.com/semantic-ui-react/-/semantic-ui-react-0.71.1.tgz#241055be740bf0a73363f484446b360e944a792b"
   dependencies:
     babel-runtime "^6.22.0"
     classnames "^2.1.5"
     debug "^2.6.3"
     lodash "^4.17.2"
+    prop-types "15.5.8"
 
 semver-diff@^2.0.0:
   version "2.1.0"
