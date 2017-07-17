@@ -100,12 +100,6 @@
       "flow force-recheck",
       "git add"
     ],
-    "test/**/*.js": [
-      "prettier-eslint --write",
-      "lint",
-      "flow force-recheck",
-      "git add"
-    ],
     "src/**/*.css": [
       "stylefmt",
       "stylelint",

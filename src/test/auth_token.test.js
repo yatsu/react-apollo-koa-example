@@ -11,7 +11,7 @@ describe('Refreshing token caused by token expiration', () => {
   describe('with a valid refresh token', () => {
     it('succeeds and retrying previous request also succeeds', async () => {
       const todo = uuid.v4()
-      const { accessToken, refreshToken } = await Nightmare()
+      const { accessToken, refreshToken } = await Nightmare({ typeInterval: 10 })
         .goto(`${BASE_URL}/todo-pubsub`)
         .evaluate(() => {
           localStorage.setItem(
@@ -22,14 +22,14 @@ describe('Refreshing token caused by token expiration', () => {
             })
           )
         })
-        .insert('input[name=username]', 'alice')
-        .insert('input[name=password]', 'alicepass')
+        .type('input[name=username]', 'alice')
+        .type('input[name=password]', 'alicepass')
         .click('#signin-button')
         .evaluate(() => {
           localStorage.removeItem('devHeaders')
         })
         .wait('input[name=add-todo]', todo)
-        .insert('input[name=add-todo]', todo)
+        .type('input[name=add-todo]', todo)
         .click('#add-todo-button')
         .wait(1000)
         .evaluate(() => ({
@@ -47,7 +47,7 @@ describe('Refreshing token caused by token expiration', () => {
   describe('with an expired refresh token', () => {
     it('fails and the user will be signed out', async () => {
       const todo = uuid.v4()
-      const { path } = await Nightmare()
+      const { path } = await Nightmare({ typeInterval: 10 })
         .goto(`${BASE_URL}/todo-pubsub`)
         .evaluate(() => {
           localStorage.setItem(
@@ -58,8 +58,8 @@ describe('Refreshing token caused by token expiration', () => {
             })
           )
         })
-        .insert('input[name=username]', 'alice')
-        .insert('input[name=password]', 'alicepass')
+        .type('input[name=username]', 'alice')
+        .type('input[name=password]', 'alicepass')
         .click('#signin-button')
         .evaluate(() => {
           localStorage.removeItem('devHeaders')

@@ -14,10 +14,10 @@ describe('Todo page w/o auth', () => {
 
 describe('Signing in', () => {
   it('fails with an incorrect password', async () => {
-    const { message, path } = await Nightmare()
+    const { message, path } = await Nightmare({ typeInterval: 10 })
       .goto(`${BASE_URL}/signin`)
-      .insert('input[name=username]', 'alice')
-      .insert('input[name=password]', 'incorrect')
+      .type('input[name=username]', 'alice')
+      .type('input[name=password]', 'incorrect')
       .click('#signin-button')
       .wait('.negative')
       .evaluate(() => ({
@@ -30,10 +30,10 @@ describe('Signing in', () => {
   })
 
   it('redirects /signin to / after auth', async () => {
-    const { username, path } = await Nightmare()
+    const { username, path } = await Nightmare({ typeInterval: 10 })
       .goto(`${BASE_URL}/signin`)
-      .insert('input[name=username]', 'alice')
-      .insert('input[name=password]', 'alicepass')
+      .type('input[name=username]', 'alice')
+      .type('input[name=password]', 'alicepass')
       .click('#signin-button')
       .wait('#username')
       .evaluate(() => ({
@@ -46,10 +46,10 @@ describe('Signing in', () => {
   })
 
   it('redirects /todo to /todo after auth', async () => {
-    const { username, path } = await Nightmare()
+    const { username, path } = await Nightmare({ typeInterval: 10 })
       .goto(`${BASE_URL}/todo`)
-      .insert('input[name=username]', 'alice')
-      .insert('input[name=password]', 'alicepass')
+      .type('input[name=username]', 'alice')
+      .type('input[name=password]', 'alicepass')
       .click('#signin-button')
       .wait('#username')
       .evaluate(() => ({
