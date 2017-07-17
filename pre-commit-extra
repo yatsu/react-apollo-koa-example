@@ -6,4 +6,3 @@ repo_top=$(git rev-parse --show-toplevel)
 cd ${repo_top}
 
 yarn test -- --coverage
-yarn run mocha

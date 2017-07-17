@@ -101,7 +101,7 @@ Signin.propTypes = {
     query: PropTypes.shape({
       redirect: PropTypes.string
     }).isRequired
-  }).isRequired,
+  }),
   authenticating: PropTypes.bool.isRequired,
   error: PropTypes.string,
   onSubmit: PropTypes.func.isRequired,

@@ -1,11 +1,14 @@
 import Nightmare from 'nightmare'
-import { expect } from 'chai'
 import { BASE_URL } from './test_config'
+
+beforeAll(() => {
+  jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000
+})
 
 describe('Todo page w/o auth', () => {
   it('redirects the req to /signin', async () => {
     const path = await Nightmare().goto(`${BASE_URL}/todo`).path().end()
-    expect(path).to.equal('/signin')
+    expect(path).toEqual('/signin')
   })
 })
 
@@ -22,8 +25,8 @@ describe('Signing in', () => {
         path: document.location.pathname
       }))
       .end()
-    expect(message).to.equal('Username or password incorrect.')
-    expect(path).to.equal('/signin')
+    expect(message).toEqual('Username or password incorrect.')
+    expect(path).toEqual('/signin')
   })
 
   it('redirects /signin to / after auth', async () => {
@@ -38,8 +41,8 @@ describe('Signing in', () => {
         path: document.location.pathname
       }))
       .end()
-    expect(username).to.equal('alice')
-    expect(path).to.equal('/')
+    expect(username).toEqual('alice')
+    expect(path).toEqual('/')
   })
 
   it('redirects /todo to /todo after auth', async () => {
@@ -54,7 +57,7 @@ describe('Signing in', () => {
         path: document.location.pathname
       }))
       .end()
-    expect(username).to.equal('alice')
-    expect(path).to.equal('/todo')
+    expect(username).toEqual('alice')
+    expect(path).toEqual('/todo')
   })
 })

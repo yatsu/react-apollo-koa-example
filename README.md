@@ -96,15 +96,9 @@ which is required for proper handling of OAuth2 based authentication.
   webpack dev server proxy where anchor element links on the same domain are
   captured by React and render 404s.)
 
-### Unit Tests
+### Tests
 
 * [Jest](https://facebook.github.io/jest/)
-* [Enzyme](http://airbnb.io/enzyme/) (Shallow rendering)
-
-### Integration Tests
-
-* [Mocha](https://mochajs.org/) (Test Runner)
-* [Chai](http://chaijs.com/) (Assertio)
 * [Nightmare](http://www.nightmarejs.org/) (Browser automation)
 
 ### Repo and code management

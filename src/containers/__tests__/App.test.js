@@ -1,19 +1,22 @@
 import React from 'react'
-import { shallow } from 'enzyme'
+import ReactShallowRenderer from 'react-test-renderer/shallow'
 import App from '../App'
 
+const renderer = new ReactShallowRenderer()
+
 function setup() {
-  const app = shallow(<App />)
+  renderer.render(<App />)
+  const output = renderer.getRenderOutput()
 
   return {
-    app
+    output
   }
 }
 
 describe('<App/>', () => {
-  const { app } = setup()
+  const { output } = setup()
 
   it('renders div', () => {
-    expect(app.find('div').hasClass('app')).toBe(true)
+    expect(output.type).toBe('div')
   })
 })

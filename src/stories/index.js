@@ -1,5 +1,5 @@
 import React from 'react'
-import { storiesOf, action } from '@kadira/storybook'
+import { storiesOf, action } from '@storybook/react'
 import Header from '../components/Header'
 import Signin from '../components/Signin/Signin'
 
@@ -22,8 +22,21 @@ storiesOf('Header', module)
   ))
 
 storiesOf('Signin', module)
-  .add('Initial state', () => <Signin authenticating={false} onSubmit={action('signin')} />)
-  .add('Signing in', () => <Signin authenticating onSubmit={action('signin')} />)
+  .add('Initial state', () => (
+    <Signin
+      authenticating={false}
+      onSubmit={action('signin')}
+      githubSignin={action('githubSignin')}
+    />
+  ))
+  .add('Signing in', () => (
+    <Signin authenticating onSubmit={action('signin')} githubSignin={action('githubSignin')} />
+  ))
   .add('Error', () => (
-    <Signin authenticating={false} error={'Authentication failed'} onSubmit={action('signin')} />
+    <Signin
+      authenticating={false}
+      error={'Authentication failed'}
+      onSubmit={action('signin')}
+      githubSignin={action('githubSignin')}
+    />
   ))

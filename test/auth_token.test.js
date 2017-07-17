@@ -1,8 +1,11 @@
 import Nightmare from 'nightmare'
-import { expect } from 'chai'
 import jwtDecode from 'jwt-decode'
 import uuid from 'uuid'
 import { BASE_URL } from './test_config'
+
+beforeAll(() => {
+  jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000
+})
 
 describe('Refreshing token caused by token expiration', () => {
   describe('with a valid refresh token', () => {
@@ -36,8 +39,8 @@ describe('Refreshing token caused by token expiration', () => {
         .end()
       const at = jwtDecode(accessToken)
       const rt = jwtDecode(refreshToken)
-      expect(at.exp - at.iat).to.equal(60 * 60 * 2)
-      expect(rt.exp - rt.iat).to.equal(5)
+      expect(at.exp - at.iat).toEqual(60 * 60 * 2)
+      expect(rt.exp - rt.iat).toEqual(5)
     })
   })
 
@@ -69,7 +72,7 @@ describe('Refreshing token caused by token expiration', () => {
           path: document.location.pathname
         }))
         .end()
-      expect(path).to.equal('/signin') // redirected
+      expect(path).toEqual('/signin') // redirected
     })
   })
 })
