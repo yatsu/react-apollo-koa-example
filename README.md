@@ -34,11 +34,6 @@ settings.
 Usage
 =====
 
-Launch the proxy server:
-```sh
-% yarn caddy
-```
-
 Launch the API server:
 
 ```sh
@@ -89,12 +84,6 @@ See package.json for more information.
 
 The API server does not use DB and stores data on memory.
 All changes will be cleared when you stop the server.
-
-The development build depends on Caddy for proxying to the Koa backend,
-which is required for proper handling of OAuth2 based authentication.
-(An external proxy server is currently necessary, as here is a bug in the
-  webpack dev server proxy where anchor element links on the same domain are
-  captured by React and render 404s.)
 
 ### Tests
 

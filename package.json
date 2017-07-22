@@ -90,7 +90,6 @@
     "build-storybook": "build-storybook -s public",
     "persistgraphql": "persistgraphql src/graphql --add_typename",
     "server": "nodemon server.js",
-    "caddy": "caddy",
     "console": "NODE_ENV=development babel-node --presets react-app"
   },
   "proxy": "http://localhost:7000",
