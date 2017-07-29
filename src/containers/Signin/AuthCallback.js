@@ -38,7 +38,7 @@ const mapStateToProps = () => ({})
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   authCallback(service: string, code: string, redirect: ?string) {
-    dispatch(authCallback(service, code, redirect))
+    dispatch(authCallback({ service, code, redirect }))
   }
 })
 

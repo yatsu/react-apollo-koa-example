@@ -2,31 +2,25 @@
 import R from 'ramda'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { signin, clearAuthError, githubSignin } from '../../ducks/auth'
+import { signin, authErrorClear, githubSignin } from '../../ducks/auth'
 import Signin from '../../components/Signin/Signin'
 
 class SigninApp extends Signin {
   componentWillMount() {
-    this.props.clearAuthError()
+    this.props.authErrorClear()
   }
 
   componentDidMount() {
-    setTimeout(
-      () => {
-        this.usernameField.select()
-      },
-      0
-    )
+    setTimeout(() => {
+      this.usernameField.select()
+    }, 0)
   }
 
   componentWillReceiveProps(nextProps: Object) {
     if (nextProps.error) {
-      setTimeout(
-        () => {
-          this.passwordField.select()
-        },
-        0
-      )
+      setTimeout(() => {
+        this.passwordField.select()
+      }, 0)
     }
   }
 }
@@ -34,7 +28,7 @@ class SigninApp extends Signin {
 SigninApp.propTypes = {
   authenticating: PropTypes.bool.isRequired,
   error: PropTypes.string,
-  clearAuthError: PropTypes.func.isRequired,
+  authErrorClear: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired
 }
 
@@ -45,15 +39,15 @@ const mapStateToProps = (state: Object) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   onSubmit(username, password) {
-    dispatch(signin(username, password))
+    dispatch(signin({ username, password }))
   },
 
-  clearAuthError() {
-    dispatch(clearAuthError())
+  authErrorClear() {
+    dispatch(authErrorClear())
   },
 
   githubSignin(redirect: ?string) {
-    dispatch(githubSignin(redirect))
+    dispatch(githubSignin({ redirect }))
   }
 })
 

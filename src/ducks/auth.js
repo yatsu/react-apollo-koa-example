@@ -2,21 +2,23 @@
 import jwtDecode from 'jwt-decode'
 import R from 'ramda'
 import { browserHistory } from 'react-router'
+import { createAction, createReducer } from 'redux-act'
 import { createLogic } from 'redux-logic'
-import { Action, AuthError } from '../types'
+import { ErrorType } from '../types'
+import { errorObject } from '../utils'
 
-// Actions
+// Action Creators
 
-const SIGNIN = 'auth/SIGNIN'
-const SIGNIN_SUCCEEDED = 'auth/SIGNIN_SUCCEEDED'
-const SIGNIN_FAILED = 'auth/SIGNIN_FAILED'
-const SIGNIN_RESUME = 'auth/SIGNIN_RESUME'
-const SIGNOUT = 'auth/SIGNOUT'
-const SIGNOUT_SUCCEEDED = 'auth/SIGNOUT_SUCCEEDED'
-const SIGNOUT_FAILED = 'auth/SIGNOUT_FAILED'
-const CLEAR_AUTH_ERROR = 'auth/CLEAR_AUTH_ERROR'
-const GITHUB_SIGNIN = 'auth/GITHUB_SIGNIN'
-const AUTH_CALLBACK = 'auth/AUTH_CALLBACK'
+export const signin = createAction('SIGNIN')
+export const signinSucceeded = createAction('SIGNIN_SUCCEEDED')
+export const signinFailed = createAction('SIGNIN_FAILED')
+export const signinResume = createAction('SIGNIN_RESUME')
+export const signout = createAction('SIGNOUT')
+export const signoutSucceeded = createAction('SIGNOUT_SUCCEEDED')
+export const signoutFailed = createAction('SIGNOUT_FAILED')
+export const authErrorClear = createAction('AUTH_ERROR_CLEAR')
+export const githubSignin = createAction('GITHUB_SIGNIN')
+export const authCallback = createAction('AUTH_CALLBACK')
 
 // Types
 
@@ -24,7 +26,7 @@ type AuthState = {
   username: ?string,
   admin: boolean,
   authenticating: boolean,
-  error: ?AuthError
+  error: ?ErrorType
 }
 
 // Reducer
@@ -36,146 +38,74 @@ const initialState: AuthState = {
   error: null
 }
 
-export function authReducer(state: AuthState = initialState, action: Object = {}) {
-  switch (action.type) {
-    case SIGNIN:
-      return R.pipe(R.assoc('authenticating', true), R.assoc('error', null))(state)
-    case SIGNIN_SUCCEEDED:
-      return R.pipe(
-        R.assoc('authenticating', false),
-        R.assoc('username', R.prop('username', action.payload)),
-        R.assoc('admin', R.prop('admin', action.payload))
-      )(state)
-    case SIGNIN_FAILED:
-      return R.pipe(
-        R.assoc('authenticating', false),
-        R.assoc('error', R.prop('error', action.payload))
-      )(state)
-    case SIGNIN_RESUME:
-      return R.pipe(
-        R.assoc('authenticating', false),
-        R.assoc('username', R.prop('username', action.payload)),
-        R.assoc('admin', R.prop('admin', action.payload))
-      )(state)
-    case SIGNOUT:
-      return R.pipe(
-        R.assoc('authenticating', false),
-        R.assoc('username', null),
-        R.assoc('admin', false)
-      )(state)
-    case SIGNOUT_SUCCEEDED:
-      return state
-    case SIGNOUT_FAILED:
-      return state
-    case CLEAR_AUTH_ERROR:
-      return R.pipe(R.assoc('authenticating', false), R.assoc('error', null))(state)
-    case GITHUB_SIGNIN:
-      return R.assoc('authenticating', true, state)
-    case AUTH_CALLBACK:
-      return R.pipe(R.assoc('authenticating', true), R.assoc('error', null))(state)
-    default:
-      return state
-  }
-}
+export const authReducer = createReducer(
+  {
+    [signin]: (state: AuthState) =>
+      R.merge(state, {
+        authenticating: true,
+        error: null
+      }),
 
-// Action Creators
+    [signinSucceeded]: (state: AuthState, payload: { accessToken: string }) => {
+      const { user } = jwtDecode(payload.accessToken)
+      return R.merge(state, {
+        authenticated: false,
+        username: user.username,
+        admin: user.admin
+      })
+    },
 
-export function signin(username: string, password: string): Action {
-  return {
-    type: SIGNIN,
-    payload: {
-      username,
-      password
-    }
-  }
-}
+    [signinFailed]: (state: AuthState, error: ErrorType) =>
+      R.merge(state, {
+        authenticating: false,
+        error: errorObject(error)
+      }),
 
-export function signinSucceeded(payload: Object): Action {
-  const { accessToken } = payload
-  const { user } = jwtDecode(accessToken)
+    [signinResume]: (state: AuthState) => {
+      const accessToken = localStorage.getItem('accessToken')
+      const { user } = jwtDecode(accessToken)
+      return R.merge(state, {
+        authenticating: false,
+        username: user.username,
+        admin: user.admin
+      })
+    },
 
-  return {
-    type: SIGNIN_SUCCEEDED,
-    payload: {
-      username: user.username,
-      admin: user.admin
-    }
-  }
-}
+    [signout]: (state: AuthState) =>
+      R.merge(state, {
+        authenticating: false,
+        username: null,
+        admin: false
+      }),
 
-export function signinFailed(error: AuthError): Action {
-  return {
-    type: SIGNIN_FAILED,
-    payload: {
-      error: {
-        message: R.pathOr(error.message, ['xhr', 'response', 'error', 'message'], error),
-        status: error.status
-      }
-    }
-  }
-}
+    [signoutSucceeded]: (state: AuthState) => state,
 
-export function signinResume(): Action {
-  const accessToken = localStorage.getItem('accessToken')
-  const { user } = jwtDecode(accessToken)
+    [signoutFailed]: (state: AuthState) => state,
 
-  return {
-    type: SIGNIN_RESUME,
-    payload: {
-      username: user.username,
-      admin: user.admin
-    }
-  }
-}
+    [authErrorClear]: (state: AuthState) =>
+      R.merge(state, {
+        error: null
+      }),
 
-export function signout(): Action {
-  return {
-    type: SIGNOUT
-  }
-}
+    [githubSignin]: (state: AuthState) =>
+      R.merge(state, {
+        authenticating: true,
+        error: null
+      }),
 
-export function signoutSucceeded(): Action {
-  return {
-    type: SIGNOUT_SUCCEEDED
-  }
-}
-
-export function signoutFailed(): Action {
-  return {
-    type: SIGNOUT_FAILED
-  }
-}
-
-export function clearAuthError(): Action {
-  return {
-    type: CLEAR_AUTH_ERROR
-  }
-}
-
-export function githubSignin(redirect: ?string): Action {
-  return {
-    type: GITHUB_SIGNIN,
-    payload: {
-      redirect
-    }
-  }
-}
-
-export function authCallback(service: string, code: string, redirect: ?string): Action {
-  return {
-    type: AUTH_CALLBACK,
-    payload: {
-      service,
-      code,
-      redirect
-    }
-  }
-}
+    [authCallback]: (state: AuthState) =>
+      R.merge(state, {
+        authenticating: true,
+        error: null
+      })
+  },
+  initialState
+)
 
 // Logic
 
 export const signinLogic = createLogic({
-  type: SIGNIN,
+  type: signin,
   latest: true,
 
   processOptions: {
@@ -198,7 +128,7 @@ export const signinLogic = createLogic({
 })
 
 export const signoutLogic = createLogic({
-  type: SIGNOUT,
+  type: signout,
   latest: true,
 
   process({ webClient }) {
@@ -225,14 +155,13 @@ export const autoSignoutLogic = createLogic({
 })
 
 export const githubSigninLogic = createLogic({
-  type: GITHUB_SIGNIN,
+  type: githubSignin,
   latest: true,
 
   process({ action, webClient }, dispatch: Dispatch, done: () => void) {
     const headers = { 'Content-Type': 'application/json' }
-    const { redirect } = action.payload
     return webClient
-      .post(`/auth/github/${redirect || ''}`, {}, headers, false)
+      .post(`/auth/github/${action.payload.redirect || ''}`, {}, headers, false)
       .subscribe((result: Object) => {
         const { url } = result.response
         window.location = url
@@ -242,7 +171,7 @@ export const githubSigninLogic = createLogic({
 })
 
 export const authCallbackLogic = createLogic({
-  type: AUTH_CALLBACK,
+  type: authCallback,
   latest: true,
 
   process({ action, webClient }, dispatch: Dispatch, done: () => void) {

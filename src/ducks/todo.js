@@ -20,8 +20,8 @@ export type TodoState = {
 
 // Action Creators
 
-export const createTodo = createAction('CREATE')
-export const toggleTodo = createAction('TOGGLE')
+export const createTodo = createAction('TODO_CREATE')
+export const toggleTodo = createAction('TODO_TOGGLE')
 
 // Reducer
 
@@ -34,14 +34,14 @@ export const initialState: TodoState = {
 
 export const todoReducer = createReducer(
   {
-    [createTodo]: (state: TodoState, payload: string) => {
+    [createTodo]: (state: TodoState, text: string) => {
       const id = keyLength(state.todos).toString()
       return {
         todos: R.assoc(
           id,
           {
             id,
-            text: payload,
+            text,
             completed: false
           },
           state.todos
@@ -49,8 +49,8 @@ export const todoReducer = createReducer(
       }
     },
 
-    [toggleTodo]: (state: TodoState, payload: string) => {
-      const todo = state.todos[payload]
+    [toggleTodo]: (state: TodoState, todoID: string) => {
+      const todo = state.todos[todoID]
       todo.completed = !todo.completed
       return {
         todos: R.assoc(todo.id, todo, state.todos)
