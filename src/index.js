@@ -4,7 +4,8 @@ import ReactDOM from 'react-dom'
 import { Router, Route, IndexRoute, browserHistory } from 'react-router'
 import { Provider } from 'react-redux'
 import { replace, syncHistoryWithStore } from 'react-router-redux'
-import { UserAuthWrapper } from 'redux-auth-wrapper'
+import { connectedReduxRedirect } from 'redux-auth-wrapper/history3/redirect'
+import locationHelperBuilder from 'redux-auth-wrapper/history3/locationHelper'
 import 'semantic-ui-css/semantic.min.css'
 import { SubscriptionClient, addGraphQLSubscriptions } from 'subscriptions-transport-ws'
 import WebClient from './WebClient'
@@ -58,22 +59,22 @@ const webClient = new WebClient()
 const store = configureStore({}, apolloClient, webClient)
 const history = syncHistoryWithStore(browserHistory, store)
 
-const userAuthenticated = UserAuthWrapper({
-  authSelector: state => state.auth,
-  predicate: auth => !!auth.username,
-  redirectAction: replace,
+const locationHelper = locationHelperBuilder({})
+
+const userIsAuthenticated = connectedReduxRedirect({
+  redirectPath: '/signin',
   allowRedirectBack: true,
-  failureRedirectPath: '/signin',
-  wrapperDisplayName: 'userAuthenticated'
+  authenticatedSelector: state => state.auth.username !== null,
+  redirectAction: replace,
+  wrapperDisplayName: 'userIsAuthenticated'
 })
 
-const userNotAuthenticated = UserAuthWrapper({
-  authSelector: state => state.auth,
-  predicate: auth => !auth.username,
-  redirectAction: replace,
+const userIsNotAuthenticated = connectedReduxRedirect({
+  redirectPath: (state, ownProps) => locationHelper.getRedirectQueryParam(ownProps) || '/',
   allowRedirectBack: false,
-  failureRedirectPath: (state, ownProps) => ownProps.location.query.redirect || '/',
-  wrapperDisplayName: 'userNotAuthenticated'
+  authenticatedSelector: state => state.auth.username === null,
+  redirectAction: replace,
+  wrapperDisplayName: 'userIsNotAuthenticated'
 })
 
 const accessToken = localStorage.getItem('accessToken')
@@ -86,10 +87,10 @@ ReactDOM.render(
     <Router history={history}>
       <Route path="/" component={App}>
         <IndexRoute component={HomeApp} />
-        <Route path="signin" component={userNotAuthenticated(SigninApp)} />
-        <Route path="todo" component={userAuthenticated(TodoApp)} />
-        <Route path="todo-remote" component={userAuthenticated(RemoteTodoApp)} />
-        <Route path="todo-pubsub" component={userAuthenticated(PubSubTodoApp)} />
+        <Route path="signin" component={userIsNotAuthenticated(SigninApp)} />
+        <Route path="todo" component={userIsAuthenticated(TodoApp)} />
+        <Route path="todo-remote" component={userIsAuthenticated(RemoteTodoApp)} />
+        <Route path="todo-pubsub" component={userIsAuthenticated(PubSubTodoApp)} />
         <Route path="authcb/(:service)(/:redirect)" component={AuthCallback} />
         <Route path="*" component={NotFound} />
       </Route>

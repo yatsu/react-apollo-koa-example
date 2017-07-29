@@ -1,11 +1,8 @@
 // @flow
 import R from 'ramda'
+import { createAction, createReducer } from 'redux-act'
 import { Todo } from '../types'
-
-// Actions
-
-const CREATE = 'todo/CREATE'
-const TOGGLE = 'todo/TOGGLE'
+import { keyLength } from '../utils'
 
 // Types
 
@@ -18,8 +15,13 @@ export type TodoAction = {
 }
 
 export type TodoState = {
-  'todos': { [id: string]: Todo }
+  'todos': { [string]: Todo }
 }
+
+// Action Creators
+
+export const createTodo = createAction('CREATE')
+export const toggleTodo = createAction('TOGGLE')
 
 // Reducer
 
@@ -30,40 +32,30 @@ export const initialState: TodoState = {
   }
 }
 
-export function todoReducer(state: TodoState = initialState, action: Object = {}) {
-  switch (action.type) {
-    case CREATE:
-      return R.over(
-        R.lensProp('todos'),
-        (todos: { [id: string]: Todo }) =>
-          R.assoc(
-            R.keys(todos).length.toString(),
-            {
-              id: R.keys(todos).length.toString(),
-              text: R.path(['todo', 'text'], action.payload),
-              completed: false
-            },
-            todos
-          ),
-        state
-      )
-    case TOGGLE:
-      return R.over(
-        R.lensPath(['todos', R.prop('todoID', action.payload)]),
-        (todo: Todo) => R.assoc('completed', !todo.completed, todo),
-        state
-      )
-    default:
-      return state
-  }
-}
+export const todoReducer = createReducer(
+  {
+    [createTodo]: (state: TodoState, payload: string) => {
+      const id = keyLength(state.todos).toString()
+      return {
+        todos: R.assoc(
+          id,
+          {
+            id,
+            text: payload,
+            completed: false
+          },
+          state.todos
+        )
+      }
+    },
 
-// Action Creators
-
-export function createTodo(text: Object) {
-  return { type: CREATE, payload: { todo: { text } } }
-}
-
-export function toggleTodo(todoID: string) {
-  return { type: TOGGLE, payload: { todoID } }
-}
+    [toggleTodo]: (state: TodoState, payload: string) => {
+      const todo = state.todos[payload]
+      todo.completed = !todo.completed
+      return {
+        todos: R.assoc(todo.id, todo, state.todos)
+      }
+    }
+  },
+  initialState
+)
