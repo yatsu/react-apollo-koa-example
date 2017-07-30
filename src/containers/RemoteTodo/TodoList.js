@@ -2,12 +2,12 @@
 import R from 'ramda'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { fetchTodos, toggleTodo } from '../../ducks/todoRemote'
+import { todoRemoteFetch, todoRemoteToggle } from '../../ducks/todoRemote'
 import TodoList from '../../components/Todo/TodoList'
 
 class TodoListContainer extends TodoList {
   componentDidMount() {
-    this.props.fetchTodos()
+    this.props.todoRemoteFetch()
   }
 }
 
@@ -19,7 +19,7 @@ TodoListContainer.propTypes = {
       text: PropTypes.string.isRequired
     })
   ).isRequired,
-  fetchTodos: PropTypes.func.isRequired,
+  todoRemoteFetch: PropTypes.func.isRequired,
   onTodoClick: PropTypes.func.isRequired
 }
 
@@ -28,11 +28,11 @@ const mapStateToProps = (state: Object) => ({
 })
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-  fetchTodos() {
-    dispatch(fetchTodos())
+  todoRemoteFetch() {
+    dispatch(todoRemoteFetch())
   },
   onTodoClick(todoID: string) {
-    dispatch(toggleTodo(todoID))
+    dispatch(todoRemoteToggle({ todoID }))
   }
 })
 

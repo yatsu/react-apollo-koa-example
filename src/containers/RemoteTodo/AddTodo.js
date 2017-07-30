@@ -3,7 +3,7 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import TodoField from '../../components/Todo/TodoField'
-import { createTodo } from '../../ducks/todoRemote'
+import { todoRemoteCreate } from '../../ducks/todoRemote'
 
 class AddTodo extends PureComponent {
   render() {
@@ -21,7 +21,7 @@ const mapStateToProps = () => ({})
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   onCreateTodo(text: string) {
-    dispatch(createTodo({ text }))
+    dispatch(todoRemoteCreate({ text }))
   }
 })
 

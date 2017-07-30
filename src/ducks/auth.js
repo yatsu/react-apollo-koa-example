@@ -4,8 +4,8 @@ import R from 'ramda'
 import { browserHistory } from 'react-router'
 import { createAction, createReducer } from 'redux-act'
 import { createLogic } from 'redux-logic'
-import { ErrorType } from '../types'
 import { errorObject } from '../utils'
+import type { ErrorType } from '../types'
 
 // Action Creators
 
@@ -40,13 +40,13 @@ const initialState: AuthState = {
 
 export const authReducer = createReducer(
   {
-    [signin]: (state: AuthState) =>
+    [signin]: (state: AuthState): AuthState =>
       R.merge(state, {
         authenticating: true,
         error: null
       }),
 
-    [signinSucceeded]: (state: AuthState, payload: { accessToken: string }) => {
+    [signinSucceeded]: (state: AuthState, payload: { accessToken: string }): AuthState => {
       const { user } = jwtDecode(payload.accessToken)
       return R.merge(state, {
         authenticated: false,
@@ -55,13 +55,13 @@ export const authReducer = createReducer(
       })
     },
 
-    [signinFailed]: (state: AuthState, error: ErrorType) =>
+    [signinFailed]: (state: AuthState, payload: ErrorType): AuthState =>
       R.merge(state, {
         authenticating: false,
-        error: errorObject(error)
+        error: errorObject(payload)
       }),
 
-    [signinResume]: (state: AuthState) => {
+    [signinResume]: (state: AuthState): AuthState => {
       const accessToken = localStorage.getItem('accessToken')
       const { user } = jwtDecode(accessToken)
       return R.merge(state, {
@@ -71,29 +71,29 @@ export const authReducer = createReducer(
       })
     },
 
-    [signout]: (state: AuthState) =>
+    [signout]: (state: AuthState): AuthState =>
       R.merge(state, {
         authenticating: false,
         username: null,
         admin: false
       }),
 
-    [signoutSucceeded]: (state: AuthState) => state,
+    [signoutSucceeded]: (state: AuthState): AuthState => state,
 
-    [signoutFailed]: (state: AuthState) => state,
+    [signoutFailed]: (state: AuthState): AuthState => state,
 
-    [authErrorClear]: (state: AuthState) =>
+    [authErrorClear]: (state: AuthState): AuthState =>
       R.merge(state, {
         error: null
       }),
 
-    [githubSignin]: (state: AuthState) =>
+    [githubSignin]: (state: AuthState): AuthState =>
       R.merge(state, {
         authenticating: true,
         error: null
       }),
 
-    [authCallback]: (state: AuthState) =>
+    [authCallback]: (state: AuthState): AuthState =>
       R.merge(state, {
         authenticating: true,
         error: null
