@@ -1,67 +1,88 @@
 import { createMockStore } from 'redux-logic-test'
 import Rx from 'rxjs'
 import TODO_UPDATED_SUBSCRIPTION from '../../graphql/todoUpdatedSubscription.graphql'
-
+import { itWithRx } from '../../test/helper'
 import {
-  SUBSCRIBE,
-  SUBSCRIBE_SUCCEEDED,
-  RECEIVE_SUCCEEDED,
+  todoPubSubSubscribe,
+  todoPubSubSubscribeSucceeded,
+  todoPubSubReceiveSucceeded,
+  todoPubSubUnsubscribe,
   initialState,
   todoSubscribeLogic
 } from '../todoPubSub'
 
 describe('todoSubscribeLogic', () => {
-  it('dispatches SUBSCRIBE_SUCCEEDED on success', () => {
-    const scheduler = new Rx.TestScheduler((a, b) => expect(a).toEqual(b))
-    scheduler.maxFrames = 1000
-    const subscriptions = { todo: null }
-    const todo$ = Rx.Observable
-      .of({ todoUpdated: { id: '1', text: 'foo', completed: true } })
-      .delay(100, scheduler)
-    let todoSub = null
-    todo$.subscribe_ = todo$.subscribe
-    todo$.subscribe = (observer) => {
-      const sub = todo$.subscribe_(observer)
-      sub._networkSubscriptionId = 1
-      todoSub = sub
-      return sub
-    }
-    let subscribeQuery = null
-    const store = createMockStore({
-      initialState,
-      injectedDeps: {
-        apollo: {
-          subscribe: (query) => {
-            subscribeQuery = query
-            return todo$
+  itWithRx(
+    'dispatches todoPubSubSubscribeSucceeded on success',
+    async ({ rstTestScheduler, hot }) => {
+      const subscriptions = { todo: null }
+      const todo$ = hot('-a|', {
+        a: {
+          todoUpdated: {
+            id: '1',
+            text: 'foo',
+            completed: true
           }
-        },
-        subscriptions
-      },
-      logic: [todoSubscribeLogic]
-    })
-    store.dispatch({ type: SUBSCRIBE })
-    scheduler.flush()
-    expect(store.actions).toEqual([
-      {
-        type: SUBSCRIBE
-      },
-      {
-        type: SUBSCRIBE_SUCCEEDED,
-        payload: {
-          subid: 1
         }
-      },
-      {
-        type: RECEIVE_SUCCEEDED,
-        payload: {
-          todo: { id: '1', text: 'foo', completed: true }
-        }
+      })
+
+      let subscribeQuery = null
+
+      // mock todo$.subscribe() to assign _networkSubscriptionId
+      todo$.subscribe_ = todo$.subscribe
+      todo$.subscribe = (observer) => {
+        const sub = todo$.subscribe_(observer)
+        sub._networkSubscriptionId = 'sub-1'
+        return sub
       }
-    ])
-    expect(subscriptions.todo).toBe(todoSub)
-    expect(subscribeQuery).toEqual({
-      query: TODO_UPDATED_SUBSCRIPTION
-    })
-  })
+
+      const store = createMockStore({
+        initialState,
+        injectedDeps: {
+          apollo: {
+            subscribe: (query) => {
+              subscribeQuery = query
+              return todo$
+            }
+          },
+          subscriptions
+        },
+        logic: [todoSubscribeLogic]
+      })
+
+      store.dispatch(todoPubSubSubscribe())
+
+      Rx.Observable.timer(30, rstTestScheduler).subscribe({
+        next: () => {
+          store.dispatch(todoPubSubUnsubscribe())
+        }
+      })
+
+      await store.whenComplete(() => {
+        expect(store.actions).toEqual([
+          {
+            type: todoPubSubSubscribe.getType(),
+            payload: undefined
+          },
+          {
+            type: todoPubSubSubscribeSucceeded.getType(),
+            payload: {
+              subid: 'sub-1'
+            }
+          },
+          {
+            type: todoPubSubReceiveSucceeded.getType(),
+            payload: { id: '1', text: 'foo', completed: true }
+          },
+          {
+            type: todoPubSubUnsubscribe.getType(),
+            payload: undefined
+          }
+        ])
+        expect(subscribeQuery).toEqual({
+          query: TODO_UPDATED_SUBSCRIPTION
+        })
+      })
+    }
+  )
 })

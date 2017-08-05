@@ -2,7 +2,11 @@
 import R from 'ramda'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { subscribeTodos, unsubscribeTodos, toggleTodo } from '../../ducks/todoPubSub'
+import {
+  todoPubSubSubscribe,
+  todoPubSubUnsubscribe,
+  todoPubSubToggle
+} from '../../ducks/todoPubSub'
 import TodoList from '../../components/Todo/TodoList'
 
 class TodoListContainer extends TodoList {
@@ -34,13 +38,13 @@ const mapStateToProps = (state: Object) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   subscribeTodos() {
-    dispatch(subscribeTodos())
+    dispatch(todoPubSubSubscribe())
   },
   unsubscribeTodos() {
-    dispatch(unsubscribeTodos())
+    dispatch(todoPubSubUnsubscribe())
   },
   onTodoClick(todoID: string) {
-    dispatch(toggleTodo(todoID))
+    dispatch(todoPubSubToggle({ todoID }))
   }
 })
 

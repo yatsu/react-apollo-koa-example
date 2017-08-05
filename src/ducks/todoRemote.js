@@ -18,7 +18,7 @@ type TodoRemoteState = {
   toggleError: ?string
 }
 
-// Action Creators
+// Actions
 
 export const todoRemoteFetch = createAction('TODO_REMOTE_FETCH')
 export const todoRemoteFetchSucceeded = createAction('TODO_REMOTE_FETCH_SUCCEDED')

@@ -65,7 +65,7 @@ describe('Refreshing token caused by token expiration', () => {
           localStorage.removeItem('devHeaders')
         })
         .wait('input[name=add-todo]', todo)
-        .insert('input[name=add-todo]', todo)
+        .type('input[name=add-todo]', todo)
         .click('#add-todo-button')
         .wait(1000)
         .evaluate(() => ({

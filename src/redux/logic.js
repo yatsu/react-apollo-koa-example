@@ -9,7 +9,7 @@ import {
 import { todosFetchLogic, todoCreateLogic, todoToggleLogic } from '../ducks/todoRemote'
 import {
   todoSubscribeLogic,
-  todoUnsubscribeLogic,
+  // todoUnsubscribeLogic,
   todoCreateLogic as todoCreateLogicForPubSub,
   todoToggleLogic as todoToggleLogicForPubSub
 } from '../ducks/todoPubSub'
@@ -24,7 +24,7 @@ const rootLogic = [
   todoCreateLogic,
   todoToggleLogic,
   todoSubscribeLogic,
-  todoUnsubscribeLogic,
+  // todoUnsubscribeLogic,
   todoCreateLogicForPubSub,
   todoToggleLogicForPubSub
 ]

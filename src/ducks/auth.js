@@ -7,7 +7,7 @@ import { createLogic } from 'redux-logic'
 import { errorObject } from '../utils'
 import type { ErrorType } from '../types'
 
-// Action Creators
+// Actions
 
 export const signin = createAction('SIGNIN')
 export const signinSucceeded = createAction('SIGNIN_SUCCEEDED')
@@ -140,13 +140,14 @@ export const signoutLogic = createLogic({
 })
 
 export const autoSignoutLogic = createLogic({
-  type: new RegExp('[/_](REJECTED|FAILED)$'),
+  type: new RegExp('_FAILED$'),
   latest: true,
 
   process({ action }, dispatch: Dispatch, done: () => void) {
+    console.log('failed', action.payload)
     if (
-      R.path(['error', 'status'], action.payload) === 401 ||
-      R.path(['error', 'graphQLErrors', 0, 'message'], action.payload) === 'Access denied.'
+      action.payload.status === 401 ||
+      R.path(['graphQLErrors', 0, 'message'], action.payload) === 'Access denied.'
     ) {
       dispatch(signout())
     }

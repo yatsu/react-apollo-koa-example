@@ -21,7 +21,7 @@ const mapStateToProps = () => ({})
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   onCreateTodo(text) {
-    dispatch(createTodo(text))
+    dispatch(createTodo({ text }))
   }
 })
 
