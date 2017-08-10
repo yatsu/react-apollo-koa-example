@@ -22,9 +22,6 @@
     "import/no-extraneous-dependencies": ["error", {
       "devDependencies": ["**/*.test.js", "src/test/helper.js", "**/stories/**/*.js"]
     }],
-    "import/no-named-default": "off",
-    "react/jsx-tag-spacing": "off",
-    "react/no-array-index-key": "off",
     "react/require-default-props": "off"
   }
 }
