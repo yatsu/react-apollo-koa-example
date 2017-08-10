@@ -4,8 +4,8 @@ import Rx from 'rxjs'
 import createDebug from 'debug'
 
 class WebClient {
-  ajax: (...rest: Array<any>) => Rx.Observable // eslint-disable-line no-undef
-  debugAuth: (...rest: Array<any>) => void // eslint-disable-line no-undef
+  ajax: (...rest: Array<any>) => Rx.Observable
+  debugAuth: (...rest: Array<any>) => void
 
   constructor() {
     this.ajax = Rx.Observable.ajax

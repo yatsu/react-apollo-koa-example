@@ -8,7 +8,7 @@ class TodoField extends Component {
     if (this.inputField) this.inputField.focus()
   }
 
-  inputField: ?HTMLInputElement // eslint-disable-line no-undef
+  inputField: ?HTMLInputElement
 
   handleSubmit(event: Event) {
     const { onSubmit } = this.props

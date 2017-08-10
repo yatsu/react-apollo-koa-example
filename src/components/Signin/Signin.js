@@ -6,8 +6,8 @@ import { Button, Container, Divider, Form, Icon, Message } from 'semantic-ui-rea
 import './Signin.css'
 
 class Signin extends Component {
-  usernameField: ?HTMLInputElement // eslint-disable-line no-undef
-  passwordField: ?HTMLInputElement // eslint-disable-line no-undef
+  usernameField: ?HTMLInputElement
+  passwordField: ?HTMLInputElement
 
   handleSubmit(event: Event) {
     event.preventDefault()
