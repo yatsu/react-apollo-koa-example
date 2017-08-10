@@ -7,7 +7,7 @@ import config from '../config.json'
 // persisted query network interface (from `extractgql`) depending on
 // the configuration within `../config.json`.
 // export default function getNetworkInterface(apiUrl = '/graphql', headers = {}) {
-export default function getNetworkInterface(apiUrl: string, headers: Object) {
+export default function getNetworkInterface(apiUrl: string, headers: Object = {}) {
   return new PersistedQueryNetworkInterface({
     queryMap,
     uri: apiUrl,

@@ -1,4 +1,5 @@
 // @flow
+import createDebug from 'debug'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Router, Route, IndexRoute, browserHistory } from 'react-router'
@@ -24,13 +25,31 @@ import config from './config.json'
 
 import './index.css'
 
+const debugPubSub = createDebug('example:pubsub')
+
 const wsClient = new SubscriptionClient(config.wsURL, {
   reconnect: true,
   connectionParams: {}
 })
 
+wsClient.on('connecting', () => {
+  debugPubSub('connecting')
+})
+wsClient.on('connected', () => {
+  debugPubSub('connected')
+})
+wsClient.on('reconnecting', () => {
+  debugPubSub('reconnecting')
+})
+wsClient.on('reconnected', () => {
+  debugPubSub('reconnected')
+})
+wsClient.on('disconnected', () => {
+  debugPubSub('disconnected')
+})
+
 const networkInterfaceWithSubscriptions = addGraphQLSubscriptions(
-  getNetworkInterface(config.graphqlURL, {}),
+  getNetworkInterface(config.graphqlURL),
   wsClient
 )
 
@@ -48,14 +67,12 @@ networkInterfaceWithSubscriptions.use([
 ])
 
 const apolloClient = createApolloClient({
-  networkInterface: networkInterfaceWithSubscriptions,
-  initialState: window.__APOLLO_STATE__,
-  ssrForceFetchDelay: 100
+  networkInterface: networkInterfaceWithSubscriptions
 })
 
 const webClient = new WebClient()
 
-const store = configureStore({}, apolloClient, webClient)
+const store = configureStore({}, apolloClient, webClient, wsClient)
 const history = syncHistoryWithStore(browserHistory, store)
 
 const locationHelper = locationHelperBuilder({})

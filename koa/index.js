@@ -1,19 +1,23 @@
 // @flow
+import createDebug from 'debug'
+// import { createServer } from 'http'
 import Koa from 'koa'
 import logger from 'koa-logger'
 import bodyParser from 'koa-bodyparser'
 import Router from 'koa-router'
 import R from 'ramda'
+import { execute, subscribe } from 'graphql'
 import { graphqlKoa, graphiqlKoa } from 'graphql-server-koa'
 import { SubscriptionServer } from 'subscriptions-transport-ws'
-import { executableSchema } from './executableSchema'
-import subscriptionManager from './subscriptions'
+import { executableSchema, pubsub, TODO_UPDATED_TOPIC } from './executableSchema'
 import queryMap from '../src/extracted_queries.json'
 import errorHandler from './error'
 import env from './env'
 import { todos } from './store'
 import { signin, signout, tokenRefresh, githubAuthRedirect, githubAuthCB } from './auth'
 import type { Todo } from '../src/types'
+
+const debugPubSub = createDebug('example:pubsub')
 
 const app = new Koa()
 
@@ -62,18 +66,28 @@ if (process.env !== 'production') {
 app.use(router.routes())
 app.use(router.allowedMethods())
 
-// Launching server
+// Launching the server
 
 const server = app.listen(env('SERVER_PORT'), env('SERVER_HOST'))
 
-// eslint-disable-next-line no-new
-new SubscriptionServer(
+// Setup the subscription server
+
+SubscriptionServer.create(
   {
-    subscriptionManager,
-    onSubscribe(message: string, params: Object) {
+    schema: executableSchema,
+    execute,
+    subscribe,
+    // onConnect: (connectionParams: Object, socket: WebSocket) => {
+    //   debugPubSub('connect')
+    // },
+    // onDisconnect: (socket) => {
+    //   debugPubSub('disconnect')
+    // },
+    onOperation(message: string, params: Object) {
       setTimeout(() => {
         R.forEach((todo: Todo) => {
-          subscriptionManager.pubsub.publish('todoUpdated', todo)
+          pubsub.publish(TODO_UPDATED_TOPIC, { todoUpdated: todo })
+          debugPubSub('publish', TODO_UPDATED_TOPIC, todo)
         }, todos)
       }, 0)
       return Promise.resolve(params)

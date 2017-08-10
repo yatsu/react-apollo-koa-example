@@ -6,38 +6,40 @@ import R from 'ramda'
 import env from './env'
 import { todos } from './store'
 
+const debugAuth = createDebug('example:auth')
 const debugGraphQL = createDebug('example:graphql')
+const debugPubSub = createDebug('example:pubsub')
+
+const TODO_UPDATED_TOPIC = 'todoUpdated'
 
 const pubsub = new PubSub()
 
-const authenticated = (method: Function) =>
-  async (_, args: Object, context: Object) => {
-    const { ctx } = context
-    try {
-      const { user } = jwt.verify(
-        ctx.request.header.authorization ? ctx.request.header.authorization.split(' ')[1] : '',
-        env('AUTH_SECRET')
-      )
-      ctx.state.user = user
-    } catch (error) {
-      ctx.throw(401, 'Access denied.')
-    }
-    const result = await method(_, args, context)
-    return result
+const authenticated = (method: Function) => async (_, args: Object, context: Object) => {
+  const { ctx } = context
+  // debugAuth('header.authorization', ctx.request.header.authorization)
+  try {
+    const { user } = jwt.verify(
+      ctx.request.header.authorization ? ctx.request.header.authorization.split(' ')[1] : '',
+      env('AUTH_SECRET')
+    )
+    ctx.state.user = user
+  } catch (error) {
+    debugAuth('error', error)
+    ctx.throw(401, 'Access denied.')
   }
+  const result = await method(_, args, context)
+  return result
+}
 
 function authenticatedResolvers(resolvers: Object): Object {
-  return R.mapObjIndexed(
-    (resolver: Object, key: string) => {
-      if (key === 'Subscription') {
-        // NOTE: authentication is currently not available for subscription
-        return resolver
-      }
-      debugGraphQL('key', key, resolver)
-      return R.mapObjIndexed((method: Function) => authenticated(method), resolver)
-    },
-    resolvers
-  )
+  return R.mapObjIndexed((resolver: Object, key: string) => {
+    if (key === 'Subscription') {
+      // NOTE: authentication is currently not available for subscription
+      return resolver
+    }
+    debugGraphQL('key', key, resolver)
+    return R.mapObjIndexed((method: Function) => authenticated(method), resolver)
+  }, resolvers)
 }
 
 const resolvers = authenticatedResolvers({
@@ -59,7 +61,8 @@ const resolvers = authenticatedResolvers({
         completed: false
       }
       todos.push(todo)
-      pubsub.publish('todoUpdated', todo)
+      pubsub.publish(TODO_UPDATED_TOPIC, { todoUpdated: { ...todo } })
+      debugPubSub('publish', TODO_UPDATED_TOPIC, todo)
       return todo
     },
     toggleTodo(_, { id }, { ctx }) {
@@ -68,16 +71,18 @@ const resolvers = authenticatedResolvers({
         ctx.throw(404, `Couldn't find Todo with id ${id}`)
       }
       todo.completed = !todo.completed
-      pubsub.publish('todoUpdated', todo)
+      pubsub.publish(TODO_UPDATED_TOPIC, { todoUpdated: { ...todo } })
+      debugPubSub('publish', TODO_UPDATED_TOPIC, todo)
       return todo
     }
   },
   Subscription: {
-    todoUpdated(todo: Object) {
-      debugGraphQL('todoUpdated', todo)
-      return todo
+    todoUpdated: {
+      subscribe() {
+        return pubsub.asyncIterator(TODO_UPDATED_TOPIC)
+      }
     }
   }
 })
 
-export { resolvers, pubsub }
+export { resolvers, pubsub, TODO_UPDATED_TOPIC }
