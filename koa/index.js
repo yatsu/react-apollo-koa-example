@@ -8,7 +8,7 @@ import { graphqlKoa, graphiqlKoa } from 'graphql-server-koa'
 import { SubscriptionServer } from 'subscriptions-transport-ws'
 import { executableSchema } from './executableSchema'
 import subscriptionManager from './subscriptions'
-import queryMap from '../extracted_queries.json'
+import queryMap from '../src/extracted_queries.json'
 import errorHandler from './error'
 import env from './env'
 import { todos } from './store'
@@ -71,17 +71,11 @@ new SubscriptionServer(
   {
     subscriptionManager,
     onSubscribe(message: string, params: Object) {
-      setTimeout(
-        () => {
-          R.forEach(
-            (todo: Todo) => {
-              subscriptionManager.pubsub.publish('todoUpdated', todo)
-            },
-            todos
-          )
-        },
-        0
-      )
+      setTimeout(() => {
+        R.forEach((todo: Todo) => {
+          subscriptionManager.pubsub.publish('todoUpdated', todo)
+        }, todos)
+      }, 0)
       return Promise.resolve(params)
     }
   },

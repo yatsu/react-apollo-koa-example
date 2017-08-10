@@ -6,12 +6,15 @@ import { Button, Container, Divider, Form, Icon, Message } from 'semantic-ui-rea
 import './Signin.css'
 
 class Signin extends Component {
-  usernameField: any;
-  passwordField: any;
+  usernameField: ?HTMLInputElement // eslint-disable-line no-undef
+  passwordField: ?HTMLInputElement // eslint-disable-line no-undef
 
   handleSubmit(event: Event) {
     event.preventDefault()
-    this.props.onSubmit(this.usernameField.value, this.passwordField.value)
+    this.props.onSubmit(
+      this.usernameField ? this.usernameField.value : '',
+      this.passwordField ? this.passwordField.value : ''
+    )
   }
 
   handleGithubSignin(event: Event) {
@@ -23,7 +26,11 @@ class Signin extends Component {
     const { authenticating } = this.props
     if (authenticating === false) return null
 
-    return <Message><p>Signing in...</p></Message>
+    return (
+      <Message>
+        <p>Signing in...</p>
+      </Message>
+    )
   }
 
   renderError() {
@@ -33,7 +40,9 @@ class Signin extends Component {
     return (
       <Message negative>
         <Message.Header>Sign in failed</Message.Header>
-        <p>{error}</p>
+        <p>
+          {error}
+        </p>
       </Message>
     )
   }
@@ -78,7 +87,9 @@ class Signin extends Component {
             </Button>
           </Form.Field>
         </Form>
-        <div>{authenticating}</div>
+        <div>
+          {authenticating}
+        </div>
         {this.renderStatus()}
         {this.renderError()}
         <Divider horizontal>or</Divider>

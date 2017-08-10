@@ -4,8 +4,8 @@ import Rx from 'rxjs'
 import createDebug from 'debug'
 
 class WebClient {
-  ajax: (...rest: Array<any>) => Rx.Observable;
-  debugAuth: (...rest: Array<any>) => void;
+  ajax: (...rest: Array<any>) => Rx.Observable // eslint-disable-line no-undef
+  debugAuth: (...rest: Array<any>) => void // eslint-disable-line no-undef
 
   constructor() {
     this.ajax = Rx.Observable.ajax
@@ -17,12 +17,9 @@ class WebClient {
 
     const devHeaders = localStorage.getItem('devHeaders')
     if (devHeaders) {
-      R.forEachObjIndexed(
-        (value: any, key: string) => {
-          headers[key] = value
-        },
-        JSON.parse(devHeaders)
-      )
+      R.forEachObjIndexed((value: any, key: string) => {
+        headers[key] = value
+      }, JSON.parse(devHeaders))
     }
 
     const authEnabled = auth === undefined || auth

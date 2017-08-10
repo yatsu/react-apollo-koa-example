@@ -6,6 +6,7 @@ import { keyLength } from '../utils'
 
 // Types
 
+// eslint-disable-next-line no-undef
 export type TodoAction = {
   type: string,
   payload?: {

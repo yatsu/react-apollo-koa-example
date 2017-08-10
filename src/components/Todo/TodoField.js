@@ -5,21 +5,23 @@ import { Button, Form } from 'semantic-ui-react'
 
 class TodoField extends Component {
   componentDidMount() {
-    this.inputField.focus()
+    if (this.inputField) this.inputField.focus()
   }
 
-  inputField: any;
+  inputField: ?HTMLInputElement // eslint-disable-line no-undef
 
   handleSubmit(event: Event) {
     const { onSubmit } = this.props
 
     event.preventDefault()
-    if (!this.inputField.value.trim()) {
+    if (!this.inputField || !this.inputField.value.trim()) {
       return
     }
     onSubmit(this.inputField.value)
-    this.inputField.value = ''
-    this.inputField.focus()
+    if (this.inputField) {
+      this.inputField.value = ''
+      this.inputField.focus()
+    }
   }
 
   render() {
@@ -35,7 +37,9 @@ class TodoField extends Component {
           />
         </Form.Field>
         <Form.Field>
-          <Button id="add-todo-button" primary>Add Todo</Button>
+          <Button id="add-todo-button" primary>
+            Add Todo
+          </Button>
         </Form.Field>
       </Form>
     )

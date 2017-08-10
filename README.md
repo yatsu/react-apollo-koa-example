@@ -28,8 +28,8 @@ Install required packages.
 
 Copy `.env.default` to `.env` and edit it to change server-side settings.
 
-Copy `config-default.json` to `config.json` and edit it to change client-side
-settings.
+Copy `src/config-default.json` to `src/config.json` and edit it to change
+client-side settings.
 
 Usage
 =====

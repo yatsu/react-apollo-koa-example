@@ -1,7 +1,7 @@
 // @flow
 import { PersistedQueryNetworkInterface } from 'persistgraphql'
-import queryMap from '../../extracted_queries.json'
-import config from '../../config.json'
+import queryMap from '../extracted_queries.json'
+import config from '../config.json'
 
 // Returns either a standard, fetch-full-query network interface or a
 // persisted query network interface (from `extractgql`) depending on
