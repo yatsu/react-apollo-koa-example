@@ -1,7 +1,7 @@
 // @flow
 import { connect } from 'react-redux'
-import { signout } from '../ducks/auth'
-import Header from '../components/Header'
+import { signout } from '../../ducks/auth'
+import Header from '../../components/Header/Header'
 
 const mapStateToProps = (state: Object) => ({
   username: state.auth.username,

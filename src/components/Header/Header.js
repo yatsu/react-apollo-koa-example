@@ -5,7 +5,7 @@ import { Link } from 'react-router'
 import { Button, Icon, Menu } from 'semantic-ui-react'
 import classnames from 'classnames'
 
-import logo from '../logo.svg'
+import logo from '../../logo.svg'
 import './Header.css'
 
 class Header extends Component {
