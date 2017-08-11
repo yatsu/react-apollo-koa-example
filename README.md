@@ -146,21 +146,52 @@ Read the following article to know about subscriptions.
 * [A proposal for GraphQL subscriptions](https://dev-blog.apollodata.com/a-proposal-for-graphql-subscriptions-1d89b1934c18#.vso7t15e5)
 
 Authentication
---------------
+==============
 
-The Apollo subscription in this app is not integrated with the authentication
-yet.  See the following guide to do that.
+[JWT](https://tools.ietf.org/html/rfc7519 ) access token and refresh token are
+used to authenticate a client.
 
-* [Authentication | Apollo Tools Guide](http://dev.apollodata.com/tools/graphql-subscriptions/authentication.html)
+* Access token
+  * Expires in 2 hours (default)
+* Refresh token
+  * Expires in 60 days (default)
+  * It is used only for refreshing the access token
 
-You might want to do it on subscribing to events instead of establishing a
-connection.
-See the following pull request to `subscriptions-transport-ws`.
+The access token is automatically refreshed by
+[WebClient](https://github.com/yatsu/react-apollo-koa-example/blob/master/src/WebClient.js)
+and Apollo client (including GraphQL subscription).
 
-* [onSubscribe and use middleware to modify runtime SubscriptionOptions #78](https://github.com/apollographql/subscriptions-transport-ws/pull/78)
+When the refresh token is expired, the user will be automatically signed out.
+
+The WebSocket connection will also be authenticated with a JWT access token.
+It will be reconnected on signing in/out to do the authentication.
+There are two types of connection, authenticated and unauthenticated.
+
+You can set the expiration on server-side by editing `.env` file.
+
+e.g.:
+
+```sh
+ACCESS_TOKEN_EXPIRES_IN=10s
+REFRESH_TOKEN_EXPIRES_IN=2h
+```
+
+You need to sign out and sign in again to apply the new expiration.
+
+It is also possible to set them in client-side localStorage if the server is
+running on debugging mode.
+
+Set `devHeaders` as the following (JSON encoded string):
+
+```json
+{ "X-ACCESS-TOKEN-EXPIRES-IN": "10s", "X-REFRESH-TOKEN-EXPIRES-IN": "2h" }
+```
+
+Setting `devHeaders` is useful for testing.
+See [auth_token_test.js](https://github.com/yatsu/react-apollo-koa-example/blob/master/src/test/auth_token.test.js).
 
 Storybook
----------
+=========
 
 This project uses [React Storybook](https://github.com/storybooks/react-storybook).
 to develop and check presentational components.
@@ -177,7 +208,7 @@ When you modify a component and the render result is changed, Jest reports an
 error. If the shown result is intended, press `u` to update the snapshot file.
 
 Code Organization
------------------
+=================
 
 Redux actions, reducers and logic are managed by
 [Ducks](https://github.com/erikras/ducks-modular-redux) rules in `src/ducks`
@@ -186,7 +217,7 @@ directory.
 Tests are stored in `__tests__` directories under each component.
 
 Git Hooks
----------
+=========
 
 Git hooks are managed by [Husky](https://github.com/typicode/husky).
 When you run `yarn` in this repo, Git hooks will be automatically created.

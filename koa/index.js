@@ -18,7 +18,6 @@ import { todos } from './store'
 import { signin, signout, tokenRefresh, githubAuthRedirect, githubAuthCB } from './auth'
 import type { Todo } from '../src/types'
 
-const debugAuth = createDebug('example:auth')
 const debugPubSub = createDebug('example:pubsub')
 
 const app = new Koa()
@@ -86,9 +85,13 @@ SubscriptionServer.create(
         const timeout = jwtData.exp * 1000 - Date.now()
         debugPubSub('authenticated', jwtData)
         debugPubSub('set connection timeout', timeout)
+        setTimeout(() => {
+          // let the client reconnect
+          socket.close()
+        }, timeout)
         return { subscriptionUser: user }
       } catch (error) {
-        debugAuth('authentication failed', error.message)
+        debugPubSub('authentication failed', error.message)
         return { subscriptionUser: null }
       }
     },
