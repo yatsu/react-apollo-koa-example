@@ -1,5 +1,6 @@
 // @flow
 import createDebug from 'debug'
+import jwtDecode from 'jwt-decode'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Router, Route, IndexRoute, browserHistory } from 'react-router'
@@ -20,8 +21,9 @@ import NotFound from './components/NotFound'
 import configureStore from './redux/store'
 import createApolloClient from './apollo/create-apollo-client'
 import getNetworkInterface from './apollo/transport'
-import { signinResume } from './ducks/auth'
+import { signinResume, signout } from './ducks/auth'
 import config from './config.json'
+import type { ErrorType } from './types'
 
 import './index.css'
 
@@ -29,24 +31,13 @@ const debugPubSub = createDebug('example:pubsub')
 
 const wsClient = new SubscriptionClient(config.wsURL, {
   reconnect: true,
-  connectionParams: {}
+  connectionParams: {
+    authToken: localStorage.getItem('accessToken'),
+    reconnect: false
+  }
 })
 
-wsClient.on('connecting', () => {
-  debugPubSub('connecting')
-})
-wsClient.on('connected', () => {
-  debugPubSub('connected')
-})
-wsClient.on('reconnecting', () => {
-  debugPubSub('reconnecting')
-})
-wsClient.on('reconnected', () => {
-  debugPubSub('reconnected')
-})
-wsClient.on('disconnected', () => {
-  debugPubSub('disconnected')
-})
+const webClient = new WebClient()
 
 const networkInterfaceWithSubscriptions = addGraphQLSubscriptions(
   getNetworkInterface(config.graphqlURL),
@@ -70,12 +61,56 @@ const apolloClient = createApolloClient({
   networkInterface: networkInterfaceWithSubscriptions
 })
 
-const webClient = new WebClient()
-
 const store = configureStore({}, apolloClient, webClient, wsClient)
 const history = syncHistoryWithStore(browserHistory, store)
-
 const locationHelper = locationHelperBuilder({})
+
+wsClient.on('connecting', () => {
+  debugPubSub('connecting', Date.now())
+})
+wsClient.on('connected', () => {
+  debugPubSub('connected', Date.now())
+  if (wsClient.connectionParams.reconnect) {
+    wsClient.connectionParams.reconnect = false
+    wsClient.close()
+  }
+})
+wsClient.on('reconnecting', () => {
+  debugPubSub('reconnecting', Date.now())
+})
+wsClient.on('reconnected', () => {
+  debugPubSub('reconnected', Date.now())
+  if (wsClient.connectionParams.reconnect) {
+    wsClient.connectionParams.reconnect = false
+    wsClient.close()
+  }
+})
+wsClient.on('disconnected', async () => {
+  debugPubSub('disconnected', Date.now())
+  const { authToken } = wsClient.connectionParams
+  if (authToken) {
+    const jwtData = jwtDecode(authToken)
+    debugPubSub('exp', jwtData.exp * 1000)
+    if (jwtData.exp * 1000 < Date.now()) {
+      // token expired
+      webClient.tokenRefresh().subscribe({
+        next() {
+          const accessToken = localStorage.getItem('accessToken')
+          wsClient.connectionParams.authToken = accessToken
+          debugPubSub('wsClient.status', wsClient.status)
+          if (wsClient.status === WebSocket.OPEN) {
+            wsClient.close()
+          } else if (wsClient.status === WebSocket.CONNECTING) {
+            wsClient.connectionParams.reconnect = true
+          }
+        },
+        error(error: ErrorType) {
+          store.dispatch(signout())
+        }
+      })
+    }
+  }
+})
 
 const userIsAuthenticated = connectedReduxRedirect({
   redirectPath: '/signin',

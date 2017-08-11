@@ -29,7 +29,7 @@ class TodoField extends Component {
       <Form onSubmit={e => this.handleSubmit(e)}>
         <Form.Field>
           <input
-            ref={(elem) => {
+            ref={(elem: HTMLInputElement) => {
               this.inputField = elem
             }}
             name="add-todo"

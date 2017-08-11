@@ -1,13 +1,14 @@
 // @flow
 import createDebug from 'debug'
-// import { createServer } from 'http'
+import jwt from 'jsonwebtoken'
+import jwtDecode from 'jwt-decode'
+import { execute, subscribe } from 'graphql'
+import { graphqlKoa, graphiqlKoa } from 'graphql-server-koa'
 import Koa from 'koa'
 import logger from 'koa-logger'
 import bodyParser from 'koa-bodyparser'
 import Router from 'koa-router'
 import R from 'ramda'
-import { execute, subscribe } from 'graphql'
-import { graphqlKoa, graphiqlKoa } from 'graphql-server-koa'
 import { SubscriptionServer } from 'subscriptions-transport-ws'
 import { executableSchema, pubsub, TODO_UPDATED_TOPIC } from './executableSchema'
 import queryMap from '../src/extracted_queries.json'
@@ -17,6 +18,7 @@ import { todos } from './store'
 import { signin, signout, tokenRefresh, githubAuthRedirect, githubAuthCB } from './auth'
 import type { Todo } from '../src/types'
 
+const debugAuth = createDebug('example:auth')
 const debugPubSub = createDebug('example:pubsub')
 
 const app = new Koa()
@@ -77,12 +79,19 @@ SubscriptionServer.create(
     schema: executableSchema,
     execute,
     subscribe,
-    // onConnect: (connectionParams: Object, socket: WebSocket) => {
-    //   debugPubSub('connect')
-    // },
-    // onDisconnect: (socket) => {
-    //   debugPubSub('disconnect')
-    // },
+    onConnect: (connectionParams: Object, socket: WebSocket) => {
+      try {
+        const { user } = jwt.verify(connectionParams.authToken, env('AUTH_SECRET'))
+        const jwtData = jwtDecode(connectionParams.authToken)
+        const timeout = jwtData.exp * 1000 - Date.now()
+        debugPubSub('authenticated', jwtData)
+        debugPubSub('set connection timeout', timeout)
+        return { subscriptionUser: user }
+      } catch (error) {
+        debugAuth('authentication failed', error.message)
+        return { subscriptionUser: null }
+      }
+    },
     onOperation(message: string, params: Object) {
       setTimeout(() => {
         R.forEach((todo: Todo) => {

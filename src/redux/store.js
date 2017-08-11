@@ -78,6 +78,7 @@ export default function configureStore(
       }
     },
     webClient,
+    wsClient,
     subscriptions: { todo: null }
   })
 

@@ -7,7 +7,6 @@ import env from './env'
 import { todos } from './store'
 
 const debugAuth = createDebug('example:auth')
-const debugGraphQL = createDebug('example:graphql')
 const debugPubSub = createDebug('example:pubsub')
 
 const TODO_UPDATED_TOPIC = 'todoUpdated'
@@ -34,10 +33,9 @@ const authenticated = (method: Function) => async (_, args: Object, context: Obj
 function authenticatedResolvers(resolvers: Object): Object {
   return R.mapObjIndexed((resolver: Object, key: string) => {
     if (key === 'Subscription') {
-      // NOTE: authentication is currently not available for subscription
+      // subscriptions do not have ctx.request.header
       return resolver
     }
-    debugGraphQL('key', key, resolver)
     return R.mapObjIndexed((method: Function) => authenticated(method), resolver)
   }, resolvers)
 }
@@ -78,7 +76,16 @@ const resolvers = authenticatedResolvers({
   },
   Subscription: {
     todoUpdated: {
-      subscribe() {
+      // subscription payload can be filtered here
+      // resolve(payload, args) {
+      //   return payload.todoUpdated
+      // },
+      subscribe(_, args, { ctx, subscriptionUser }) {
+        // it is possible to check authentication here
+        // debugGraphQL('subscribe subscriptionUser', subscriptionUser)
+        // if (!subscriptionUser) {
+        //   return null
+        // }
         return pubsub.asyncIterator(TODO_UPDATED_TOPIC)
       }
     }

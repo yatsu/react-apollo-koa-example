@@ -1,4 +1,5 @@
 // @flow
+import createDebug from 'debug'
 import jwtDecode from 'jwt-decode'
 import R from 'ramda'
 import { browserHistory } from 'react-router'
@@ -7,6 +8,7 @@ import { createLogic } from 'redux-logic'
 import { errorObject } from '../utils'
 import type { ErrorType } from '../types'
 
+const debugAuth = createDebug('example:auth')
 // Actions
 
 export const signin = createAction('SIGNIN')
@@ -114,7 +116,7 @@ export const signinLogic = createLogic({
     failType: signinFailed
   },
 
-  process({ action, webClient }) {
+  process({ action, webClient, wsClient }) {
     const { username, password } = action.payload
     const body = { username, password }
     const headers = { 'Content-Type': 'application/json' }
@@ -122,6 +124,13 @@ export const signinLogic = createLogic({
       const { accessToken, refreshToken } = result.response
       localStorage.setItem('accessToken', accessToken)
       localStorage.setItem('refreshToken', refreshToken)
+      debugAuth('wsClient.status', wsClient.status)
+      wsClient.connectionParams.authToken = accessToken
+      if (wsClient.status === WebSocket.CONNECTING) {
+        wsClient.connectionParams.reconnect = true
+      } else {
+        wsClient.close()
+      }
       return result.response
     })
   }
@@ -131,11 +140,14 @@ export const signoutLogic = createLogic({
   type: signout,
   latest: true,
 
-  process({ webClient }) {
+  process({ webClient, wsClient }) {
     const headers = { 'Content-Type': 'application/json' }
     webClient.post('/auth/signout', {}, headers).subscribe()
     localStorage.removeItem('accessToken')
     localStorage.removeItem('refreshToken')
+    wsClient.unsubscribeAll()
+    wsClient.connectionParams.authToken = null
+    wsClient.close()
   }
 })
 
@@ -174,7 +186,7 @@ export const authCallbackLogic = createLogic({
   type: authCallback,
   latest: true,
 
-  process({ action, webClient }, dispatch: Dispatch, done: () => void) {
+  process({ action, webClient, wsClient }, dispatch: Dispatch, done: () => void) {
     const { service, code, redirect } = action.payload
     const headers = { 'Content-Type': 'application/json' }
     const body = { code }
@@ -183,6 +195,13 @@ export const authCallbackLogic = createLogic({
         const { accessToken, refreshToken } = result.response
         localStorage.setItem('accessToken', accessToken)
         localStorage.setItem('refreshToken', refreshToken)
+        debugAuth('wsClient.status', wsClient.status)
+        wsClient.connectionParams.authToken = accessToken
+        if (wsClient.status === WebSocket.CONNECTING) {
+          wsClient.connectionParams.reconnect = true
+        } else {
+          wsClient.close()
+        }
         if (redirect) {
           browserHistory.replace(redirect)
         } else {

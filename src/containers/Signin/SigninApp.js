@@ -12,14 +12,14 @@ class SigninApp extends Signin {
 
   componentDidMount() {
     setTimeout(() => {
-      this.usernameField.select()
+      if (this.usernameField) this.usernameField.select()
     }, 0)
   }
 
   componentWillReceiveProps(nextProps: Object) {
     if (nextProps.error) {
       setTimeout(() => {
-        this.passwordField.select()
+        if (this.passwordField) this.passwordField.select()
       }, 0)
     }
   }

@@ -60,7 +60,7 @@ class Signin extends Component {
               name="username"
               type="text"
               disabled={authenticating}
-              ref={(elem) => {
+              ref={(elem: HTMLInputElement) => {
                 this.usernameField = elem
               }}
             />
@@ -71,7 +71,7 @@ class Signin extends Component {
               name="password"
               type="password"
               disabled={authenticating}
-              ref={(elem) => {
+              ref={(elem: HTMLInputElement) => {
                 this.passwordField = elem
               }}
             />

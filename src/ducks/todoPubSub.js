@@ -1,4 +1,5 @@
 // @flow
+import createDebug from 'debug'
 import R from 'ramda'
 import { createAction, createReducer } from 'redux-act'
 import { createLogic } from 'redux-logic'
@@ -7,6 +8,8 @@ import ADD_TODO_MUTATION from '../graphql/addTodoMutation.graphql'
 import TOGGLE_TODO_MUTATION from '../graphql/toggleTodoMutation.graphql'
 import { errorObject } from '../utils'
 import type { ErrorType, Todo } from '../types'
+
+const debugPubSub = createDebug('example:pubsub')
 
 // Actions
 
@@ -110,6 +113,7 @@ export const todoSubscribeLogic = createLogic({
     })
 
     cancelled$.subscribe(() => {
+      debugPubSub('unsubscribe todo')
       sub.unsubscribe()
       subscriptions.todo = null
     })

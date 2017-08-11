@@ -46,7 +46,6 @@ describe('Refreshing token caused by token expiration', () => {
 
   describe('with an expired refresh token', () => {
     it('fails and the user will be signed out', async () => {
-      const todo = uuid.v4()
       const { path } = await Nightmare({ typeInterval: 10 })
         .goto(`${BASE_URL}/todo-pubsub`)
         .evaluate(() => {
@@ -60,13 +59,11 @@ describe('Refreshing token caused by token expiration', () => {
         })
         .type('input[name=username]', 'alice')
         .type('input[name=password]', 'alicepass')
+        .wait(3000)
         .click('#signin-button')
         .evaluate(() => {
           localStorage.removeItem('devHeaders')
         })
-        .wait('input[name=add-todo]', todo)
-        .type('input[name=add-todo]', todo)
-        .click('#add-todo-button')
         .wait(1000)
         .evaluate(() => ({
           path: document.location.pathname
