@@ -141,8 +141,6 @@ Subscriptions
 This example project uses subscriptions.
 Select "GraphQL Subscription" tab in the header to see it.
 
-It has not been integrated with authentication.
-
 Read the following article to know about subscriptions.
 
 * [A proposal for GraphQL subscriptions](https://dev-blog.apollodata.com/a-proposal-for-graphql-subscriptions-1d89b1934c18#.vso7t15e5)
