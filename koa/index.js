@@ -32,7 +32,7 @@ app.use(errorHandler)
 
 // GraphQL persisted query
 
-app.use(async (ctx: Object, next: () => void) => {
+app.use(async (ctx: Object, next: () => Promise<void>) => {
   if (ctx.path === '/graphql' && ctx.request.body.id) {
     const invertedMap = R.invertObj(queryMap)
     ctx.request.body.query = invertedMap[ctx.request.body.id]
@@ -69,7 +69,7 @@ app.use(router.allowedMethods())
 
 // Launching the server
 
-const server = app.listen(env('SERVER_PORT'), env('SERVER_HOST'))
+const server = app.listen(parseInt(env('SERVER_PORT'), 10), env('SERVER_HOST'))
 
 // Setup the subscription server
 
