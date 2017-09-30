@@ -257,7 +257,7 @@ export const autoSignoutLogic = createLogic({
 
   process({ action }, dispatch: Dispatch, done: () => void) {
     if (
-      action.payload.status === 401 ||
+      R.path(['payload', 'status'], action) === 401 ||
       R.path(['graphQLErrors', 0, 'message'], action.payload) === 'Access denied.'
     ) {
       dispatch(signout())

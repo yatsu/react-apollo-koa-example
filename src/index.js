@@ -127,10 +127,7 @@ const userIsNotAuthenticated = connectedReduxRedirect({
   wrapperDisplayName: 'userIsNotAuthenticated'
 })
 
-const accessToken = localStorage.getItem('accessToken')
-if (accessToken) {
-  store.dispatch(signinResume())
-}
+store.dispatch(signinResume())
 
 ReactDOM.render(
   <Provider store={store}>
