@@ -2,6 +2,7 @@
 import {
   signinLogic,
   signoutLogic,
+  signinResumeLogic,
   autoSignoutLogic,
   githubSigninLogic,
   authCallbackLogic
@@ -16,6 +17,7 @@ import {
 const rootLogic = [
   signinLogic,
   signoutLogic,
+  signinResumeLogic,
   autoSignoutLogic,
   githubSigninLogic,
   authCallbackLogic,

@@ -39,7 +39,7 @@ const mapStateToProps = (state: Object) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   onSubmit(username, password) {
-    dispatch(signin({ username, password }))
+    dispatch(signin(username, password))
   },
 
   authErrorClear() {
@@ -47,7 +47,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
   },
 
   githubSignin(redirect: ?string) {
-    dispatch(githubSignin({ redirect }))
+    dispatch(githubSignin(redirect))
   }
 })
 

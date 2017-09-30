@@ -16,7 +16,6 @@ import errorHandler from './error'
 import env from './env'
 import { todos } from './store'
 import { signin, signout, tokenRefresh, githubAuthRedirect, githubAuthCB } from './auth'
-import type { Todo } from '../src/types'
 
 const debugPubSub = createDebug('example:pubsub')
 

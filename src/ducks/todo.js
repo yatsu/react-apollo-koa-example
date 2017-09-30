@@ -1,7 +1,6 @@
 // @flow
 import R from 'ramda'
-import { createAction, createReducer } from 'redux-act'
-import { Todo } from '../types'
+import createReducer from '../redux/createReducer'
 import { keyLength } from '../utils'
 
 // Types
@@ -21,8 +20,22 @@ export type TodoState = {
 
 // Actions
 
-export const createTodo = createAction('TODO_CREATE')
-export const toggleTodo = createAction('TODO_TOGGLE')
+const TODO_CREATE = 'TODO_CREATE'
+const TODO_TOGGLE = 'TODO_TOGGLE'
+
+export function createTodo(text: string): Action {
+  return {
+    type: TODO_CREATE,
+    payload: { text }
+  }
+}
+
+export function toggleTodo(todoID: string): Action {
+  return {
+    type: TODO_TOGGLE,
+    payload: { todoID }
+  }
+}
 
 // Reducer
 
@@ -35,14 +48,14 @@ export const initialState: TodoState = {
 
 export const todoReducer = createReducer(
   {
-    [createTodo]: (state: TodoState, payload: { text: string }): TodoState => {
+    [TODO_CREATE]: (state: TodoState, { payload: { text } }): TodoState => {
       const id = keyLength(state.todos).toString()
       return {
         todos: R.assoc(
           id,
           {
             id,
-            text: payload.text,
+            text,
             completed: false
           },
           state.todos
@@ -50,8 +63,8 @@ export const todoReducer = createReducer(
       }
     },
 
-    [toggleTodo]: (state: TodoState, payload: { todoID: string }): TodoState => {
-      const todo = state.todos[payload.todoID]
+    [TODO_TOGGLE]: (state: TodoState, { payload: { todoID } }): TodoState => {
+      const todo = state.todos[todoID]
       todo.completed = !todo.completed
       return {
         todos: R.assoc(todo.id, todo, state.todos)

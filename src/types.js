@@ -5,7 +5,7 @@ export type Action = {
 
 export type ErrorType = {
   message: string,
-  status?: number
+  status: ?number
 }
 
 export type Todo = {
@@ -20,7 +20,7 @@ export type TodoList = {
 
 export type User = {
   username: string,
-  password: ?string,
+  password?: ?string,
   admin: boolean,
   authService: ?string
 }

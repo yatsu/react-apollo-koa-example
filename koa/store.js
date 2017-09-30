@@ -4,9 +4,8 @@
 
 import R from 'ramda'
 import digest from './digest'
-import type { Todo, User } from '../src/types'
 
-type UserMap = { [username: string]: User }
+type UserMap = { [string]: User }
 
 export const todos: Array<Todo> = [
   { id: '1', text: 'Make America great again', completed: false },

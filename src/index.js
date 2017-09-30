@@ -23,7 +23,6 @@ import createApolloClient from './apollo/create-apollo-client'
 import getNetworkInterface from './apollo/transport'
 import { signinResume, signout } from './ducks/auth'
 import config from './config.json'
-import type { ErrorType } from './types'
 
 import './index.css'
 

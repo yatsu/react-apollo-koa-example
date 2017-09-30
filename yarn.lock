@@ -318,9 +318,23 @@ anymatch@^1.3.0:
     micromatch "^2.1.5"
     normalize-path "^2.0.0"
 
-apollo-client@^1.1, apollo-client@^1.9.1:
+apollo-client@^1.1:
   version "1.9.1"
   resolved "https://registry.yarnpkg.com/apollo-client/-/apollo-client-1.9.1.tgz#9e6a383605572c755038cf5d7fdac9382bcdc040"
+  dependencies:
+    apollo-link-core "^0.5.0"
+    graphql "^0.10.0"
+    graphql-anywhere "^3.0.1"
+    graphql-tag "^2.0.0"
+    redux "^3.4.0"
+    symbol-observable "^1.0.2"
+    whatwg-fetch "^2.0.0"
+  optionalDependencies:
+    "@types/graphql" "0.10.2"
+
+apollo-client@^1.9.1:
+  version "1.9.3"
+  resolved "https://registry.yarnpkg.com/apollo-client/-/apollo-client-1.9.3.tgz#37000b3c801f4571b7b089739e696a158896aeab"
   dependencies:
     apollo-link-core "^0.5.0"
     graphql "^0.10.0"
@@ -346,16 +360,16 @@ apollo-server-core@^1.1.0:
   dependencies:
     apollo-tracing "^0.0.7"
 
-apollo-server-koa@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/apollo-server-koa/-/apollo-server-koa-1.1.0.tgz#a7c6f4e8836c3e710932a9483405a6d86a705e42"
+apollo-server-koa@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/apollo-server-koa/-/apollo-server-koa-1.1.2.tgz#9fee68271f6eb3d448a750beb43b330911f240cf"
   dependencies:
     apollo-server-core "^1.1.0"
-    apollo-server-module-graphiql "^1.1.0"
+    apollo-server-module-graphiql "^1.1.2"
 
-apollo-server-module-graphiql@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/apollo-server-module-graphiql/-/apollo-server-module-graphiql-1.1.0.tgz#f10333e50659d61dc48e2ed6afac6f313b1f418b"
+apollo-server-module-graphiql@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/apollo-server-module-graphiql/-/apollo-server-module-graphiql-1.1.2.tgz#49a154cf80e984acb082bd0096175b561e1bfbcc"
 
 apollo-tracing@^0.0.7:
   version "0.0.7"
@@ -3980,11 +3994,11 @@ graphql-fragments@^0.1.0:
   dependencies:
     graphql-anywhere "^0.2.4"
 
-graphql-server-koa@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/graphql-server-koa/-/graphql-server-koa-1.1.0.tgz#7b8874f5b6b9abf5a2d101286ea5038af35382ca"
+graphql-server-koa@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/graphql-server-koa/-/graphql-server-koa-1.1.2.tgz#680c4d030da5b45b6b666d941e16b28fcc6a7649"
   dependencies:
-    apollo-server-koa "^1.1.0"
+    apollo-server-koa "^1.1.2"
 
 graphql-subscriptions@^0.4.4:
   version "0.4.4"
@@ -4008,17 +4022,20 @@ graphql-tools@^1.1.0:
   optionalDependencies:
     "@types/graphql" "^0.9.0"
 
-graphql@^0.10.0, graphql@^0.10.3, graphql@^0.10.5:
+graphql-tools@^1.2.3:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/graphql-tools/-/graphql-tools-1.2.3.tgz#079bf4d157e46c0a0bae9fec117e0eea6e03ba2c"
+  dependencies:
+    deprecated-decorator "^0.1.6"
+    uuid "^3.0.1"
+  optionalDependencies:
+    "@types/graphql" "^0.9.0"
+
+"graphql@>=0.9.4 <0.11", graphql@^0.10.0, graphql@^0.10.3, graphql@^0.10.5:
   version "0.10.5"
   resolved "https://registry.yarnpkg.com/graphql/-/graphql-0.10.5.tgz#c9be17ca2bdfdbd134077ffd9bbaa48b8becd298"
   dependencies:
     iterall "^1.1.0"
-
-graphql@^0.9.4:
-  version "0.9.6"
-  resolved "https://registry.yarnpkg.com/graphql/-/graphql-0.9.6.tgz#514421e9d225c29dfc8fd305459abae58815ef2c"
-  dependencies:
-    iterall "^1.0.0"
 
 growly@^1.3.0:
   version "1.3.0"
@@ -4832,7 +4849,7 @@ items@2.x.x:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/items/-/items-2.1.1.tgz#8bd16d9c83b19529de5aea321acaada78364a198"
 
-iterall@^1.0.0, iterall@^1.1.0, iterall@^1.1.1:
+iterall@^1.1.0, iterall@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/iterall/-/iterall-1.1.1.tgz#f7f0af11e9a04ec6426260f5019d9fcca4d50214"
 
@@ -6681,12 +6698,12 @@ performance-now@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/performance-now/-/performance-now-0.2.0.tgz#33ef30c5c77d4ea21c5a53869d91b56d8f2555e5"
 
-persistgraphql@^0.3.2:
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/persistgraphql/-/persistgraphql-0.3.2.tgz#6565272ff19d6c09093f169285c751ae7ba8c5b6"
+persistgraphql@^0.3.10:
+  version "0.3.10"
+  resolved "https://registry.yarnpkg.com/persistgraphql/-/persistgraphql-0.3.10.tgz#9abbeb7222eead58bc1f74cc9e74f396bfcdc9e1"
   dependencies:
     apollo-client "^1.1"
-    graphql "^0.9.4"
+    graphql ">=0.9.4 <0.11"
     graphql-tag "^2.0.0"
     lodash "^4.17.4"
     whatwg-fetch "^2.0.3"
@@ -7789,10 +7806,6 @@ reduce-function-call@^1.0.1:
   resolved "https://registry.yarnpkg.com/reduce-function-call/-/reduce-function-call-1.0.2.tgz#5a200bf92e0e37751752fe45b0ab330fd4b6be99"
   dependencies:
     balanced-match "^0.4.2"
-
-redux-act@^1.3.0:
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/redux-act/-/redux-act-1.3.2.tgz#fc8fcba6425aee0114258d8cdd8fb4563b3b1b7e"
 
 redux-auth-wrapper@^2.0.1:
   version "2.0.1"

@@ -61,22 +61,26 @@ describe('todoSubscribeLogic', () => {
       await store.whenComplete(() => {
         expect(store.actions).toEqual([
           {
-            type: todoPubSubSubscribe.getType(),
-            payload: undefined
+            type: 'TODO_PUBSUB_SUBSCRIBE'
           },
           {
-            type: todoPubSubSubscribeSucceeded.getType(),
+            type: 'TODO_PUBSUB_SUBSCRIBE_SUCCEEDED',
             payload: {
               subid: 'sub-1'
             }
           },
           {
-            type: todoPubSubReceiveSucceeded.getType(),
-            payload: { id: '1', text: 'foo', completed: true }
+            type: 'TODO_PUBSUB_RECEIVE_SUCCEEDED',
+            payload: {
+              todo: {
+                id: '1',
+                text: 'foo',
+                completed: true
+              }
+            }
           },
           {
-            type: todoPubSubUnsubscribe.getType(),
-            payload: undefined
+            type: 'TODO_PUBSUB_UNSUBSCRIBE'
           }
         ])
         expect(subscribeQuery).toEqual({

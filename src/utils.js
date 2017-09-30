@@ -1,12 +1,11 @@
 import R from 'ramda'
-import { ErrorType } from './types'
 
 export const keyLength = R.compose(R.length, R.keys)
 
-export const errorMessage = (error: ErrorType) =>
+export const errorMessage = (error: Object) =>
   R.pathOr(error.message, ['xhr', 'response', 'error', 'message'], error)
 
-export const errorObject = (error: ErrorType) => ({
+export const errorObject = (error: Object): ErrorType => ({
   message: errorMessage(error),
   status: R.propOr(null, 'status', error)
 })

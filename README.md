@@ -55,8 +55,6 @@ Frameworks/Libraries
 
 * [React](https://facebook.github.io/react/)
 * [Redux](http://redux.js.org/)
-* [redux-act](https://github.com/pauldijou/redux-act)
-  (Redux actions and reducers)
 * [react-router](https://github.com/ReactTraining/react-router) and
   [react-router-redux](https://github.com/reactjs/react-router-redux)
   (URL routes management)

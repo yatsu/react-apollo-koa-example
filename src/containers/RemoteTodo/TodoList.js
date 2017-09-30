@@ -32,7 +32,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     dispatch(todoRemoteFetch())
   },
   onTodoClick(todoID: string) {
-    dispatch(todoRemoteToggle({ todoID }))
+    dispatch(todoRemoteToggle(todoID))
   }
 })
 

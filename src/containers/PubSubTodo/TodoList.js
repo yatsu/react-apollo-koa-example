@@ -44,7 +44,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     dispatch(todoPubSubUnsubscribe())
   },
   onTodoClick(todoID: string) {
-    dispatch(todoPubSubToggle({ todoID }))
+    dispatch(todoPubSubToggle(todoID))
   }
 })
 

@@ -1,29 +1,101 @@
 // @flow
 import createDebug from 'debug'
 import R from 'ramda'
-import { createAction, createReducer } from 'redux-act'
 import { createLogic } from 'redux-logic'
+import createReducer from '../redux/createReducer'
+import { errorObject } from '../utils'
 import TODO_UPDATED_SUBSCRIPTION from '../graphql/todoUpdatedSubscription.graphql'
 import ADD_TODO_MUTATION from '../graphql/addTodoMutation.graphql'
 import TOGGLE_TODO_MUTATION from '../graphql/toggleTodoMutation.graphql'
-import { errorObject } from '../utils'
-import type { ErrorType, Todo } from '../types'
 
 const debugPubSub = createDebug('example:pubsub')
 
 // Actions
 
-export const todoPubSubSubscribe = createAction('TODO_PUBSUB_SUBSCRIBE')
-export const todoPubSubSubscribeSucceeded = createAction('TODO_PUBSUB_SUBSCRIBE_SUCCEEDED')
-export const todoPubSubUnsubscribe = createAction('TODO_PUBSUB_UNSUBSCRIBE')
-export const todoPubSubReceiveSucceeded = createAction('TODO_PUBSUB_RECEIVE_SUCCEEDED')
-export const todoPubSubReceiveFailed = createAction('TODO_PUBSUB_RECEIVE_FAILED')
-export const todoPubSubCreate = createAction('TODO_PUBSUB_CREATE')
-export const todoPubSubCreateSucceeded = createAction('TODO_PUBSUB_CREATE_SUCCEEDED')
-export const todoPubSubCreateFailed = createAction('TODO_PUBSUB_CREATE_FAILED')
-export const todoPubSubToggle = createAction('TODO_PUBSUB_TOGGLE')
-export const todoPubSubToggleSucceeded = createAction('TODO_PUBSUB_TOGGLE_SUCCEEDED')
-export const todoPubSubToggleFailed = createAction('TODO_PUBSUB_TOGGLE_FAILED')
+export const TODO_PUBSUB_SUBSCRIBE = 'TODO_PUBSUB_SUBSCRIBE'
+export const TODO_PUBSUB_SUBSCRIBE_SUCCEEDED = 'TODO_PUBSUB_SUBSCRIBE_SUCCEEDED'
+export const TODO_PUBSUB_UNSUBSCRIBE = 'TODO_PUBSUB_UNSUBSCRIBE'
+export const TODO_PUBSUB_RECEIVE_SUCCEEDED = 'TODO_PUBSUB_RECEIVE_SUCCEEDED'
+export const TODO_PUBSUB_RECEIVE_FAILED = 'TODO_PUBSUB_RECEIVE_FAILED'
+export const TODO_PUBSUB_CREATE = 'TODO_PUBSUB_CREATE'
+export const TODO_PUBSUB_CREATE_SUCCEEDED = 'TODO_PUBSUB_CREATE_SUCCEEDED'
+export const TODO_PUBSUB_CREATE_FAILED = 'TODO_PUBSUB_CREATE_FAILED'
+export const TODO_PUBSUB_TOGGLE = 'TODO_PUBSUB_TOGGLE'
+export const TODO_PUBSUB_TOGGLE_SUCCEEDED = 'TODO_PUBSUB_TOGGLE_SUCCEEDED'
+export const TODO_PUBSUB_TOGGLE_FAILED = 'TODO_PUBSUB_TOGGLE_FAILED'
+
+export function todoPubSubSubscribe(): Action {
+  return {
+    type: TODO_PUBSUB_SUBSCRIBE
+  }
+}
+
+export function todoPubSubSubscribeSucceeded(subid: string): Action {
+  return {
+    type: TODO_PUBSUB_SUBSCRIBE_SUCCEEDED,
+    payload: { subid }
+  }
+}
+
+export function todoPubSubUnsubscribe(): Action {
+  return {
+    type: TODO_PUBSUB_UNSUBSCRIBE
+  }
+}
+
+export function todoPubSubReceiveSucceeded(todo: Todo): Action {
+  return {
+    type: TODO_PUBSUB_RECEIVE_SUCCEEDED,
+    payload: { todo }
+  }
+}
+
+export function todoPubSubReceiveFailed(error: ErrorType): Action {
+  return {
+    type: TODO_PUBSUB_RECEIVE_FAILED,
+    payload: { error }
+  }
+}
+
+export function todoPubSubCreate(text: string): Action {
+  return {
+    type: TODO_PUBSUB_CREATE,
+    payload: { text }
+  }
+}
+
+export function todoPubSubCreateSucceeded(): Action {
+  return {
+    type: TODO_PUBSUB_CREATE_SUCCEEDED
+  }
+}
+
+export function todoPubSubCreateFailed(error: ErrorType): Action {
+  return {
+    type: TODO_PUBSUB_CREATE_FAILED,
+    payload: { error }
+  }
+}
+
+export function todoPubSubToggle(todoID: string): Action {
+  return {
+    type: TODO_PUBSUB_TOGGLE,
+    payload: { todoID }
+  }
+}
+
+export function todoPubSubToggleSucceeded(): Action {
+  return {
+    type: TODO_PUBSUB_TOGGLE_SUCCEEDED
+  }
+}
+
+export function todoPubSubToggleFailed(error: ErrorType): Action {
+  return {
+    type: TODO_PUBSUB_TOGGLE_FAILED,
+    payload: { error }
+  }
+}
 
 // Types
 
@@ -47,9 +119,9 @@ export const initialState: TodoPubSubState = {
 
 export const todoPubSubReducer = createReducer(
   {
-    [todoPubSubSubscribe]: (state: TodoPubSubState): TodoPubSubState => state,
+    [TODO_PUBSUB_SUBSCRIBE]: (state: TodoPubSubState): TodoPubSubState => state,
 
-    [todoPubSubSubscribeSucceeded]: (
+    [TODO_PUBSUB_SUBSCRIBE_SUCCEEDED]: (
       state: TodoPubSubState,
       payload: { subid: string }
     ): TodoPubSubState =>
@@ -57,34 +129,46 @@ export const todoPubSubReducer = createReducer(
         subid: payload.subid
       }),
 
-    [todoPubSubUnsubscribe]: (state: TodoPubSubState): TodoPubSubState => state,
+    [TODO_PUBSUB_UNSUBSCRIBE]: (state: TodoPubSubState): TodoPubSubState => state,
 
-    [todoPubSubReceiveSucceeded]: (state: TodoPubSubState, payload: Todo): TodoPubSubState =>
+    [TODO_PUBSUB_RECEIVE_SUCCEEDED]: (
+      state: TodoPubSubState,
+      { payload: { todo } }
+    ): TodoPubSubState =>
       R.merge(state, {
-        todos: R.assoc(payload.id, payload, state.todos)
+        todos: R.assoc(todo.id, todo, state.todos)
       }),
 
-    [todoPubSubReceiveFailed]: (state: TodoPubSubState, payload: ErrorType): TodoPubSubState =>
+    [TODO_PUBSUB_RECEIVE_FAILED]: (
+      state: TodoPubSubState,
+      { payload: { error } }
+    ): TodoPubSubState =>
       R.merge(state, {
-        receiveError: errorObject(payload)
+        receiveError: error
       }),
 
-    [todoPubSubCreate]: (state: TodoPubSubState): TodoPubSubState => state,
+    [TODO_PUBSUB_CREATE]: (state: TodoPubSubState): TodoPubSubState => state,
 
-    [todoPubSubCreateSucceeded]: (state: TodoPubSubState): TodoPubSubState => state,
+    [TODO_PUBSUB_CREATE_SUCCEEDED]: (state: TodoPubSubState): TodoPubSubState => state,
 
-    [todoPubSubCreateFailed]: (state: TodoPubSubState, payload: ErrorType): TodoPubSubState =>
+    [TODO_PUBSUB_CREATE_FAILED]: (
+      state: TodoPubSubState,
+      { payload: { error } }
+    ): TodoPubSubState =>
       R.merge(state, {
-        createError: errorObject(payload)
+        createError: error
       }),
 
-    [todoPubSubToggle]: (state: TodoPubSubState): TodoPubSubState => state,
+    [TODO_PUBSUB_TOGGLE]: (state: TodoPubSubState): TodoPubSubState => state,
 
-    [todoPubSubToggleSucceeded]: (state: TodoPubSubState): TodoPubSubState => state,
+    [TODO_PUBSUB_TOGGLE_SUCCEEDED]: (state: TodoPubSubState): TodoPubSubState => state,
 
-    [todoPubSubToggleFailed]: (state: TodoPubSubState, payload: ErrorType): TodoPubSubState =>
+    [TODO_PUBSUB_TOGGLE_FAILED]: (
+      state: TodoPubSubState,
+      { payload: { error } }
+    ): TodoPubSubState =>
       R.merge(state, {
-        toggleError: errorObject(payload)
+        toggleError: error
       })
   },
   initialState
@@ -93,22 +177,22 @@ export const todoPubSubReducer = createReducer(
 // Logic
 
 export const todoSubscribeLogic = createLogic({
-  type: todoPubSubSubscribe,
-  cancelType: todoPubSubUnsubscribe,
+  type: TODO_PUBSUB_SUBSCRIBE,
+  cancelType: TODO_PUBSUB_UNSUBSCRIBE,
   warnTimeout: 0,
 
   // eslint-disable-next-line no-unused-vars
   process({ apollo, subscriptions, cancelled$ }, dispatch: Dispatch, done: () => void) {
     if (subscriptions.todo) {
-      dispatch(todoPubSubSubscribeSucceeded({ subid: subscriptions.todo._networkSubscriptionId }))
+      dispatch(todoPubSubSubscribeSucceeded(subscriptions.todo._networkSubscriptionId))
       return
     }
     const sub = apollo.subscribe({ query: TODO_UPDATED_SUBSCRIPTION }).subscribe({
-      next(payload: { todoUpdated: Todo }) {
-        dispatch(todoPubSubReceiveSucceeded(payload.todoUpdated))
+      next({ todoUpdated }) {
+        dispatch(todoPubSubReceiveSucceeded(todoUpdated))
       },
-      error(error: ErrorType) {
-        dispatch(todoPubSubReceiveFailed(error))
+      error(error: Object) {
+        dispatch(todoPubSubReceiveFailed(errorObject(error)))
       }
     })
 
@@ -119,13 +203,12 @@ export const todoSubscribeLogic = createLogic({
     })
 
     subscriptions.todo = sub
-    dispatch(todoPubSubSubscribeSucceeded({ subid: sub._networkSubscriptionId }))
+    dispatch(todoPubSubSubscribeSucceeded(sub._networkSubscriptionId))
   }
 })
 
 export const todoCreateLogic = createLogic({
-  type: todoPubSubCreate,
-
+  type: TODO_PUBSUB_CREATE,
   processOptions: {
     dispatchReturn: true,
     successType: todoPubSubCreateSucceeded,
@@ -139,11 +222,14 @@ export const todoCreateLogic = createLogic({
         variables: { text: action.payload.text }
       })
       .map(resp => resp.data.addTodo)
+      .catch((error: Object) => {
+        throw errorObject(error)
+      })
   }
 })
 
 export const todoToggleLogic = createLogic({
-  type: todoPubSubToggle,
+  type: TODO_PUBSUB_TOGGLE,
 
   processOptions: {
     dispatchReturn: true,
@@ -158,5 +244,8 @@ export const todoToggleLogic = createLogic({
         variables: { id: action.payload.todoID }
       })
       .map(resp => resp.data.toggleTodo)
+      .catch((error: Object) => {
+        throw errorObject(error)
+      })
   }
 })

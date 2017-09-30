@@ -4,6 +4,7 @@
 [include]
 
 [libs]
+./src/types.js
 
 [options]
 # workaround for errors on importing CSS

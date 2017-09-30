@@ -8,7 +8,6 @@ import oauth2 from 'simple-oauth2'
 import digest from './digest'
 import env from './env'
 import { getUser, getOrCreateUser } from './store'
-import type { User } from '../src/types'
 
 const debugAuth = createDebug('example:auth')
 

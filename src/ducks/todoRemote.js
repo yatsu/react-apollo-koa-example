@@ -1,12 +1,11 @@
 // @flow
 import R from 'ramda'
-import { createAction, createReducer } from 'redux-act'
 import { createLogic } from 'redux-logic'
+import createReducer from '../redux/createReducer'
+import { errorObject } from '../utils'
 import TODO_LIST_QUERY from '../graphql/todoListQuery.graphql'
 import ADD_TODO_MUTATION from '../graphql/addTodoMutation.graphql'
 import TOGGLE_TODO_MUTATION from '../graphql/toggleTodoMutation.graphql'
-import { errorObject } from '../utils'
-import type { ErrorType, Todo } from '../types'
 
 // Types
 
@@ -20,15 +19,76 @@ type TodoRemoteState = {
 
 // Actions
 
-export const todoRemoteFetch = createAction('TODO_REMOTE_FETCH')
-export const todoRemoteFetchSucceeded = createAction('TODO_REMOTE_FETCH_SUCCEDED')
-export const todoRemoteFetchFailed = createAction('TODO_REMOTE_FETCH_FAILED')
-export const todoRemoteCreate = createAction('TODO_REMOTE_CREATE')
-export const todoRemoteCreateSucceeded = createAction('TODO_REMOTE_CREATE_SUCCEEDED')
-export const todoRemoteCreateFailed = createAction('TODO_REMOTE_CREATE_FAILED')
-export const todoRemoteToggle = createAction('TODO_REMOTE_TOGGLE')
-export const todoRemoteToggleSucceeded = createAction('TODO_REMOTE_TOGGLE_SUCCEEDED')
-export const todoRemoteToggleFailed = createAction('TODO_REMOTE_TOGGLE_FAILED')
+export const TODO_REMOTE_FETCH = 'TODO_REMOTE_FETCH'
+export const TODO_REMOTE_FETCH_SUCCEDED = 'TODO_REMOTE_FETCH_SUCCEDED'
+export const TODO_REMOTE_FETCH_FAILED = 'TODO_REMOTE_FETCH_FAILED'
+export const TODO_REMOTE_CREATE = 'TODO_REMOTE_CREATE'
+export const TODO_REMOTE_CREATE_SUCCEEDED = 'TODO_REMOTE_CREATE_SUCCEEDED'
+export const TODO_REMOTE_CREATE_FAILED = 'TODO_REMOTE_CREATE_FAILED'
+export const TODO_REMOTE_TOGGLE = 'TODO_REMOTE_TOGGLE'
+export const TODO_REMOTE_TOGGLE_SUCCEEDED = 'TODO_REMOTE_TOGGLE_SUCCEEDED'
+export const TODO_REMOTE_TOGGLE_FAILED = 'TODO_REMOTE_TOGGLE_FAILED'
+
+export function todoRemoteFetch(): Action {
+  return {
+    type: TODO_REMOTE_FETCH
+  }
+}
+
+export function todoRemoteFetchSucceeded(todos: Todo[]): Action {
+  return {
+    type: TODO_REMOTE_FETCH_SUCCEDED,
+    payload: { todos }
+  }
+}
+
+export function todoRemoteFetchFailed(error: ErrorType): Action {
+  return {
+    type: TODO_REMOTE_FETCH_FAILED,
+    payload: { error }
+  }
+}
+
+export function todoRemoteCreate(text: string): Action {
+  return {
+    type: TODO_REMOTE_CREATE,
+    payload: { text }
+  }
+}
+
+export function todoRemoteCreateSucceeded(): Action {
+  return {
+    type: TODO_REMOTE_CREATE_SUCCEEDED
+  }
+}
+
+export function todoRemoteCreateFailed(error: ErrorType): Action {
+  return {
+    type: TODO_REMOTE_CREATE_FAILED,
+    payload: { error }
+  }
+}
+
+export function todoRemoteToggle(todoID: string): Action {
+  return {
+    type: TODO_REMOTE_TOGGLE,
+    payload: { todoID }
+  }
+}
+
+export function todoRemoteToggleSucceeded(todo: Todo): Action {
+  return {
+    type: TODO_REMOTE_TOGGLE_SUCCEEDED,
+    payload: { todo }
+  }
+}
+
+export function todoRemoteToggleFailed(error: ErrorType): Action {
+  return {
+    type: TODO_REMOTE_TOGGLE_FAILED,
+    payload: { error }
+  }
+}
 
 // Reducer
 
@@ -42,46 +102,58 @@ const initialState: TodoRemoteState = {
 
 export const todoRemoteReducer = createReducer(
   {
-    [todoRemoteFetch]: (state: TodoRemoteState): TodoRemoteState =>
+    [TODO_REMOTE_FETCH]: (state: TodoRemoteState): TodoRemoteState =>
       R.merge(state, {
         fetching: true
       }),
 
-    [todoRemoteFetchSucceeded]: (state: TodoRemoteState, payload: Array<Todo>): TodoRemoteState =>
+    [TODO_REMOTE_FETCH_SUCCEDED]: (
+      state: TodoRemoteState,
+      { payload: { todos } }
+    ): TodoRemoteState =>
       R.merge(state, {
         fetching: false,
         todos: R.reduce(
           (acc: { [string]: Todo }, todo: Todo) => R.assoc(todo.id, todo, acc),
           {},
-          payload
+          todos
         )
       }),
 
-    [todoRemoteFetchFailed]: (state: TodoRemoteState, payload: ErrorType): TodoRemoteState =>
+    [TODO_REMOTE_FETCH_FAILED]: (state: TodoRemoteState, { payload: { error } }): TodoRemoteState =>
       R.merge(state, {
         fetching: false,
-        fetchError: errorObject(payload)
+        fetchError: error
       }),
 
-    [todoRemoteCreate]: (state: TodoRemoteState): TodoRemoteState => state,
+    [TODO_REMOTE_CREATE]: (state: TodoRemoteState): TodoRemoteState => state,
 
-    [todoRemoteCreateSucceeded]: (state: TodoRemoteState): TodoRemoteState => state,
+    [TODO_REMOTE_CREATE_SUCCEEDED]: (state: TodoRemoteState): TodoRemoteState => state,
 
-    [todoRemoteCreateFailed]: (state: TodoRemoteState, payload: ErrorType): TodoRemoteState =>
+    [TODO_REMOTE_CREATE_FAILED]: (
+      state: TodoRemoteState,
+      { payload: { error } }
+    ): TodoRemoteState =>
       R.merge(state, {
-        createError: errorObject(payload)
+        createError: error
       }),
 
-    [todoRemoteToggle]: (state: TodoRemoteState): TodoRemoteState => state,
+    [TODO_REMOTE_TOGGLE]: (state: TodoRemoteState): TodoRemoteState => state,
 
-    [todoRemoteToggleSucceeded]: (state: TodoRemoteState, payload: Todo): TodoRemoteState =>
+    [TODO_REMOTE_TOGGLE_SUCCEEDED]: (
+      state: TodoRemoteState,
+      { payload: { todo } }
+    ): TodoRemoteState =>
       R.merge(state, {
-        todos: R.assoc(payload.id, payload, state.todos)
+        todos: R.assoc(todo.id, todo, state.todos)
       }),
 
-    [todoRemoteToggleFailed]: (state: TodoRemoteState, payload: ErrorType): TodoRemoteState =>
+    [TODO_REMOTE_TOGGLE_FAILED]: (
+      state: TodoRemoteState,
+      { payload: { error } }
+    ): TodoRemoteState =>
       R.merge(state, {
-        toggleError: errorObject(payload)
+        toggleError: error
       })
   },
   initialState
@@ -90,8 +162,7 @@ export const todoRemoteReducer = createReducer(
 // Logic
 
 export const todosFetchLogic = createLogic({
-  type: [todoRemoteFetch, todoRemoteCreateSucceeded],
-
+  type: [TODO_REMOTE_FETCH, TODO_REMOTE_CREATE_SUCCEEDED],
   processOptions: {
     dispatchReturn: true,
     successType: todoRemoteFetchSucceeded,
@@ -105,12 +176,14 @@ export const todosFetchLogic = createLogic({
         fetchPolicy: 'network-only'
       })
       .map(resp => resp.data.todoList.todos)
+      .catch((error: Object) => {
+        throw errorObject(error)
+      })
   }
 })
 
 export const todoCreateLogic = createLogic({
-  type: todoRemoteCreate,
-
+  type: TODO_REMOTE_CREATE,
   processOptions: {
     dispatchReturn: true,
     successType: todoRemoteCreateSucceeded,
@@ -124,12 +197,14 @@ export const todoCreateLogic = createLogic({
         variables: { text: action.payload.text }
       })
       .map(resp => resp.data.addTodo)
+      .catch((error: Object) => {
+        throw errorObject(error)
+      })
   }
 })
 
 export const todoToggleLogic = createLogic({
-  type: todoRemoteToggle,
-
+  type: TODO_REMOTE_TOGGLE,
   processOptions: {
     dispatchReturn: true,
     successType: todoRemoteToggleSucceeded,
@@ -143,5 +218,8 @@ export const todoToggleLogic = createLogic({
         variables: { id: R.prop('todoID', action.payload) }
       })
       .map(resp => resp.data.toggleTodo)
+      .catch((error: Object) => {
+        throw errorObject(error)
+      })
   }
 })

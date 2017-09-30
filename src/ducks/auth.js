@@ -3,24 +3,105 @@ import createDebug from 'debug'
 import jwtDecode from 'jwt-decode'
 import R from 'ramda'
 import { browserHistory } from 'react-router'
-import { createAction, createReducer } from 'redux-act'
 import { createLogic } from 'redux-logic'
+import createReducer from '../redux/createReducer'
 import { errorObject } from '../utils'
-import type { ErrorType } from '../types'
 
 const debugAuth = createDebug('example:auth')
+
 // Actions
 
-export const signin = createAction('SIGNIN')
-export const signinSucceeded = createAction('SIGNIN_SUCCEEDED')
-export const signinFailed = createAction('SIGNIN_FAILED')
-export const signinResume = createAction('SIGNIN_RESUME')
-export const signout = createAction('SIGNOUT')
-export const signoutSucceeded = createAction('SIGNOUT_SUCCEEDED')
-export const signoutFailed = createAction('SIGNOUT_FAILED')
-export const authErrorClear = createAction('AUTH_ERROR_CLEAR')
-export const githubSignin = createAction('GITHUB_SIGNIN')
-export const authCallback = createAction('AUTH_CALLBACK')
+const SIGNIN = 'SIGNIN'
+const SIGNIN_SUCCEEDED = 'SIGNIN_SUCCEEDED'
+const SIGNIN_FAILED = 'SIGNIN_FAILED'
+const SIGNIN_RESUME = 'SIGNIN_RESUME'
+const SIGNIN_RESUME_SUCCEEDED = 'SIGNIN_RESUME_SUCCEEDED'
+const SIGNIN_RESUME_FAILED = 'SIGNIN_RESUME_FAILED'
+const SIGNOUT = 'SIGNOUT'
+const AUTH_ERROR_CLEAR = 'AUTH_ERROR_CLEAR'
+const GITHUB_SIGNIN = 'GITHUB_SIGNIN'
+const GITHUB_SIGNIN_SUCCEEDED = 'GITHUB_SIGNIN_SUCCEEDED'
+const GITHUB_SIGNIN_FAILED = 'GITHUB_SIGNIN_FAILED'
+const AUTH_CALLBACK = 'AUTH_CALLBACK'
+
+export function signin(username: string, password: string): Action {
+  return {
+    type: SIGNIN,
+    payload: { username, password }
+  }
+}
+
+export function signinSucceeded(user: User): Action {
+  return {
+    type: SIGNIN_SUCCEEDED,
+    payload: { user }
+  }
+}
+
+export function signinFailed(error: ErrorType): Action {
+  return {
+    type: SIGNIN_FAILED,
+    payload: { error }
+  }
+}
+
+export function signout(): Action {
+  return {
+    type: SIGNOUT
+  }
+}
+
+export function signinResume(): Action {
+  return {
+    type: SIGNIN_RESUME
+  }
+}
+
+export function signinResumeSucceeded(user: User): Action {
+  return {
+    type: SIGNIN_RESUME_SUCCEEDED,
+    payload: { user }
+  }
+}
+
+export function signinResumeFailed(): Action {
+  return {
+    type: SIGNIN_RESUME_FAILED
+  }
+}
+
+export function authErrorClear(): Action {
+  return {
+    type: AUTH_ERROR_CLEAR
+  }
+}
+
+export function githubSignin(redirect: ?string): Action {
+  return {
+    type: GITHUB_SIGNIN,
+    payload: { redirect }
+  }
+}
+
+export function githubSigninSucceeded(): Action {
+  return {
+    type: GITHUB_SIGNIN_SUCCEEDED
+  }
+}
+
+export function githubSigninFailed(error: ErrorType): Action {
+  return {
+    type: GITHUB_SIGNIN_FAILED,
+    payload: { error }
+  }
+}
+
+export function authCallback(service: string, code: string, redirect: ?string): Action {
+  return {
+    type: AUTH_CALLBACK,
+    payload: { service, code, redirect }
+  }
+}
 
 // Types
 
@@ -42,60 +123,63 @@ const initialState: AuthState = {
 
 export const authReducer = createReducer(
   {
-    [signin]: (state: AuthState): AuthState =>
+    [SIGNIN]: (state: AuthState): AuthState =>
       R.merge(state, {
         authenticating: true,
         error: null
       }),
 
-    [signinSucceeded]: (state: AuthState, payload: { accessToken: string }): AuthState => {
-      const { user } = jwtDecode(payload.accessToken)
-      return R.merge(state, {
+    [SIGNIN_SUCCEEDED]: (state: AuthState, { payload: { user } }): AuthState =>
+      R.merge(state, {
         authenticated: false,
         username: user.username,
         admin: user.admin
-      })
-    },
-
-    [signinFailed]: (state: AuthState, payload: ErrorType): AuthState =>
-      R.merge(state, {
-        authenticating: false,
-        error: errorObject(payload)
       }),
 
-    [signinResume]: (state: AuthState): AuthState => {
-      const accessToken = localStorage.getItem('accessToken')
-      const { user } = jwtDecode(accessToken)
-      return R.merge(state, {
+    [SIGNIN_FAILED]: (state: AuthState, { payload: { error } }): AuthState =>
+      R.merge(state, {
+        authenticating: false,
+        error
+      }),
+
+    [SIGNIN_RESUME]: (state: AuthState): AuthState => state,
+
+    [SIGNIN_RESUME_SUCCEEDED]: (state: AuthState, { payload: { user } }): AuthState =>
+      R.merge(state, {
         authenticating: false,
         username: user.username,
         admin: user.admin
-      })
-    },
+      }),
 
-    [signout]: (state: AuthState): AuthState =>
+    [SIGNIN_RESUME_FAILED]: (state: AuthState): AuthState => state,
+
+    [SIGNOUT]: (state: AuthState): AuthState =>
       R.merge(state, {
         authenticating: false,
         username: null,
         admin: false
       }),
 
-    [signoutSucceeded]: (state: AuthState): AuthState => state,
-
-    [signoutFailed]: (state: AuthState): AuthState => state,
-
-    [authErrorClear]: (state: AuthState): AuthState =>
+    [AUTH_ERROR_CLEAR]: (state: AuthState): AuthState =>
       R.merge(state, {
         error: null
       }),
 
-    [githubSignin]: (state: AuthState): AuthState =>
+    [GITHUB_SIGNIN]: (state: AuthState): AuthState =>
       R.merge(state, {
         authenticating: true,
         error: null
       }),
 
-    [authCallback]: (state: AuthState): AuthState =>
+    [GITHUB_SIGNIN_SUCCEEDED]: (state: AuthState): AuthState => state,
+
+    [GITHUB_SIGNIN_FAILED]: (state: AuthState, { payload: { error } }): AuthState =>
+      R.merge(state, {
+        authenticating: false,
+        error
+      }),
+
+    [AUTH_CALLBACK]: (state: AuthState): AuthState =>
       R.merge(state, {
         authenticating: true,
         error: null
@@ -107,9 +191,7 @@ export const authReducer = createReducer(
 // Logic
 
 export const signinLogic = createLogic({
-  type: signin,
-  latest: true,
-
+  type: SIGNIN,
   processOptions: {
     dispatchReturn: true,
     successType: signinSucceeded,
@@ -120,25 +202,29 @@ export const signinLogic = createLogic({
     const { username, password } = action.payload
     const body = { username, password }
     const headers = { 'Content-Type': 'application/json' }
-    return webClient.post('/auth/signin', body, headers, false).map((result) => {
-      const { accessToken, refreshToken } = result.response
-      localStorage.setItem('accessToken', accessToken)
-      localStorage.setItem('refreshToken', refreshToken)
-      debugAuth('wsClient.status', wsClient.status)
-      wsClient.connectionParams.authToken = accessToken
-      if (wsClient.status === WebSocket.CONNECTING) {
-        wsClient.connectionParams.reconnect = true
-      } else {
-        wsClient.close()
-      }
-      return result.response
-    })
+    return webClient
+      .post('/auth/signin', body, headers, false)
+      .map(({ response: { accessToken, refreshToken } }) => {
+        localStorage.setItem('accessToken', accessToken)
+        localStorage.setItem('refreshToken', refreshToken)
+        const { user } = jwtDecode(accessToken)
+        debugAuth('wsClient.status', wsClient.status)
+        wsClient.connectionParams.authToken = accessToken
+        if (wsClient.status === WebSocket.CONNECTING) {
+          wsClient.connectionParams.reconnect = true
+        } else {
+          wsClient.close()
+        }
+        return user
+      })
+      .catch((error: Object) => {
+        throw errorObject(error)
+      })
   }
 })
 
 export const signoutLogic = createLogic({
-  type: signout,
-  latest: true,
+  type: SIGNOUT,
 
   process({ webClient, wsClient }) {
     const headers = { 'Content-Type': 'application/json' }
@@ -151,9 +237,23 @@ export const signoutLogic = createLogic({
   }
 })
 
+export const signinResumeLogic = createLogic({
+  type: SIGNIN_RESUME,
+
+  process({ webClient }, dispatch: Dispatch, done: () => void) {
+    const accessToken = localStorage.getItem('accessToken')
+    if (accessToken) {
+      const { user } = jwtDecode(accessToken)
+      dispatch(signinResumeSucceeded(user))
+    } else {
+      dispatch(signinResumeFailed())
+    }
+    done()
+  }
+})
+
 export const autoSignoutLogic = createLogic({
   type: new RegExp('_FAILED$'),
-  latest: true,
 
   process({ action }, dispatch: Dispatch, done: () => void) {
     if (
@@ -167,34 +267,44 @@ export const autoSignoutLogic = createLogic({
 })
 
 export const githubSigninLogic = createLogic({
-  type: githubSignin,
-  latest: true,
+  type: GITHUB_SIGNIN,
+  processOptions: {
+    dispatchReturn: true,
+    successType: githubSigninSucceeded,
+    failType: githubSigninFailed
+  },
 
-  process({ action, webClient }, dispatch: Dispatch, done: () => void) {
+  process({ action, webClient }) {
     const headers = { 'Content-Type': 'application/json' }
     return webClient
       .post(`/auth/github/${action.payload.redirect || ''}`, {}, headers, false)
-      .subscribe((result: Object) => {
-        const { url } = result.response
+      .do(({ response: { url } }) => {
         window.location = url
-        done()
+      })
+      .catch((error: Object) => {
+        throw errorObject(error)
       })
   }
 })
 
 export const authCallbackLogic = createLogic({
-  type: authCallback,
-  latest: true,
+  type: AUTH_CALLBACK,
+  processOptions: {
+    dispatchReturn: true,
+    successType: signinSucceeded,
+    failType: signinFailed
+  },
 
-  process({ action, webClient, wsClient }, dispatch: Dispatch, done: () => void) {
+  process({ action, webClient, wsClient }) {
     const { service, code, redirect } = action.payload
     const headers = { 'Content-Type': 'application/json' }
     const body = { code }
-    return webClient.post(`/auth/cb/${service}`, body, headers, false).subscribe(
-      (result: Object) => {
-        const { accessToken, refreshToken } = result.response
+    return webClient
+      .post(`/auth/cb/${service}`, body, headers, false)
+      .map(({ response: { accessToken, refreshToken } }) => {
         localStorage.setItem('accessToken', accessToken)
         localStorage.setItem('refreshToken', refreshToken)
+        const { user } = jwtDecode(accessToken)
         debugAuth('wsClient.status', wsClient.status)
         wsClient.connectionParams.authToken = accessToken
         if (wsClient.status === WebSocket.CONNECTING) {
@@ -207,14 +317,11 @@ export const authCallbackLogic = createLogic({
         } else {
           browserHistory.replace('')
         }
-        dispatch(signinSucceeded(result.response))
-        done()
-      },
-      (error: Object) => {
+        return user
+      })
+      .catch((error: Object) => {
         browserHistory.replace('/signin')
-        dispatch(signinFailed(error))
-        done()
-      }
-    )
+        throw errorObject(error)
+      })
   }
 })
